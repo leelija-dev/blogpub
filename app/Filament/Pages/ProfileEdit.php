@@ -18,40 +18,38 @@ class ProfileEdit extends Page
     protected static bool $shouldRegisterNavigation = false; 
     protected  static ?string $slug = 'profile/edit'; 
 
-     public array $formData = [];
+    //  public array $formData = [];
+     public $name='';
+     public $email='';
     public function mount(): void
     {
         
         $admin = Auth::guard('admin')->user();
         // Initialize the form state manually
-        $this->formData = [
-            'name' => $admin->name,
-            'email' => $admin->email,
-        ];
-
-        // Ensure Filament form is populated when the page mounts
-        if (isset($this->form)) {
-            $this->form->fill($this->formData);
+        if (isset($this->form) && $admin !== null) {
+            $this->form->fill($admin->only(['name', 'email']));
         }
+       
     }
+    
 
     protected function getFormSchema(): array
     {
         $admin = Auth::guard('admin')->user();
         return [
             TextInput::make('name')
-                ->label('Name')
+                ->label('Names')
                 ->required()
-                ->reactive()
-                ->default($admin?->name),
+                ->reactive(),
+                
+                
 
             TextInput::make('email')
                 ->label('Email')
                 ->required()
-                ->reactive()
-                ->default($admin?->email),
+                ->reactive(),
                 
-        ];
+            ];
     }
 
     /**
