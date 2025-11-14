@@ -14,12 +14,41 @@ class PlansForm
         return $schema
             ->components([
                 //
-                TextInput::make('name')->required(),
-                TextInput::make('slug')->required(),
-                TextInput::make('price')->required(),
+                TextInput::make('name')
+                //->required()
+                ->rules([
+                    'required'
+                ])
+                ->validationMessages([
+                    'required' => 'Plan name can not be blank!',
+                ]),
+                TextInput::make('slug')//->required(),
+                ->rules([
+                    'required'
+                ])
+                ->validationMessages([
+                    'required' => 'Slug can not be blank!',
+                ]),
+
+                TextInput::make('price')//->required(),
+                    ->rules(['required'])
+                    ->validationMessages([
+                        'required' => 'Price can not be blank!',
+                    ]),
+
                 TextInput::make('description'),
-                TextInput::make('duration')->required(),
-                TextInput::make('mail_available')->required(),
+
+                TextInput::make('duration')//->required(),
+                    ->rules(['required'])
+                    ->validationMessages([
+                        'required' => 'Duration can not be blank!',
+                    ]),
+                
+                TextInput::make('mail_available')//->required(),
+                    ->rules(['required'])
+                    ->validationMessages([
+                        'required' => 'Mail Available can not be blank!',
+                    ]),
                 // TextInput::make('is_active')->required(),
                 // Repeater::make('features')
                 //     ->label('Plan Features')
