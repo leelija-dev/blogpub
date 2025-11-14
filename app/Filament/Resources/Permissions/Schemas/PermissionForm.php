@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Permissions\Schemas;
 
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
-
+use Illuminate\Support\HtmlString;
 class PermissionForm
 {
     public static function configure(Schema $schema): Schema
@@ -15,7 +15,8 @@ class PermissionForm
                 TextInput::make('name')
                     ->unique(ignoreRecord: true)
                     //->required()
-                    ->label('Permission Name')
+                    //->label('Permission Name')
+                    ->label(fn () => new HtmlString('Permission Name<sup style="color:red">*</sup>'))
                     ->rules(['required','unique:permissions,name'])
                     ->validationMessages([
                         'required' => 'Permission name can not be blank!',

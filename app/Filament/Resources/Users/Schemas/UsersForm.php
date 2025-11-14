@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Filament\Resources\Users\Schemas;
-
+use Illuminate\Support\HtmlString;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 class UsersForm
@@ -11,7 +11,8 @@ class UsersForm
         return $schema
             ->components([
                  TextInput::make('name')
-                 ->label('User Name')
+                 //->label('User Name')
+                 ->label(fn () => new HtmlString('User Name<sup style="color:red">*</sup>'))
                  ->rules([
                          'required'
                      ])
@@ -19,7 +20,10 @@ class UsersForm
                          'required' => 'The user name is can not be blank.',
                          
                      ]),
-                 TextInput::make('email')->label('Email')->rules([
+                 TextInput::make('email')
+                    ->label(fn () => new HtmlString('Email<sup style="color:red">*</sup>'))
+                     //->label('Email')
+                     ->rules([
                         'required',
                         'email',
                         //'unique:users,email',
