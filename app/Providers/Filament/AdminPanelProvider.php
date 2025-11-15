@@ -6,6 +6,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Actions\Action;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -18,6 +19,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+// use App\Filament\Pages\UpdateProfile;
+
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -42,6 +45,27 @@ class AdminPanelProvider extends PanelProvider
                 AccountWidget::class,
                 FilamentInfoWidget::class,
             ])
+            ->userMenuItems([
+                // custom navbar profile menu
+                'profile' => fn (Action $action) => $action
+                    ->label(fn () => auth('admin')->user()?->name ?? 'Profile') // show admin name
+                    ->icon('heroicon-o-user'),
+                    //->url(fn () => route('filament.admin.pages.update-profile')),
+
+                //my account link
+                Action::make('my-account')
+                    ->label('My Account')
+                    ->icon('heroicon-o-user-circle')
+                    ->url(fn () => route('filament.admin.pages.update-profile')),
+
+                // You can add other actions (these will be shown in the menu where Actions are listed).
+                // Filament typically renders the Theme switcher automatically in the menu UI,
+                // so you usually don't need to add it manually.
+
+                // logout link
+                'logout' => fn (Action $action) => $action->label('Logout'),
+            ])
+
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
