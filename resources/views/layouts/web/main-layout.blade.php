@@ -7,6 +7,7 @@
     <title>Document</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
 
 
@@ -45,15 +46,15 @@
 
 
     <!-- gsap animation script  -->
-    <script src="{{asset('web/js/gsap/gsap.min.js')}}"></script>
-    <script src="{{asset('web/js/gsap/ScrollTrigger.min.js')}}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollSmoother.min.js"></script>
-    <script src="{{asset('web/js/gsap/Draggable.min.js')}}"></script>
-
-
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- <script src="{{asset('web/js/gsap/gsap.min.js')}}"></script> -->
+    <!-- <script src="{{asset('web/js/gsap/ScrollTrigger.min.js')}}"></script> -->
+    <!-- <script src="{{asset('web/js/gsap/Draggable.min.js')}}"></script> -->
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollSmoother.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
 
     <!-- gsap smooth scrolling  -->
     <script>
