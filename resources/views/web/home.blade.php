@@ -115,7 +115,9 @@
     <!-- Background decorative circles -->
     <div class="w-full h-full absolute top-0 left-0 overflow-hidden z-[-1]">
         <div class="absolute w-[300px] h-[300px] border-secondary border-[40px] rounded-full opacity-[0.1] top-[10%] right-[29%] "></div>
-        <div class="absolute bottom-10 right-10 w-24 h-24 rounded-full border-8 border-primary-light opacity-30"></div>
+        <div class="absolute w-[120px] h-[120px] border-secondary border-[20px] rounded-full opacity-[0.1] top-[13%] right-[8%] "></div>
+        <div class="absolute w-[80px] h-[80px] border-secondary border-[20px] rounded-full opacity-[0.1] bottom-[10%] left-[18%] "></div>
+        
         <div class="absolute w-[600px] h-[600px] border-secondary border-[80px] rounded-full opacity-[0.1] bottom-[10%] left-0 transform translate-x-[-50%]"></div>
     </div>
 
