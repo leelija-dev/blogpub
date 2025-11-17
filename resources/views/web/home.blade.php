@@ -20,21 +20,50 @@
     .slider-thumb-right {
         z-index: 3;
     }
+
+    /* Custom range thumbs */
+.slider-thumb::-webkit-slider-thumb,
+.slider-thumb-right::-webkit-slider-thumb {
+    appearance: none;
+    height: 18px;
+    width: 18px;
+    background: #6a36ff;   /* primary */
+    border-radius: 50%;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.slider-thumb::-moz-range-thumb,
+.slider-thumb-right::-moz-range-thumb {
+    height: 18px;
+    width: 18px;
+    background: #6a36ff;
+    border-radius: 50%;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+/* To allow thumbs to be clickable */
+input[type="range"] {
+    pointer-events: auto !important;
+}
+
 </style>
 
 <!-- hero section  -->
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
     <!-- Background decorative circles -->
-    <div class="absolute top-10 left-10 w-32 h-32 rounded-full border-8 border-primary-light opacity-30"></div>
-    <div class="absolute bottom-10 right-10 w-24 h-24 rounded-full border-8 border-primary-light opacity-30"></div>
-    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full border-8 border-primary-light opacity-10"></div>
+    <div class="w-full h-full absolute top-0 left-0 overflow-hidden z-[-1]">
+        <div class="absolute w-[300px] h-[300px] border-secondary border-[40px] rounded-full opacity-[0.1] top-[10%] right-[29%] "></div>
+        <div class="absolute bottom-10 right-10 w-24 h-24 rounded-full border-8 border-primary-light opacity-30"></div>
+        <div class="absolute w-[600px] h-[600px] border-secondary border-[80px] rounded-full opacity-[0.1] bottom-[10%] left-0 transform translate-x-[-50%]"></div>
+    </div>
 
-    <div class="container mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-4 items-center">
+    <div class="container mx-auto px-6 lg:px-12  flex items-center justify-center relative z-10">
 
         <!-- Left Section -->
-        <div class="space-y-8">
-            <h1 class="text-h1-xs sm:text-h1-sm md:text-h1-md lg:text-h1-lg lgg:text-h1-lgg xl:text-h1-xl 2xl:text-h1-2xl
- font-bold text-gray-900 leading-tight">
+        <div class=" lg:w-1/2 w-full space-y-8">
+            <h1 class="text-h1-xs sm:text-h1-sm md:text-h1-md lg:text-h1-lg lgg:text-h1-lgg xl:text-h1-xl 2xl:text-h1-2xl font-bold text-gray-900 leading-tight">
                 Don’t Miss<br />
                 <span class="text-primary">Amazing Grocery</span><br />
                 Deals & Offers
@@ -72,22 +101,22 @@
         </div>
 
         <!-- Right Section - Card -->
-        <div class="flex justify-center lg:justify-end">
-            <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md border border-gray-100">
+        <div class=" lg:w-1/2 w-full flex justify-center ">
+            <div class="backdrop-blur-[9px]  bg-white/0  rounded-3xl shadow-2xl p-8 w-full max-w-[500px] border-t-0 border-b-0 border-l-[3px] border-r-[3px] border-primary">
 
                 <!-- Search Bar -->
                 <div class="relative mb-8">
                     <input
                         type="text"
                         placeholder="Search and Select Niche"
-                        class="w-full pl-12 pr-4 py-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700" />
-                    <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="w-full backdrop-blur-[3px]  bg-white/0 shadow-[1px_4px_17px_#5e5d5d38]  pl-12 pr-4 py-3 rounded-full border border-secondary focus:outline-none focus:ring-2 focus:ring-primary text-gray-700" />
+                    <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
 
                 <!-- Sliders -->
-                <div class="space-y-6">
+                <div class="space-y-10">
                     <!-- DA Slider -->
                     <div>
                         <div class="flex justify-between text-sm font-medium text-gray-700 mb-2">
@@ -451,13 +480,13 @@
             <div class="w-full lg:w-1/2 p-8 smxl:block hidden">
                 <div class="block-contaning-wrapper relative w-full lg:h-full h-[390px] max-w-[600px] mx-auto">
                     <div class="rounded-[15px] bg-gray-500 overflow-hidden w-[45%] lg:h-[36%] h-[53%] absolute bottom-[46%] left-0">
-                        <img class="w-full h-full object-cover" src="{{asset('images/bg-8.webp')}}"  alt="">
+                        <img class="w-full h-full object-cover" src="{{asset('images/bg-8.webp')}}" alt="">
                     </div>
                     <div class="rounded-[15px] bg-gray-500 overflow-hidden w-[45%] lg:h-[36%] h-[53%] absolute bottom-[40%] right-0">
-                        <img class="w-full h-full object-cover" src="{{asset('images/bg-8.webp')}}"  alt="">
+                        <img class="w-full h-full object-cover" src="{{asset('images/bg-8.webp')}}" alt="">
                     </div>
                     <div class="rounded-[15px] bg-gray-500 overflow-hidden w-[70%] lg:h-[50%] h-[64%] absolute bottom-0 left-[16%] border-white border-[4px]">
-                        <img class="w-full h-full object-cover" src="{{asset('images/bg-8.webp')}}"  alt="">
+                        <img class="w-full h-full object-cover" src="{{asset('images/bg-8.webp')}}" alt="">
                     </div>
 
                 </div>
@@ -658,6 +687,50 @@
 </section>
 
 <x-web.faq />
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const sliders = document.querySelectorAll(".slider-container");
+
+    sliders.forEach(container => {
+        const minSlider = container.querySelector(".slider-thumb");
+        const maxSlider = container.querySelector(".slider-thumb-right");
+        const fill = container.querySelector(".slider-fill");
+        const minText = container.querySelector(".min-value");
+        const maxText = container.querySelector(".max-value");
+
+        function updateSlider() {
+            let minVal = parseInt(minSlider.value);
+            let maxVal = parseInt(maxSlider.value);
+
+            if (minVal > maxVal) {
+                // Swap values
+                [minSlider.value, maxSlider.value] = [maxVal, minVal];
+                minVal = parseInt(minSlider.value);
+                maxVal = parseInt(maxSlider.value);
+            }
+
+            const minRange = minSlider.min;
+            const maxRange = minSlider.max;
+
+            const percent1 = ((minVal - minRange) / (maxRange - minRange)) * 100;
+            const percent2 = ((maxVal - minRange) / (maxRange - minRange)) * 100;
+
+            fill.style.left = percent1 + "%";
+            fill.style.width = (percent2 - percent1) + "%";
+
+            minText.textContent = minVal >= 1000 ? Math.round(minVal/1000)+"K" : minVal;
+            maxText.textContent = maxVal >= 1000 ? Math.round(maxVal/1000)+"K" : maxVal;
+        }
+
+        minSlider.addEventListener("input", updateSlider);
+        maxSlider.addEventListener("input", updateSlider);
+
+        updateSlider(); // initialize
+    });
+});
+
+</script>
 @endsection
 @section('scripts')
 
