@@ -21,14 +21,14 @@ use BackedEnum;
 class Promotion extends Page implements HasForms
 {
     use InteractsWithForms;
-
+    
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUser;
     
     protected string $view = 'filament.pages.promotion';
     protected static ?string $title = 'Promotion';
     // protected static ?int $navigationSort = 98;
     protected  static ?string $slug = 'mail'; 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 98;
 
 
     public ?string $send_to = null;

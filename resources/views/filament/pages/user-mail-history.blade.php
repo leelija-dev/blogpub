@@ -1,7 +1,7 @@
 <x-filament-panels::page>
-        <table class="w-full text-left border" style="background-color: white;">
+        <table class="w-full text-left border" style="background-color: white; padding-left:5%">
             <thead>
-                <tr class="bg-gray-200 ml-2 text-center" style="border-bottom: 1px solid #ddd;">
+                <tr class="bg-gray-200 ml-2 text-center" style="border-bottom: 1px solid #ddd;padding-left:5%">
                     <th class="p-2 border text-center">SL No</th>
                     <th class="p-2 border text-center">Email</th>
                     <th class="p-2 border">Subject</th>
@@ -13,7 +13,7 @@
                 </tr>
             </thead>
           
-            <tbody class="ml-2">
+            <tbody class="ml-2" style="padding-left:5%">
                 @if ($this->getLogs()->isNotEmpty())
                     @foreach ($this->getLogs() as $user_mail)
                         <tr style="border-bottom: 1px solid #ddd;">
@@ -42,15 +42,15 @@
                                 </span>
                             </td>
                             <td class="p-2 border">{{ $user_mail->created_at->format('d M Y ') }}</td>
-                            <td class="p-2 border text-center">
+                            
                             <td class="p-2 border text-center">
                                 <a href="{{ url('admin/view-mail?id=' . $user_mail->id) }}"
-                                class="text-blue-600 hover:text-blue-800">
+                                class="text-blue-600 hover:text-blue-800 text-center">
                                     <x-filament::icon icon="heroicon-o-eye" class="w-5 h-5" />
                                 </a>
                             </td>
 
-                            </td>
+                            
                         </tr>
                     @endforeach
                 @else
