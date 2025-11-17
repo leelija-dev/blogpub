@@ -1,10 +1,19 @@
 <?php
-
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('web.home');
+});
+
+Route::get('/about', function () {
+    return view('web.about');
+});
+Route::get('/contact', function () {
+    return view('web.contact');
+});
+Route::get('/checkout', function () {
+    return view('web.checkout');
 });
 
 Route::get('/dashboard', function () {
@@ -16,5 +25,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
 
 require __DIR__.'/auth.php';

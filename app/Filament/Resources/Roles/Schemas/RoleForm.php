@@ -7,14 +7,21 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
 use Spatie\Permission\Models\Permission;
-
+use Illuminate\Support\HtmlString;
 class RoleForm
 {
     public static function configure(Schema $schema): Schema
     {
         return $schema->columns(1)->components([
             TextInput::make('name')
-                ->required()
+                //->required()
+                ->label(fn () => new HtmlString('Name<sup style="color:red">*</sup>'))
+                ->placeholder('Enter role name')
+                ->rules(['required','unique:roles,name'])
+                ->validationMessages([
+                    'required' => 'Role name can not be blank!',
+                    'unique' => 'This role name is already taken!',
+                ])
                 ->unique(ignoreRecord: true),
 
             CheckboxList::make('permissions')
@@ -24,12 +31,17 @@ class RoleForm
                 ->label('Assign Permissions'),
 
             Select::make('guard_name')
+                ->label(fn () => new HtmlString('Guard name<sup style="color:red">*</sup>'))
                 ->options([
                     'web' => 'Web (Frontend Users)',
                     'admin' => 'Admin (Filament Admins)',
                 ])
                 ->default('admin') // or 'web'
-                ->required()
+                //->required()
+                ->rules(['required'])
+                ->validationMessages([
+                    'required' => 'Guard name can not be blank!',
+                ])
         ]);
     }
 }

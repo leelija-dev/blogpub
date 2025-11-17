@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Admins\Schemas;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Illuminate\Support\HtmlString;
 
 class AdminsForm
 {
@@ -14,6 +15,8 @@ class AdminsForm
             ->columns(1) // optional but makes intent clear
             ->components([
                 TextInput::make('name')
+                ->label(fn () => new HtmlString('Name<sup style="color:red">*</sup>'))
+                ->placeholder('Enter admin name')
                     ->rules(['required']) // server-side validation
                     ->validationMessages([
                         'required' => 'Name can not be blank!',
@@ -21,7 +24,8 @@ class AdminsForm
                      
 
                 TextInput::make('email')
-                    ->label('Email')
+                    ->label(fn () => new HtmlString('Email<sup style="color:red">*</sup>'))
+                    ->placeholder('Enter email address')
                     ->rules([
                         'required',
                         'email',
@@ -34,6 +38,8 @@ class AdminsForm
                     
 
                 TextInput::make('password')
+                    ->label(fn () => new HtmlString('Password<sup style="color:red">*</sup>'))
+                    ->placeholder('Enter password')
                     ->password()
                     ->rules(['required'])
                     ->validationMessages([
