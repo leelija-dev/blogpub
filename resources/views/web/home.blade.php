@@ -126,13 +126,13 @@
         <!-- Left Section -->
         <div class=" lg:w-1/2 w-full space-y-8 lg:text-left text-center">
             <h1 class="text-h1-xs sm:text-h1-sm md:text-h1-md lg:text-h1-lg lgg:text-h1-lgg xl:text-h1-xl 2xl:text-h1-2xl font-bold text-gray-900 leading-tight">
-                Don’t Miss<br />
+                Don’t Miss
                 <span class="text-primary">Amazing Grocery</span><br />
                 Deals & Offers
             </h1>
 
             <p class="text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg lgg:text-p-lgg xl:text-p-xl 2xl:text-p-2xl text-gray-600 ">
-                We source and sell the very best beef, lamb and pork,<br />
+                We source and sell the very best beef, lamb and pork,
                 sourced with the greatest care from farmer.
             </p>
 
@@ -146,7 +146,7 @@
             </div>
 
             <!-- Stats -->
-            <div class="flex flex-wrap gap-8 mt-12 text-center lg:justify-start justify-center">
+            <div class="flex flex-wrap gap-8 xl:gap-20 mt-12 text-center lg:justify-start justify-center">
                 <div>
                     <div class="text-4xl font-bold text-gray-900">10+</div>
                     <div class="text-sm text-gray-500">Years Experience</div>

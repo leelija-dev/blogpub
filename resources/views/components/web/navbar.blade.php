@@ -18,10 +18,10 @@
       <div class="flex gap-6 items-center">
         <!-- Desktop Navigation Links -->
         <div class="hidden lg:flex items-center space-x-8">
-          <a href="#" class="text-gray-700 hover:text-secondary font-semibold transition-all duration-300 ease-in-out">Home</a>
-          <a href="#" class="text-gray-700 hover:text-secondary font-semibold transition-all duration-300 ease-in-out">Pricing</a>
-          <a href="#" class="text-gray-700 hover:text-secondary font-semibold transition-all duration-300 ease-in-out">About Us</a>
-          <a href="#" class="text-gray-700 hover:text-secondary font-semibold transition-all duration-300 ease-in-out">Contact Us</a>
+          <a href="#" class="text-gray-700 hover:text-secondary font-medium transition-all duration-300 ease-in-out">Home</a>
+          <a href="#" class="text-gray-700 hover:text-secondary font-medium transition-all duration-300 ease-in-out">Pricing</a>
+          <a href="#" class="text-gray-700 hover:text-secondary font-medium transition-all duration-300 ease-in-out">About Us</a>
+          <a href="#" class="text-gray-700 hover:text-secondary font-medium transition-all duration-300 ease-in-out">Contact Us</a>
         </div>
 
         <!-- Desktop Login Button -->
@@ -46,8 +46,12 @@
 </nav>
 
 <!-- Mobile Sidebar Menu -->
-<div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden overlay" onclick="closeSidebar()"></div>
-<div id="mobile-sidebar" class="fixed top-0 left-0 h-full w-64 bg-white shadow-xl z-50 transform -translate-x-full sidebar">
+<div id="sidebar-overlay" 
+     class="fixed inset-0 bg-black bg-opacity-50 z-[1000] hidden ">
+</div>
+
+<div id="mobile-sidebar" 
+     class="fixed top-0 left-0 h-full w-64 bg-white shadow-xl z-[1001] -translate-x-full">
   <div class="p-6">
     <!-- Close button -->
     <div class="flex justify-between items-center mb-8">
@@ -82,27 +86,67 @@
   const sidebar = document.getElementById('mobile-sidebar');
   const overlay = document.getElementById('sidebar-overlay');
 
+  // Add transition classes once
+  sidebar.classList.add('transition-transform', 'duration-300', 'ease-in-out');
+  overlay.classList.add('transition-opacity', 'duration-300', 'ease-in-out');
+
+  // Initial state: sidebar hidden
+  let isSidebarOpen = false;
+
   function openSidebar() {
-    sidebar.classList.remove('-translate-x-full', 'sidebar-leave-active');
-    sidebar.classList.add('sidebar-enter-active');
-    overlay.classList.remove('hidden', 'overlay-leave-active');
-    overlay.classList.add('overlay-enter-active');
-    setTimeout(() => {
-      sidebar.classList.remove('sidebar-enter-active');
-      overlay.classList.remove('overlay-enter-active');
-    }, 300);
+    if (window.innerWidth >= 991) return; // Do nothing on large screens
+
+    overlay.classList.remove('hidden');
+    sidebar.classList.remove('-translate-x-full');
+    overlay.classList.remove('hidden');
+    // overlay.classList.add('opacity-100');
+
+    isSidebarOpen = true;
   }
 
   function closeSidebar() {
-    sidebar.classList.add('sidebar-leave-active');
-    overlay.classList.add('overlay-leave-active');
-    setTimeout(() => {
-      sidebar.classList.add('-translate-x-full');
-      sidebar.classList.remove('sidebar-leave-active');
+    sidebar.classList.add('-translate-x-full');
+    overlay.classList.add('hidden');
+
+    // Wait for transition to finish before hiding overlay
+    const hideOverlay = () => {
       overlay.classList.add('hidden');
-      overlay.classList.remove('overlay-leave-active');
-    }, 300);
+      overlay.removeEventListener('transitionend', hideOverlay);
+    };
+    overlay.addEventListener('transitionend', hideOverlay);
+
+    isSidebarOpen = false;
   }
 
-  mobileMenuButton.addEventListener('click', openSidebar);
+  // Toggle sidebar (only on mobile)
+  mobileMenuButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (isSidebarOpen) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
+  });
+
+  // Close when clicking overlay
+  overlay.addEventListener('click', closeSidebar);
+
+  // Close sidebar automatically when resizing to desktop (≥991px)
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 991 && isSidebarOpen) {
+      closeSidebar();
+    }
+
+    // Optional: Also close if going from desktop to mobile but sidebar was open (safety)
+    if (window.innerWidth < 991 && !sidebar.classList.contains('-translate-x-full') && !isSidebarOpen) {
+      // This case shouldn't happen normally, but just in case
+      sidebar.classList.add('-translate-x-full');
+      overlay.classList.add('hidden', 'opacity-0');
+    }
+  });
+
+  // Initial check on load (in case page loads on large screen)
+  if (window.innerWidth >= 991) {
+    closeSidebar(); // Ensures it's closed on desktop
+  }
 </script>

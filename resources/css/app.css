@@ -7,7 +7,7 @@
   font-family: 'TT Norms Pro';
   src:  url('../font/ttnormspro-normal.woff2') format('woff2'),
         url('../font/ttnormspro-normal.woff') format('woff');
-        /* url('fonts/TTNormsPro-Regular.ttf') format('truetype'); */
+
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -18,7 +18,7 @@
   font-family: 'TT Norms Pro';
   src:  url('../font/ttnormspro-bold.woff2') format('woff2'),
         url('../font/ttnormspro-bold.woff') format('woff');
-        /* url('fonts/TTNormsPro-Bold.ttf') format('truetype'); */
+       
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -36,6 +36,10 @@
 
 *,body,h1,h2,h3,h4,h5,h6,p,span,li,ul,label,input,div,section{
     font-family: 'TT Norms Pro' !important;
+}
+
+i{
+    font-family: "Font Awesome 6 Free" !important;
 }
 
 /* Repeat for every weight/style you have (Light 300, Medium 500, ExtraBold 800, etc.) */
