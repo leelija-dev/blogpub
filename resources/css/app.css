@@ -2,6 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Regular */
+@font-face {
+  font-family: 'TT Norms Pro';
+  src:  url('../font/ttnormspro-normal.woff2') format('woff2'),
+        url('../font/ttnormspro-normal.woff') format('woff');
+        /* url('fonts/TTNormsPro-Regular.ttf') format('truetype'); */
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Bold */
+@font-face {
+  font-family: 'TT Norms Pro';
+  src:  url('../font/ttnormspro-bold.woff2') format('woff2'),
+        url('../font/ttnormspro-bold.woff') format('woff');
+        /* url('fonts/TTNormsPro-Bold.ttf') format('truetype'); */
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Add more weights if you have them, e.g. */
+@font-face {
+  font-family: 'TT Norms Pro';
+  src:  url('../font/ttnormspro-normal.woff2') format('woff2'),
+        url('../font/ttnormspro-normal.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+*,body,h1,h2,h3,h4,h5,h6,p,span,li,ul,label,input,div,section{
+    font-family: 'TT Norms Pro' !important;
+}
+
+/* Repeat for every weight/style you have (Light 300, Medium 500, ExtraBold 800, etc.) */
+
+
+
+
+
 /* ===========================================
    BEAUTIFUL CUSTOM SCROLLBAR FOR ENTIRE PAGE
    Works on WebKit (Chrome, Edge, Safari) & Firefox
