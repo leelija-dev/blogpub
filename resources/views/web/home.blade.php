@@ -300,7 +300,7 @@
             <!-- Features Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- High Resolution -->
-                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col items-start text-left hover:shadow-lg transition-all duration-300 ease-in-out">
+                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
                     <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -314,7 +314,7 @@
                     </p>
                 </div>
                 <!-- High Resolution -->
-                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col items-start text-left hover:shadow-lg transition-all duration-300 ease-in-out">
+                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
                     <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -327,7 +327,7 @@
                     </p>
                 </div>
                 <!-- High Resolution -->
-                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col items-start text-left hover:shadow-lg transition-all duration-300 ease-in-out">
+                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
                     <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -340,7 +340,7 @@
                     </p>
                 </div>
                 <!-- High Resolution -->
-                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col items-start text-left hover:shadow-lg transition-all duration-300 ease-in-out">
+                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
                     <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -353,7 +353,7 @@
                     </p>
                 </div>
                 <!-- High Resolution -->
-                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col items-start text-left hover:shadow-lg transition-all duration-300 ease-in-out">
+                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
                     <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -366,7 +366,7 @@
                     </p>
                 </div>
                 <!-- High Resolution -->
-                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col items-start text-left hover:shadow-lg transition-all duration-300 ease-in-out">
+                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
                     <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
