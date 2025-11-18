@@ -411,7 +411,7 @@
         </div>
 
         <!-- Pricing Cards Wrapper -->
-        <div class="max-w-7xl mx-auto lg:px-6 px-0 grid grid-cols-1 md:grid-cols-3 gap-8 pb-16">
+        <div class="max-w-7xl mx-auto lg:px-6 px-0 grid grid-cols-1 md:grid-cols-3 gap-8 ">
 
             <!-- Basic Plan -->
             <div class="bg-white rounded-2xl shadow-md px-8 pb-8 pt-0 border border-gray-100 overflow-hidden hover:scale-[1.04] transition-all duration-300 ease-in-out">
@@ -556,6 +556,7 @@
                 <div class="block-contaning-wrapper relative w-full lg:h-full h-[390px] max-w-[600px] mx-auto">
                     <div class="rounded-[15px] bg-gray-500 overflow-hidden w-[45%] lg:h-[36%] h-[53%] absolute bottom-[46%] left-0">
                         <img class="w-full h-full object-cover" src="{{asset('images/bg-8.webp')}}" alt="">
+                        <img class="w-full h-full object-cover" src="{{asset('images/bg-8.webp')}}" alt="">
                     </div>
                     <div class="rounded-[15px] bg-gray-500 overflow-hidden w-[45%] lg:h-[36%] h-[53%] absolute bottom-[40%] right-0">
                         <img class="w-full h-full object-cover" src="{{asset('images/bg-8.webp')}}" alt="">
@@ -568,7 +569,7 @@
             </div>
 
             <!-- Right Section - Content -->
-            <div class="w-full lg:w-1/2 p-0 lg:p-16 flex flex-col justify-center space-y-8 ">
+            <div class="w-full lg:w-1/2 px-0 lg:px-16 flex flex-col justify-center space-y-8 ">
                 <div>
                     <!-- Badge -->
                     <div class="inline-flex items-center gap-2 bg-indigo-100 text-primary text-p-xs sm:text-p-sm md:text-p-md  font-semibold px-3 py-1 rounded-full w-fit">
@@ -673,9 +674,9 @@
 
                 <!-- SOCIAL ICONS -->
                 <div class="flex gap-4 mt-10 items-center">
-                    <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">🌐</a>
-                    <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">📸</a>
-                    <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">💬</a>
+                    <a href="#" class="min-w-12 w-12 min-h-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">🌐</a>
+                    <a href="#" class="min-w-12 w-12 min-h-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">📸</a>
+                    <a href="#" class="min-w-12 w-12 min-h-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">💬</a>
                 </div>
 
                 <!-- DECOR CIRCLE -->
