@@ -145,7 +145,7 @@
                         </div>
 
                         <!-- Zip / Phone -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 md:gap-6 gap-8">
                             <div class="floating-label-group">
                                 <input type="text" id="zip" placeholder=" " value="" required />
                                 <label for="zip">Zip / Postal Code</label>
