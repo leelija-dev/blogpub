@@ -3,78 +3,34 @@
 @section('title', 'home-page')
 
 @section('content')
-<style>
-    input[type="range"]::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        @apply h-5 w-5 rounded-full bg-white border-4 border-primary shadow-md pointer-events-auto cursor-pointer z-10;
-    }
-
-    input[type="range"]::-moz-range-thumb {
-        @apply h-5 w-5 rounded-full bg-white border-4 border-primary shadow-md pointer-events-auto cursor-pointer;
-    }
-
-    .slider-thumb {
-        z-index: 2;
-    }
-
-    .slider-thumb-right {
-        z-index: 3;
-    }
-
-    /* Custom range thumbs */
-.slider-thumb::-webkit-slider-thumb,
-.slider-thumb-right::-webkit-slider-thumb {
-    appearance: none;
-    height: 18px;
-    width: 18px;
-    background: #6a36ff;   /* primary */
-    border-radius: 50%;
-    cursor: pointer;
-    pointer-events: auto;
-}
-
-.slider-thumb::-moz-range-thumb,
-.slider-thumb-right::-moz-range-thumb {
-    height: 18px;
-    width: 18px;
-    background: #6a36ff;
-    border-radius: 50%;
-    cursor: pointer;
-    pointer-events: auto;
-}
-
-/* To allow thumbs to be clickable */
-input[type="range"] {
-    pointer-events: auto !important;
-}
-
-</style>
 
 <!-- hero section  -->
-<section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden lg:py-16 py-12 px-6">
     <!-- Background decorative circles -->
     <div class="w-full h-full absolute top-0 left-0 overflow-hidden z-[-1]">
         <div class="absolute w-[300px] h-[300px] border-secondary border-[40px] rounded-full opacity-[0.1] top-[10%] right-[29%] "></div>
-        <div class="absolute bottom-10 right-10 w-24 h-24 rounded-full border-8 border-primary-light opacity-30"></div>
+        <div class="absolute w-[120px] h-[120px] border-secondary border-[20px] rounded-full opacity-[0.1] top-[13%] right-[8%] "></div>
+        <div class="absolute w-[80px] h-[80px] border-secondary border-[20px] rounded-full opacity-[0.1] bottom-[10%] left-[18%] "></div>
+
         <div class="absolute w-[600px] h-[600px] border-secondary border-[80px] rounded-full opacity-[0.1] bottom-[10%] left-0 transform translate-x-[-50%]"></div>
     </div>
 
-    <div class="container mx-auto px-6 lg:px-12  flex items-center justify-center relative z-10">
+    <div class="container mx-auto   flex items-center justify-center relative z-10 lg:flex-nowrap flex-wrap">
 
         <!-- Left Section -->
-        <div class=" lg:w-1/2 w-full space-y-8">
+        <div class=" lg:w-1/2 w-full space-y-8 lg:text-left text-center">
             <h1 class="text-h1-xs sm:text-h1-sm md:text-h1-md lg:text-h1-lg lgg:text-h1-lgg xl:text-h1-xl 2xl:text-h1-2xl font-bold text-gray-900 leading-tight">
-                Don’t Miss<br />
+                Don’t Miss
                 <span class="text-primary">Amazing Grocery</span><br />
                 Deals & Offers
             </h1>
 
             <p class="text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg lgg:text-p-lgg xl:text-p-xl 2xl:text-p-2xl text-gray-600 ">
-                We source and sell the very best beef, lamb and pork,<br />
+                We source and sell the very best beef, lamb and pork,
                 sourced with the greatest care from farmer.
             </p>
 
-            <div class="flex flex-col sm:flex-row gap-4">
+            <div class="flex flex-col sm:flex-row gap-4 lg:justify-start sm:justify-center items-center">
                 <button class="btn-primary">
                     See Pricing
                 </button>
@@ -84,7 +40,7 @@ input[type="range"] {
             </div>
 
             <!-- Stats -->
-            <div class="flex flex-wrap gap-8 mt-12 text-center">
+            <div class="flex flex-wrap gap-8 xl:gap-20 mt-12 text-center lg:justify-start justify-center">
                 <div>
                     <div class="text-4xl font-bold text-gray-900">10+</div>
                     <div class="text-sm text-gray-500">Years Experience</div>
@@ -101,7 +57,7 @@ input[type="range"] {
         </div>
 
         <!-- Right Section - Card -->
-        <div class=" lg:w-1/2 w-full flex justify-center ">
+        <div class=" lg:w-1/2 w-full flex justify-center lg:mt-0 mt-4">
             <div class="backdrop-blur-[9px]  bg-white/0  rounded-3xl shadow-2xl p-8 w-full max-w-[500px] border-t-0 border-b-0 border-l-[3px] border-r-[3px] border-primary">
 
                 <!-- Search Bar -->
@@ -116,51 +72,64 @@ input[type="range"] {
                 </div>
 
                 <!-- Sliders -->
-                <div class="space-y-10">
+                <div class="">
+
+
                     <!-- DA Slider -->
-                    <div>
-                        <div class="flex justify-between text-sm font-medium text-gray-700 mb-2">
+                    <div class="mb-3">
+                        <div class="flex justify-between text-2xl font-bold  text-darkPrimary mb-3">
                             <span>DA</span>
-                            <span class="text-primary">15</span>
-                            <span>90</span>
+                            <span class="text-purple-600 font-bold hidden" id="da-values">25 – 70</span>
                         </div>
-                        <div class="relative">
-                            <div class="absolute inset-0 h-2 bg-gray-200 rounded-full"></div>
-                            <div class="absolute inset-0 h-2 bg-gradient-to-r from-primary to-primary-light rounded-full" style="width: 20%"></div>
-                            <input type="range" min="15" max="90" value="25" class="absolute w-full h-2 bg-transparent appearance-none pointer-events-none slider-thumb" />
-                            <input type="range" min="15" max="90" value="90" class="absolute w-full h-2 bg-transparent appearance-none pointer-events-none slider-thumb-right" />
+                        <div class="range-slider">
+                            <div class="track"></div>
+                            <div class="fill" id="da-fill"></div>
+                            <!-- Tooltip for left thumb -->
+                            <span class="tooltip left-tooltip" id="da-min-tooltip">25</span>
+                            <!-- Tooltip for right thumb -->
+                            <span class="tooltip right-tooltip" id="da-max-tooltip">70</span>
+
+                            <!-- Right thumb (higher value) - MUST BE FIRST -->
+                            <input type="range" min="15" max="90" value="70" class="thumb-right" id="da-max">
+                            <!-- Left thumb (lower value) -->
+                            <input type="range" min="15" max="90" value="25" class="thumb-left" id="da-min">
                         </div>
                     </div>
-
-                    <!-- DR Slider -->
-                    <div>
-                        <div class="flex justify-between text-sm font-medium text-gray-700 mb-2">
+                    <div class="mb-3">
+                        <div class="flex justify-between text-2xl font-bold  text-darkPrimary mb-3">
                             <span>DR</span>
-                            <span class="text-primary">12</span>
-                            <span>85</span>
+                            <span class="text-purple-600 font-bold hidden" id="dr-values">12 – 70</span>
                         </div>
-                        <div class="relative">
-                            <div class="absolute inset-0 h-2 bg-gray-200 rounded-full"></div>
-                            <div class="absolute inset-0 h-2 bg-gradient-to-r from-primary to-primary-light rounded-full" style="width: 75%"></div>
-                            <input type="range" min="12" max="85" value="12" class="absolute w-full h-2 bg-transparent appearance-none pointer-events-none slider-thumb" />
-                            <input type="range" min="12" max="85" value="70" class="absolute w-full h-2 bg-transparent appearance-none pointer-events-none slider-thumb-right" />
+                        <div class="range-slider">
+                            <div class="track"></div>
+                            <div class="fill" id="dr-fill"></div>
+
+                            <!-- Tooltip for left thumb -->
+                            <span class="tooltip left-tooltip" id="dr-min-tooltip">25</span>
+                            <!-- Tooltip for right thumb -->
+                            <span class="tooltip right-tooltip" id="dr-max-tooltip">70</span>
+
+                            <input type="range" min="12" max="85" value="70" class="thumb-right" id="dr-max">
+                            <input type="range" min="12" max="85" value="12" class="thumb-left" id="dr-min">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="flex justify-between text-2xl font-bold  text-darkPrimary mb-3">
+                            <span>Traffic</span>
+                            <span class="text-purple-600 font-bold hidden" id="tar-values">12 – 70</span>
+                        </div>
+                        <div class="range-slider">
+                            <div class="track"></div>
+                            <div class="fill" id="tar-fill"></div>
+                            <!-- Tooltip for left thumb -->
+                            <span class="tooltip left-tooltip" id="tar-min-tooltip">25</span>
+                            <!-- Tooltip for right thumb -->
+                            <span class="tooltip right-tooltip" id="tar-max-tooltip">70</span>
+                            <input type="range" min="12" max="85" value="70" class="thumb-right" id="tar-max">
+                            <input type="range" min="12" max="85" value="12" class="thumb-left" id="tar-min">
                         </div>
                     </div>
 
-                    <!-- Traffic Slider -->
-                    <div>
-                        <div class="flex justify-between text-sm font-medium text-gray-700 mb-2">
-                            <span>Traffic</span>
-                            <span class="text-primary">10K</span>
-                            <span>80K</span>
-                        </div>
-                        <div class="relative">
-                            <div class="absolute inset-0 h-2 bg-gray-200 rounded-full"></div>
-                            <div class="absolute inset-0 h-2 bg-gradient-to-r from-primary to-primary-light rounded-full" style="width: 50%"></div>
-                            <input type="range" min="10000" max="80000" value="10000" class="absolute w-full h-2 bg-transparent appearance-none pointer-events-none slider-thumb" />
-                            <input type="range" min="10000" max="80000" value="50000" class="absolute w-full h-2 bg-transparent appearance-none pointer-events-none slider-thumb-right" />
-                        </div>
-                    </div>
                 </div>
 
                 <!-- CTA Button -->
@@ -225,7 +194,7 @@ input[type="range"] {
             <!-- Features Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- High Resolution -->
-                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col items-start text-left hover:shadow-lg transition-all duration-300 ease-in-out">
+                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
                     <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -239,7 +208,7 @@ input[type="range"] {
                     </p>
                 </div>
                 <!-- High Resolution -->
-                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col items-start text-left hover:shadow-lg transition-all duration-300 ease-in-out">
+                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
                     <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -252,7 +221,7 @@ input[type="range"] {
                     </p>
                 </div>
                 <!-- High Resolution -->
-                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col items-start text-left hover:shadow-lg transition-all duration-300 ease-in-out">
+                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
                     <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -265,7 +234,7 @@ input[type="range"] {
                     </p>
                 </div>
                 <!-- High Resolution -->
-                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col items-start text-left hover:shadow-lg transition-all duration-300 ease-in-out">
+                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
                     <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -278,7 +247,7 @@ input[type="range"] {
                     </p>
                 </div>
                 <!-- High Resolution -->
-                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col items-start text-left hover:shadow-lg transition-all duration-300 ease-in-out">
+                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
                     <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -291,7 +260,7 @@ input[type="range"] {
                     </p>
                 </div>
                 <!-- High Resolution -->
-                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col items-start text-left hover:shadow-lg transition-all duration-300 ease-in-out">
+                <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
                     <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -336,121 +305,76 @@ input[type="range"] {
         </div>
 
         <!-- Pricing Cards Wrapper -->
-        <div class="max-w-7xl mx-auto lg:px-6 px-0 grid grid-cols-1 md:grid-cols-3 gap-8 pb-16">
+        <div class="max-w-7xl mx-auto lg:px-6 px-0 grid grid-cols-1 md:grid-cols-{{ $plans->count() }} gap-8 pb-16">
+            @foreach($plans as $index => $plan)
+            @php
+            $isHighlighted = $index === 1; // Make the middle plan highlighted
+            $planIcons = ['🚀', '⚙️', '👑', '💎', '⭐'];
+            $planBadges = ['STARTER BOOST', 'GROWTH ACCELERATOR', 'MARKET LEADER', 'ENTERPRISE', 'PREMIUM'];
+            $icon = $planIcons[$index] ?? '🚀';
+            $badge = $planBadges[$index] ?? 'PLAN';
+            @endphp
 
-            <!-- Basic Plan -->
-            <div class="bg-white rounded-2xl shadow-md px-8 pb-8 pt-0 border border-gray-100 overflow-hidden hover:scale-[1.04] transition-all duration-300 ease-in-out">
+            <!-- Plan Card -->
+            <div class="bg-{{ $isHighlighted ? 'gradient-to-br from-black to-primary text-white' : 'white' }} rounded-2xl {{ $isHighlighted ? 'shadow-xl' : 'shadow-md border border-gray-100' }} px-8 pb-8 pt-0 overflow-hidden hover:scale-[1.04] transition-all duration-300 ease-in-out">
                 <div class="text-center">
-                    <div class="bg-purple-100  text-purple-600 relative top-[-3px] py-[7px] px-[22px] mb-[3rem] rounded-b-[10px] text-sm font-semibold inline-block">
-                        STARTER BOOST
+                    <div class="bg-{{ $isHighlighted ? 'purple-600 text-white' : 'purple-100 text-purple-600' }} relative top-[-3px] py-[7px] px-[22px] mb-[3rem] rounded-b-[10px] text-sm font-semibold inline-block">
+                        {{ $badge }}
                     </div>
 
                     <div class="flex justify-center mb-6">
-                        <div class="w-16 h-16 bg-purple-50 rounded-full flex justify-center items-center">
-                            <span class="text-purple-600 text-3xl">🚀</span>
+                        <div class="w-16 h-16 {{ $isHighlighted ? 'bg-white/20' : 'bg-purple-50' }} rounded-full flex justify-center items-center">
+                            <span class="{{ $isHighlighted ? 'text-white' : 'text-purple-600' }} text-3xl">{{ $icon }}</span>
                         </div>
                     </div>
 
-                    <h3 class="text-xl font-semibold">Basic Plan</h3>
-                    <p class="text-4xl font-bold mt-2">$1,000<span class="text-base font-medium">/month</span></p>
-                    <p class="text-gray-500 text-sm mb-4">Billed Annually</p>
-                    <span class="inline-block bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full mb-6">
-                        Up to 3 Platforms
+                    <h3 class="text-xl font-semibold">{{ $plan->name }}</h3>
+                    <p class="text-4xl font-bold mt-2">${{ number_format($plan->price) }}<span class="text-base font-medium">/{{ $plan->duration }}</span></p>
+                    <p class="{{ $isHighlighted ? 'text-purple-200' : 'text-gray-500' }} text-sm mb-4">Billed {{ $plan->duration === 'month' ? 'Monthly' : 'Annually' }}</p>
+                    <span class="inline-block {{ $isHighlighted ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-700' }} text-xs px-3 py-1 rounded-full mb-6">
+                        {{ $plan->description ?? 'All Features Included' }}
                     </span>
                 </div>
 
-                <ul class="space-y-3 text-gray-600">
-                    <li>• Social Media Management</li>
-                    <li>• 8 Monthly Social Media Posts</li>
-                    <li>• SEO Strategy & Keyword Research</li>
-                    <li>• Google Ads & Social Media Ad Campaigns</li>
-                    <li>• Monthly Analytics and Performance Report</li>
-                    <li>• Bi-Weekly Strategy Call</li>
+                @if($plan->features && $plan->features->count() > 0)
+                <ul class="space-y-3 {{ $isHighlighted ? 'text-purple-100' : 'text-gray-600' }}">
+                    @foreach($plan->features->where('is_active', true) as $feature)
+                    <li>• {{ $feature->feature }}</li>
+                    @endforeach
                 </ul>
-
-                <div class="text-center my-10">
-                    <a href="#" class="btn-primary  rounded-full w-full block">Get Started</a>
-                </div>
-            </div>
-
-            <!-- Standard Package (Highlighted) -->
-            <div class="bg-gradient-to-br from-black to-primary text-white rounded-2xl shadow-xl px-8 pb-8  overflow-hidden hover:scale-[1.04] transition-all duration-300 ease-in-out">
-                <div class="text-center">
-                    <div class="bg-purple-600 text-white relative top-[-3px] py-[7px] px-[22px] mb-[3rem] rounded-b-[10px] text-sm font-semibold inline-block">
-                        GROWTH ACCELERATOR
-                    </div>
-
-                    <div class="flex justify-center mb-6">
-                        <div class="w-16 h-16 bg-white/20 rounded-full flex justify-center items-center">
-                            <span class="text-white text-3xl">⚙️</span>
-                        </div>
-                    </div>
-
-                    <h3 class="text-xl font-semibold">Standard Package</h3>
-                    <p class="text-4xl font-bold mt-2">$2,500<span class="text-base font-medium">/month</span></p>
-                    <p class="text-purple-200 text-sm mb-4">Billed Annually</p>
-                    <span class="inline-block bg-white/20 text-white text-xs px-3 py-1 rounded-full mb-6">
-                        Up to 5 Platforms
-                    </span>
-                </div>
-
-                <ul class="space-y-3 text-purple-100">
-                    <li>• Social Media Management</li>
-                    <li>• 8 Monthly Social Media Posts</li>
-                    <li>• SEO Strategy & Keyword Research</li>
-                    <li>• Google Ads & Social Media Ad Campaigns</li>
-                    <li>• Monthly Analytics and Performance Report</li>
-                    <li>• Bi-Weekly Strategy Call</li>
+                @else
+                <ul class="space-y-3 {{ $isHighlighted ? 'text-purple-100' : 'text-gray-600' }}">
+                    <li>• Feature 1</li>
+                    <li>• Feature 2</li>
+                    <li>• Feature 3</li>
                 </ul>
+                @endif
 
-                <div class="text-center my-10 ">
-                    <a href="#" class="btn-secondary  rounded-full w-full block">Get Started</a>
-                </div>
+                <!-- <div class="text-center my-10">
+                        <a href="{{ route('checkout') }}?plan={{ $plan->id }}" class="btn-{{ $isHighlighted ? 'secondary' : 'primary' }} rounded-full w-full block">Get Started</a>
+                    </div> -->
+
+                <!-- @auth
+                <a href="{{ route('checkout') }}?plan={{ $plan->id }}" class="btn-{{ $isHighlighted ? 'secondary' : 'primary' }} rounded-full w-full block">Get Started</a>
+                @else
+                <a href="{{ route('login') }}?redirect={{ urlencode(route('checkout', ['plan' => $plan->id])) }}" class="btn-{{ $isHighlighted ? 'secondary' : 'primary' }} rounded-full w-full block">Get Started</a>
+                @endauth -->
+
+                @auth
+                <a href="{{ route('checkout', ['plan' => $plan->id]) }}" class="btn-{{ $isHighlighted ? 'secondary' : 'primary' }} rounded-full w-full block">Get Started</a>
+                @else
+                <a href="{{ route('login') }}?redirect={{ urlencode(route('checkout', ['plan' => $plan->id])) }}" class="btn-{{ $isHighlighted ? 'secondary' : 'primary' }} rounded-full w-full block">Get Started</a>
+                @endauth
             </div>
-
-            <!-- Premium Package -->
-            <div class="bg-white rounded-2xl shadow-md px-8 pb-8 border border-gray-100 overflow-hidden hover:scale-[1.04] transition-all duration-300 ease-in-out">
-                <div class="text-center">
-                    <div class="bg-purple-100 text-purple-600 relative top-[-3px] py-[7px] px-[22px] mb-[3rem] rounded-b-[10px] text-sm font-semibold inline-block">
-                        MARKET LEADER
-                    </div>
-
-                    <div class="flex justify-center mb-6">
-                        <div class="w-16 h-16 bg-purple-50 rounded-full flex justify-center items-center">
-                            <span class="text-purple-600 text-3xl">👑</span>
-                        </div>
-                    </div>
-
-                    <h3 class="text-xl font-semibold">Premium Package</h3>
-                    <p class="text-4xl font-bold mt-2">$5,000<span class="text-base font-medium">/month</span></p>
-                    <p class="text-gray-500 text-sm mb-4">Billed Annually</p>
-                    <span class="inline-block bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full mb-6">
-                        Up to 7 Platforms
-                    </span>
-                </div>
-
-                <ul class="space-y-3 text-gray-600">
-                    <li>• Social Media Management</li>
-                    <li>• 8 Monthly Social Media Posts</li>
-                    <li>• SEO Strategy & Keyword Research</li>
-                    <li>• Google Ads & Social Media Ad Campaigns</li>
-                    <li>• Monthly Analytics and Performance Report</li>
-                    <li>• Bi-Weekly Strategy Call</li>
-                </ul>
-
-                <div class="text-center my-10 w-full">
-                    <a href="#" class="btn-primary rounded-full w-full block">Get Started</a>
-                </div>
-            </div>
-
+            @endforeach
         </div>
     </div>
 </section>
 
 <section class="bg-darkPrimary min-h-[250px] flex justify-center items-center lg:py-16 py-12 px-6 ">
-    <div class="container mx-auto flex flex-col md:flex-row items-center justify-between text-white">
+    <div class="container mx-auto flex flex-col lg:flex-row items-center justify-between text-white">
         <!-- Left Section: Text -->
-        <div class="mb-6 md:mb-0 text-center md:text-left">
+        <div class="mb-6 lg:mb-0 text-center md:text-left">
             <h2 class="text-h2-xs sm:text-h2-sm md:text-h2-md lg:text-h2-lg lgg:text-h2-lgg xl:text-h2-xl 2xl:text-h2-2xl
  font-bold leading-tight">
                 Build Websites Rapidly With<br>
@@ -481,6 +405,7 @@ input[type="range"] {
                 <div class="block-contaning-wrapper relative w-full lg:h-full h-[390px] max-w-[600px] mx-auto">
                     <div class="rounded-[15px] bg-gray-500 overflow-hidden w-[45%] lg:h-[36%] h-[53%] absolute bottom-[46%] left-0">
                         <img class="w-full h-full object-cover" src="{{asset('images/bg-8.webp')}}" alt="">
+                        <img class="w-full h-full object-cover" src="{{asset('images/bg-8.webp')}}" alt="">
                     </div>
                     <div class="rounded-[15px] bg-gray-500 overflow-hidden w-[45%] lg:h-[36%] h-[53%] absolute bottom-[40%] right-0">
                         <img class="w-full h-full object-cover" src="{{asset('images/bg-8.webp')}}" alt="">
@@ -493,8 +418,8 @@ input[type="range"] {
             </div>
 
             <!-- Right Section - Content -->
-            <div class="w-full lg:w-1/2 p-0 lg:p-16 flex flex-col justify-center space-y-8 ">
-                <div>
+            <div class="w-full lg:w-1/2 px-0 lg:px-16 flex flex-col justify-center space-y-8 ">
+                <div class="lg:text-left text-center">
                     <!-- Badge -->
                     <div class="inline-flex items-center gap-2 bg-indigo-100 text-primary text-p-xs sm:text-p-sm md:text-p-md  font-semibold px-3 py-1 rounded-full w-fit">
                         <span class="w-2 h-2 bg-primary rounded-full"></span>
@@ -510,7 +435,7 @@ input[type="range"] {
                 </div>
 
                 <!-- Description -->
-                <p class="text-gray-600   text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg lgg:text-p-lgg xl:text-p-xl 2xl:text-p-2xl">
+                <p class="text-gray-600   text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg lgg:text-p-lgg xl:text-p-xl 2xl:text-p-2xl lg:text-left text-center">
                     Energetically evisculate an expanded array of meta-services after cross-media strategic theme areas.
                     Interactively simplify interactive customer service before fully tested relationship parallel task high standards.
                 </p>
@@ -579,28 +504,38 @@ input[type="range"] {
                 <div class="mt-8 space-y-6">
                     <div class="text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg flex items-center gap-3">
                         <span class="">📞</span>
-                        <p>+1012 3456 789</p>
+                        <p class="flex flex-col smx:w-auto w-full gap-[5px] lg:items-center items-start">
+
+                            <a href="tel:+916290101838" class="">
+                                +91 629 010 1838
+                            </a>
+                            <a href="tel:+913325849017" class="">
+                                +91 332 584 9017
+                            </a>
+                        </p>
                     </div>
 
                     <div class="text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg flex items-center gap-3">
                         <span class="">✉️</span>
-                        <p>demo@gmail.com</p>
+                        <a href="mailto:info@leelija.com" class="">
+                            info@leelija.com
+                        </a>
                     </div>
 
                     <div class="text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg flex items-start gap-3">
                         <span class=" mt-1">📍</span>
                         <p>
-                            132 Dartmouth Street Boston, <br />
-                            Massachusetts 02156 United States
+                            Taki Road, Bamunmura, Barasat, <br />
+                            Kolkata - 700125, West Bengal, India
                         </p>
                     </div>
                 </div>
 
                 <!-- SOCIAL ICONS -->
                 <div class="flex gap-4 mt-10 items-center">
-                    <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">🌐</a>
-                    <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">📸</a>
-                    <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">💬</a>
+                    <a href="#" class="min-w-12 w-12 min-h-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">🌐</a>
+                    <a href="#" class="min-w-12 w-12 min-h-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">📸</a>
+                    <a href="#" class="min-w-12 w-12 min-h-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">💬</a>
                 </div>
 
                 <!-- DECOR CIRCLE -->
@@ -612,7 +547,7 @@ input[type="range"] {
 
             <!-- RIGHT FORM -->
             <div class="w-full lg:w-2/3 lg:p-6 p-4">
-                <form class="space-y-6">
+                <form id="contact-us" class="space-y-6">
 
                     <!-- NAME ROW -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -628,43 +563,21 @@ input[type="range"] {
                                 class="mt-1 w-full border-t-0 border-l-0  border-r-0 border-gray-300 form-input-cus outline-none py-2" />
                         </div>
                     </div>
-
-                    <!-- EMAIL / PHONE -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-gray-700">Email</label>
-                            <input type="email" placeholder="email@example.com"
-                                class="mt-1 w-full border-t-0 border-l-0  border-r-0 border-gray-300 form-input-cus outline-none py-2" />
-                        </div>
-
-                        <div>
-                            <label class="block text-gray-700">Phone Number</label>
-                            <input type="text" placeholder="+1 012 3456 789"
-                                class="mt-1 w-full border-t-0 border-l-0  border-r-0 border-gray-300 form-input-cus outline-none py-2" />
-                        </div>
+                    <div>
+                        <label class="block text-gray-700">Email</label>
+                        <input type="email" placeholder="email@example.com"
+                            class="mt-1 w-full border-t-0 border-l-0  border-r-0 border-gray-300 form-input-cus outline-none py-2" />
                     </div>
 
                     <!-- SUBJECT -->
                     <div>
-                        <label class="block text-gray-700">Select Subject?</label>
-
-                        <div class="flex flex-wrap gap-4 mt-2 text-gray-700">
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="subject" checked class="accent-black" /> General Inquiry
-                            </label>
-
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="subject" class="accent-black" /> General Inquiry
-                            </label>
-
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="subject" class="accent-black" /> General Inquiry
-                            </label>
-
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="subject" class="accent-black" /> General Inquiry
-                            </label>
-                        </div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                        <select class="w-full px-4 py-3 text-[#625e5e] border border-t-0 border-l-0  border-r-0 border-gray-300   transition" style="box-shadow: none !important;">
+                            <option>General Inquiry</option>
+                            <option>Support</option>
+                            <option>Partnership</option>
+                            <option>Feedback</option>
+                        </select>
                     </div>
 
                     <!-- MESSAGE -->
@@ -687,50 +600,96 @@ input[type="range"] {
 </section>
 
 <x-web.faq />
-
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-    const sliders = document.querySelectorAll(".slider-container");
+    function initDualSlider(minId, maxId, displayId, fillId, minTooltipId, maxTooltipId) {
+        const minThumb = document.getElementById(minId);
+        const maxThumb = document.getElementById(maxId);
+        const display = document.getElementById(displayId);
+        const fill = document.getElementById(fillId);
+        const minTooltip = document.getElementById(minTooltipId);
+        const maxTooltip = document.getElementById(maxTooltipId);
 
-    sliders.forEach(container => {
-        const minSlider = container.querySelector(".slider-thumb");
-        const maxSlider = container.querySelector(".slider-thumb-right");
-        const fill = container.querySelector(".slider-fill");
-        const minText = container.querySelector(".min-value");
-        const maxText = container.querySelector(".max-value");
+        const updateSlider = () => {
+            let minVal = parseInt(minThumb.value);
+            let maxVal = parseInt(maxThumb.value);
 
-        function updateSlider() {
-            let minVal = parseInt(minSlider.value);
-            let maxVal = parseInt(maxSlider.value);
-
+            // Prevent crossing
             if (minVal > maxVal) {
-                // Swap values
-                [minSlider.value, maxSlider.value] = [maxVal, minVal];
-                minVal = parseInt(minSlider.value);
-                maxVal = parseInt(maxSlider.value);
+                if (document.activeElement === minThumb) {
+                    maxVal = minVal;
+                    maxThumb.value = minVal;
+                } else {
+                    minVal = maxVal;
+                    minThumb.value = maxVal;
+                }
             }
 
-            const minRange = minSlider.min;
-            const maxRange = minSlider.max;
+            // Update main display
+            display.textContent = `${minVal} – ${maxVal}`;
 
-            const percent1 = ((minVal - minRange) / (maxRange - minRange)) * 100;
-            const percent2 = ((maxVal - minRange) / (maxRange - minRange)) * 100;
+            // Update tooltips text
+            minTooltip.textContent = minVal;
+            maxTooltip.textContent = maxVal;
 
-            fill.style.left = percent1 + "%";
-            fill.style.width = (percent2 - percent1) + "%";
+            // Position tooltips exactly above thumbs
+            const minPercent = ((minVal - minThumb.min) / (minThumb.max - minThumb.min)) * 100;
+            const maxPercent = ((maxVal - maxThumb.min) / (maxThumb.max - maxThumb.min)) * 100;
 
-            minText.textContent = minVal >= 1000 ? Math.round(minVal/1000)+"K" : minVal;
-            maxText.textContent = maxVal >= 1000 ? Math.round(maxVal/1000)+"K" : maxVal;
-        }
+            minTooltip.style.left = minPercent + '%';
+            maxTooltip.style.left = maxPercent + '%';
 
-        minSlider.addEventListener("input", updateSlider);
-        maxSlider.addEventListener("input", updateSlider);
+            // Update fill bar
+            fill.style.left = minPercent + '%';
+            fill.style.width = (maxPercent - minPercent) + '%';
+        };
 
-        updateSlider(); // initialize
-    });
-});
+        // Show/hide tooltip on interaction
+        const showTooltip = (tooltip) => tooltip.classList.add('active');
+        const hideTooltip = (tooltip) => tooltip.classList.remove('active');
 
+        minThumb.addEventListener('input', () => {
+            updateSlider();
+            showTooltip(minTooltip);
+            hideTooltip(maxTooltip);
+        });
+        maxThumb.addEventListener('input', () => {
+            updateSlider();
+            showTooltip(maxTooltip);
+            hideTooltip(minTooltip);
+        });
+
+        // Hide tooltip when mouse leaves or touch ends
+        minThumb.addEventListener('mouseup', () => hideTooltip(minTooltip));
+        minThumb.addEventListener('touchend', () => hideTooltip(minTooltip));
+        maxThumb.addEventListener('mouseup', () => hideTooltip(maxTooltip));
+        maxThumb.addEventListener('touchend', () => hideTooltip(maxTooltip));
+
+        // Also hide when mouse leaves the slider area
+        minThumb.closest('.range-slider').addEventListener('mouseleave', () => {
+            hideTooltip(minTooltip);
+            hideTooltip(maxTooltip);
+        });
+
+        // Initial update
+        updateSlider();
+    }
+
+    // Initialize both sliders with tooltips
+    initDualSlider(
+        'da-min', 'da-max', 'da-values', 'da-fill',
+        'da-min-tooltip', 'da-max-tooltip'
+    );
+
+    initDualSlider(
+        'dr-min', 'dr-max', 'dr-values', 'dr-fill',
+        'dr-min-tooltip', 'dr-max-tooltip'
+    );
+    initDualSlider(
+        'tar-min', 'tar-max', 'tar-values', 'tar-fill',
+        'tar-min-tooltip', 'tar-max-tooltip'
+    );
 </script>
+
 @endsection
 @section('scripts')
 

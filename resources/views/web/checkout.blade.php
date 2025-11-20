@@ -4,10 +4,892 @@
 
 @section('content')
 
-<div>hello</div>
+<style>
+
+    .error-msg {
+        position: absolute;
+        left: 0;
+        bottom: -20px;
+    }
+
+
+    /* hidden drop down code  */
+    .hidden-sum-block {
+        overflow: hidden;
+        transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        max-height: 500px;
+        /* big enough for your content */
+        opacity: 1;
+    }
+
+    .hidden-sum-block.collapsed {
+        max-height: 0;
+        opacity: 0;
+    }
+</style>
+
+
+<section class="flex justify-center items-center min-h-screen w-full h-auto px-6 py-12">
+    <div class="max-w-7xl w-full">
+
+        <form class="flex gap-10 lg:flex-row flex-col " novalidate>
+            <div class="w-full">
+
+                <div class="w-full bg-white shadow-[0px_3px_32px_#dbd5d5] rounded-lg px-8  pb-8 pt-0">
+                    <div class="w-full flex justify-start items-center pt-5 pb-3">
+                        <a class="btn-secondary text-[15px] px-5 py-1" href="/">Go Back</a>
+                    </div>
+                    <h2 class="text-xl font-semibold mb-8">Billing Address</h2>
+
+                    <div class="space-y-8">
+
+                        <!-- First + Last Name -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="floating-label-group">
+                                <input type="text" id="firstName" placeholder=" " value="" required />
+                                <label for="firstName">First Name</label>
+                            </div>
+
+                            <div class="floating-label-group">
+                                <input type="text" id="lastName" placeholder=" " value="" required />
+                                <label for="lastName">Last Name</label>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="floating-label-group">
+                            <input type="email" id="email" placeholder=" " value="" required />
+                            <label for="email">Email Address</label>
+
+                        </div>
+
+                        <!-- Street Address -->
+                        <div class="space-y-8">
+                            <div class="floating-label-group">
+                                <input type="text" id="address1" placeholder=" " required />
+                                <label for="address1">Street Address</label>
+                            </div>
+
+                            <div class="floating-label-group">
+                                <input type="text" id="address2" placeholder=" " />
+                                <label for="address2">Apartment, suite (optional)</label>
+                            </div>
+                        </div>
+
+                        <!-- State / City -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="floating-label-group">
+                                <select id="state" class="has-value" required>
+                                    <!-- <option value="" disabled>select a city</option> -->
+                                    <option value="CA">California</option>
+                                    <option value="NY">New York</option>
+                                </select>
+                                <label for="state">State/Province</label>
+                            </div>
+
+                            <div class="floating-label-group">
+                                <input type="text" id="city" placeholder=" " value="" required />
+                                <label for="city">City</label>
+                            </div>
+                        </div>
+
+                        <!-- Zip / Phone -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 md:gap-6 gap-8">
+                            <div class="floating-label-group">
+                                <input type="text" id="zip" placeholder=" " value="" required />
+                                <label for="zip">Zip / Postal Code</label>
+                            </div>
+
+                            <div class="floating-label-group">
+                                <input type="text" id="phone" placeholder=" " value="+123456789111" required />
+                                <label for="phone">Phone</label>
+                            </div>
+                        </div>
+
+                        <!-- Checkboxes -->
+                        <div class="space-y-4 pt-4">
+                            <label class="flex items-center gap-3 text-gray-700 cursor-pointer">
+                                <input type="checkbox" checked class="w-4 h-4 text-blue-600 rounded" />
+                                <span>My billing and shipping address are the same</span>
+                            </label>
+
+                            <label class="flex items-center gap-3 text-gray-700 cursor-pointer">
+                                <input type="checkbox" class="w-4 h-4 text-blue-600 rounded" />
+                                <span>Create an account for later use</span>
+                            </label>
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+            <div class=" w-auto smx:min-w-[450px]">
+
+
+                <div class="space-y-6">
+                    <!-- Order Review -->
+                    <div class="bg-white shadow-[0px_3px_32px_#dbd5d5] rounded-lg p-6 ">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold">Order Review</h2>
+                            <!-- <i class="fas fa-chevron-up text-gray-600"></i> -->
+                            <div id="modal-package-toggle" class="btn-primary text-[15px] px-3 py-1">Change</div>
+                        </div>
+
+                        <div id="selected-package-wrapper" class="space-y-6">
+
+                        </div>
+                    </div>
+
+
+                    <!-- Discount Codes -->
+                    <div class="bg-white shadow-[0px_3px_32px_#dbd5d5] rounded-lg p-6 ">
+                        <!-- <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold">Discount Codes</h2>
+                            <i class="fas fa-chevron-up text-gray-600"></i>
+                        </div> -->
+
+                        <!-- Coupon Input -->
+
+                        <div class="floating-label-group ">
+                            <input type="text" id="discount" placeholder=" " value="" required />
+                            <label for="discount">Discount</label>
+                        </div>
+
+
+
+
+                    </div>
+
+                    <div class=" w-full bg-white shadow-[0px_3px_32px_#dbd5d5] rounded-lg p-6 border">
+                        <!-- Header -->
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-lg font-semibold">Billing Summary</h2>
+                            <i id="sum-drop-hi" class="fas fa-chevron-up text-gray-600"></i>
+                        </div>
+
+                        <div class="hidden-sum-block ">
+                            <!-- Subtotal -->
+                            <div class="flex justify-between mt-6 text-gray-700">
+                                <span>Subtotal</span>
+                                <span id="subtotal-amount"></span>
+                            </div>
+
+                            <!-- Discount -->
+                            <div class="flex justify-between mt-2 text-gray-700">
+                                <span>Discount</span>
+                                <span class="text-red-500"></span>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Divider -->
+                        <hr class="my-6">
+
+                        <!-- Grand Total -->
+                        <div class="flex justify-between">
+                            <span class="font-semibold text-gray-800">Grand Total</span>
+                            <span id="grand-total-amount" class="font-bold text-xl text-gray-900"></span>
+                        </div>
+
+                        <!-- Checkbox -->
+                        <label class="flex items-start gap-2 mt-6 text-sm text-gray-600">
+                            <input type="checkbox" class="mt-1 w-4 h-4 accent-blue-600" required>
+                            <span>
+                                Please check to acknowledge our
+                                <a href="#" class="text-blue-600 underline">Privacy & Terms Policy</a>
+                            </span>
+                        </label>
+
+                        <!-- Button -->
+                        <!-- PayPal Button Container -->
+                        <div id="paypal-button-container" class="mt-6">
+                            <p class="text-gray-500 text-sm mb-4">Please select a package to proceed with payment</p>
+                        </div>
+
+                        <!-- Hidden submit button (kept for form validation if needed) -->
+                        <button id="pay-btn" type="submit" class="hidden w-full mt-6 bg-blue-600 text-white font-semibold py-3 rounded-lg shadow hover:bg-blue-700 transition-all">
+                            Pay
+                        </button>
+                    </div>
+
+                </div>
+
+
+
+            </div>
+        </form>
+    </div>
+</section>
+
+
+<!-- Modal Background -->
+<div id="package-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 min-h-screen">
+
+    <!-- Modal Box -->
+    <div class="bg-white rounded-lg shadow-xl w-fit p-6 relative max-h-[90vh] overflow-y-scroll">
+
+        <!-- Close Button -->
+        <button id="modal-close" class="absolute top-2 right-2 text-gray-600 hover:text-black text-xl">
+            &times;
+        </button>
+
+        <h2 class="text-xl font-semibold mb-4">Choose Your Package</h2>
+
+        <div class="max-w-7xl mx-auto lg:px-6 px-0 grid grid-cols-1 md:grid-cols-3 gap-8 ">
+
+            <!-- Basic Plan -->
+            <div class="bg-white rounded-2xl shadow-md px-8 pb-8 pt-0 border border-gray-100 overflow-hidden hover:scale-[1.04] transition-all duration-300 ease-in-out">
+                <div class="text-center">
+                    <div class="bg-purple-100  text-purple-600 relative top-[-3px] py-[7px] px-[22px] mb-[3rem] rounded-b-[10px] text-sm font-semibold inline-block">
+                        STARTER BOOST
+                    </div>
+
+                    <div class="flex justify-center mb-6">
+                        <div class="w-16 h-16 bg-purple-50 rounded-full flex justify-center items-center">
+                            <span class="text-purple-600 text-3xl">🚀</span>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-semibold">Basic Plan</h3>
+                    <p class="text-4xl font-bold mt-2">$1,000<span class="text-base font-medium">/month</span></p>
+                    <p class="text-gray-500 text-sm mb-4">Billed Annually</p>
+                    <span class="inline-block bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full mb-6">
+                        Up to 3 Platforms
+                    </span>
+                </div>
+
+                <ul class="space-y-3 text-gray-600">
+                    <li>• Social Media Management</li>
+                    <li>• 8 Monthly Social Media Posts</li>
+                    <li>• SEO Strategy & Keyword Research</li>
+                    <li>• Google Ads & Social Media Ad Campaigns</li>
+                    <li>• Monthly Analytics and Performance Report</li>
+                    <li>• Bi-Weekly Strategy Call</li>
+                </ul>
+
+                <div class="text-center my-10">
+                    <a href="#" class="btn-primary package-get-started rounded-full w-full block" data-package-id="basic" data-package-name="Basic Plan" data-package-price="1000">Get Started</a>
+                </div>
+            </div>
+
+            <!-- Standard Package (Highlighted) -->
+            <div class="bg-gradient-to-br from-black to-primary text-white rounded-2xl shadow-xl px-8 pb-8  overflow-hidden hover:scale-[1.04] transition-all duration-300 ease-in-out">
+                <div class="text-center">
+                    <div class="bg-purple-600 text-white relative top-[-3px] py-[7px] px-[22px] mb-[3rem] rounded-b-[10px] text-sm font-semibold inline-block">
+                        GROWTH ACCELERATOR
+                    </div>
+
+                    <div class="flex justify-center mb-6">
+                        <div class="w-16 h-16 bg-white/20 rounded-full flex justify-center items-center">
+                            <span class="text-white text-3xl">⚙️</span>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-semibold">Standard Package</h3>
+                    <p class="text-4xl font-bold mt-2">$2,500<span class="text-base font-medium">/month</span></p>
+                    <p class="text-purple-200 text-sm mb-4">Billed Annually</p>
+                    <span class="inline-block bg-white/20 text-white text-xs px-3 py-1 rounded-full mb-6">
+                        Up to 5 Platforms
+                    </span>
+                </div>
+
+                <ul class="space-y-3 text-purple-100">
+                    <li>• Social Media Management</li>
+                    <li>• 8 Monthly Social Media Posts</li>
+                    <li>• SEO Strategy & Keyword Research</li>
+                    <li>• Google Ads & Social Media Ad Campaigns</li>
+                    <li>• Monthly Analytics and Performance Report</li>
+                    <li>• Bi-Weekly Strategy Call</li>
+                </ul>
+
+                <div class="text-center my-10 ">
+                    <a href="#" class="btn-secondary package-get-started rounded-full w-full block" data-package-id="standard" data-package-name="Standard Package" data-package-price="2500">Get Started</a>
+                </div>
+            </div>
+
+            <!-- Premium Package -->
+            <div class="bg-white rounded-2xl shadow-md px-8 pb-8 border border-gray-100 overflow-hidden hover:scale-[1.04] transition-all duration-300 ease-in-out">
+                <div class="text-center">
+                    <div class="bg-purple-100 text-purple-600 relative top-[-3px] py-[7px] px-[22px] mb-[3rem] rounded-b-[10px] text-sm font-semibold inline-block">
+                        MARKET LEADER
+                    </div>
+
+                    <div class="flex justify-center mb-6">
+                        <div class="w-16 h-16 bg-purple-50 rounded-full flex justify-center items-center">
+                            <span class="text-purple-600 text-3xl">👑</span>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-semibold">Premium Package</h3>
+                    <p class="text-4xl font-bold mt-2">$5,000<span class="text-base font-medium">/month</span></p>
+                    <p class="text-gray-500 text-sm mb-4">Billed Annually</p>
+                    <span class="inline-block bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full mb-6">
+                        Up to 7 Platforms
+                    </span>
+                </div>
+
+                <ul class="space-y-3 text-gray-600">
+                    <li>• Social Media Management</li>
+                    <li>• 8 Monthly Social Media Posts</li>
+                    <li>• SEO Strategy & Keyword Research</li>
+                    <li>• Google Ads & Social Media Ad Campaigns</li>
+                    <li>• Monthly Analytics and Performance Report</li>
+                    <li>• Bi-Weekly Strategy Call</li>
+                </ul>
+
+                <div class="text-center my-10 w-full">
+                    <a href="#" class="btn-primary package-get-started rounded-full w-full block" data-package-id="premium" data-package-name="Premium Package" data-package-price="5000">Get Started</a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
 
 @endsection
 @section('scripts')
+<script src="https://www.paypal.com/sdk/js?client-id={{ config('paypal.client_id') }}&currency=USD&components=buttons"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Pass plan data from PHP to JavaScript
+        // const planData = @json($plan ?? null);
+        const planData = @json($planModel ?? null);
 
+        const form = document.querySelector('form');
+        const inputs = document.querySelectorAll('.floating-label-group input, .floating-label-group select');
+        const selectedWrapper = document.getElementById('selected-package-wrapper');
+        const modal = document.getElementById('package-modal');
+        const subtotalEl = document.getElementById('subtotal-amount');
+        const grandTotalEl = document.getElementById('grand-total-amount');
+        const payBtn = document.getElementById('pay-btn');
+        const toggleSummaryBtn = document.getElementById('sum-drop-hi');
+        const hiddenSummary = document.querySelector('.hidden-sum-block');
+        const fmt = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD'
+        });
 
+        // === PREVENT UNWANTED CHARACTERS IN PHONE FIELD WHILE TYPING ===
+        const phoneInput = document.getElementById('phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                // Allow only: digits, +, and -
+                let value = this.value.replace(/[^0-9+-]/g, '');
+
+                // Prevent multiple + signs (only allow at start)
+                const plusCount = (value.match(/\+/g) || []).length;
+                if (plusCount > 1) {
+                    value = value.replace(/\+/g, (match, offset) => offset === 0 ? '+' : '');
+                }
+
+                // Prevent + sign anywhere except at the beginning
+                if (value.includes('+') && value.indexOf('+') !== 0) {
+                    value = value.replace(/\+/g, '');
+                }
+
+                this.value = value;
+            });
+
+            // Optional: Auto-format as user types (e.g. 123-456-7890)
+            phoneInput.addEventListener('keyup', function(e) {
+                let value = this.value.replace(/[^0-9+-]/g, '');
+                if (!value.startsWith('+')) {
+                    // Remove all non-digits for formatting
+                    let digits = value.replace(/\D/g, '');
+                    if (digits.length > 10) digits = digits.slice(0, 10);
+                    if (digits.length <= 3) {
+                        this.value = digits;
+                    } else if (digits.length <= 6) {
+                        this.value = digits.slice(0, 3) + '-' + digits.slice(3);
+                    } else {
+                        this.value = digits.slice(0, 3) + '-' + digits.slice(3, 6) + '-' + digits.slice(6);
+                    }
+                }
+            });
+        }
+
+        // Initialize PayPal Buttons
+        let paypalButtons;
+        let selectedPackage = null;
+
+        function initPayPalButtons() {
+            // Destroy existing buttons if they exist
+            if (paypalButtons) {
+                paypalButtons.close();
+            }
+
+            // Check if a package is selected
+            const packageElement = selectedWrapper.querySelector('[data-item="1"]');
+            if (!packageElement) {
+                return; // No package selected
+            }
+
+            selectedPackage = {
+                id: packageElement.dataset.packageId,
+                price: parseFloat(packageElement.dataset.price)
+            };
+
+            // Render PayPal buttons
+            paypalButtons = paypal.Buttons({
+                createOrder: function(data, actions) {
+                    // Validate form before creating PayPal order
+                    let isValid = true;
+                    inputs.forEach(input => {
+                        if (!validateField(input)) isValid = false;
+                    });
+
+                    const termsCheckbox = document.querySelector('input[type="checkbox"][required]');
+                    if (termsCheckbox && !termsCheckbox.checked) {
+                        isValid = false;
+                    }
+
+                    if (!isValid) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Please Complete the Form',
+                            html: `
+                                <ul class="text-left text-sm">
+                                    ${!termsCheckbox?.checked ? '<li>Accept Privacy & Terms Policy</li>' : ''}
+                                    ${[...inputs].some(i => i.closest('.floating-label-group')?.classList.contains('error')) ? '<li>Fix highlighted fields</li>' : ''}
+                                </ul>
+                            `,
+                            confirmButtonColor: '#ef4444'
+                        });
+                        throw new Error('Form validation failed');
+                    }
+
+                    // Create order via AJAX
+                    return fetch('/checkout/create-order', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                            },
+                            // body: JSON.stringify({
+                            //     plan_id: selectedPackage.id,
+                            //     billing_info: getBillingInfo()
+                            // })
+                            body: JSON.stringify({
+                                plan_id: selectedPackage.id,
+                                billing_info: getBillingInfo()
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.success) {
+                                throw new Error(data.message || 'Failed to create order');
+                            }
+                            return data.order_id;
+                        });
+                },
+                onApprove: function(data, actions) {
+                    // Capture the payment
+                    return fetch('/checkout/capture-payment', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                            },
+                            body: JSON.stringify({
+                                order_id: data.orderID,
+                                billing_info: getBillingInfo(),
+                                package: selectedPackage
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Redirect to success page
+                                window.location.href = `/checkout/success?transaction_id=${data.transaction_id}`;
+                            } else {
+                                throw new Error(data.message || 'Payment failed');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Payment capture error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Payment Failed',
+                                text: 'There was an error processing your payment. Please try again.',
+                                confirmButtonColor: '#ef4444'
+                            });
+                        });
+                },
+                onCancel: function(data) {
+                    // Redirect to cancel page or show message
+                    window.location.href = '/checkout/cancel';
+                },
+                // onError: function(err) {
+                //     console.error('PayPal error:', err);
+                //     Swal.fire({
+                //         icon: 'error',
+                //         title: 'Payment Error',
+                //         text: 'There was an error with PayPal. Please try again.',
+                //         confirmButtonColor: '#ef4444'
+                //     });
+                // }
+                onError: function(err) {
+                    console.error('PayPal error:', err);
+
+                    let errorMessage = 'There was an error with PayPal. Please try again.';
+
+                    if (err.message && err.message.includes('419')) {
+                        errorMessage = 'Session expired. Please refresh the page and try again.';
+                    } else if (err.message && err.message.includes('authentication')) {
+                        errorMessage = 'Payment service temporarily unavailable. Please try again later.';
+                    }
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Payment Error',
+                        text: errorMessage,
+                        confirmButtonColor: '#ef4444'
+                    });
+                }
+            });
+
+            paypalButtons.render('#paypal-button-container');
+        }
+
+        function getBillingInfo() {
+            return {
+                first_name: document.getElementById('firstName').value,
+                last_name: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                address1: document.getElementById('address1').value,
+                address2: document.getElementById('address2').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value,
+                zip: document.getElementById('zip').value,
+                phone: document.getElementById('phone').value
+            };
+        }
+
+        // Floating Labels + Validation
+        inputs.forEach(input => {
+            const group = input.closest('.floating-label-group');
+            if (input.value.trim()) group.classList.add('has-value');
+
+            input.addEventListener('focus', () => group.classList.add('focused'));
+            input.addEventListener('blur', () => {
+                group.classList.remove('focused');
+                input.value.trim() ? group.classList.add('has-value') : group.classList.remove('has-value');
+                validateField(input);
+            });
+            input.addEventListener('input', () => clearError(input));
+        });
+
+        function showError(input, message) {
+            const group = input.closest('.floating-label-group');
+            group.classList.add('error');
+            let errorEl = group.querySelector('.error-msg');
+            if (!errorEl) {
+                errorEl = document.createElement('p');
+                errorEl.className = 'error-msg text-red-500 text-xs mt-1 absolute';
+                group.style.position = 'relative';
+                group.appendChild(errorEl);
+            }
+            errorEl.textContent = message;
+        }
+
+        function clearError(input) {
+            const group = input.closest('.floating-label-group');
+            group.classList.remove('error');
+            const errorEl = group.querySelector('.error-msg');
+            if (errorEl) errorEl.remove();
+        }
+
+        function validateField(input) {
+            const value = input.value.trim();
+            const id = input.id;
+            clearError(input);
+
+            if (input.hasAttribute('required') && !value) {
+                showError(input, 'This field is required');
+                return false;
+            }
+            if (id === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                showError(input, 'Please enter a valid email');
+                return false;
+            }
+            if (id === 'phone' && value && !/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/.test(value.replace(/\s/g, ''))) {
+                showError(input, 'Invalid phone number');
+                return false;
+            }
+            if (id === 'zip' && value && !/^\d{6}(-\d{4})?$/.test(value)) {
+                showError(input, 'Invalid ZIP code');
+                return false;
+            }
+            return true;
+        }
+
+        // REPLACE PACKAGE - ONLY ONE PACKAGE ALLOWED AT A TIME
+        function replacePackage(pkg) {
+            // Remove all existing packages
+            selectedWrapper.innerHTML = '';
+
+            const wasEmpty = selectedWrapper.children.length === 0;
+
+            const row = document.createElement('div');
+            row.className = 'flex items-center justify-between py-5 border-b last:border-0 bg-gray-50 rounded-lg mb-3 px-4 relative';
+            row.dataset.item = '1';
+            row.dataset.price = pkg.price;
+            row.dataset.packageId = pkg.id;
+
+            row.innerHTML = `
+                <div class="flex flex-col smx:flex-row smx:items-center gap-2 sm:gap-6 w-full ">
+                  <!-- Left side: Icon + Package Info -->
+                  <div class="flex items-center gap-4 flex-1 min-w-0 xs:flex-row flex-col ">
+                    <!-- Icon -->
+                    <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg flex-shrink-0">
+                      Check
+                    </div>
+
+                    <!-- Package Details -->
+                    <div class="xs:flex-1 xs:min-w-0 xs:w-auto w-full xs:text-left text-center">
+                      <p class="package-name font-bold text-gray-800 text-lg truncate ">
+                        ${pkg.name}
+                      </p>
+                      <p class="text-sm text-gray-600 mt-1">
+                        <span class="font-medium">Package ID:</span>
+                        <span class="font-mono bg-gray-200 px-2 py-1 rounded text-xs package-id ml-1">
+                          ${pkg.id.toUpperCase()}
+                        </span>
+                      </p>
+                      <p class="text-xs text-gray-500 mt-1">
+                        $${pkg.price.toLocaleString()}/month • Billed Annually
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Right side: Price + Remove button -->
+                  <div class="flex items-center  xs:justify-end justify-center  gap-4 mt-2 smxl:mt-0">
+                    <p class="package-price text-[1.2rem] font-bold text-gray-900 whitespace-nowrap ">
+                      ${fmt.format(pkg.price)}
+                    </p>
+                    <button 
+                      type="button" 
+                      class="remove-pkg text-red-500 hover:text-red-700 text-4xl font-light leading-none absolute top-0 right-[3px]"
+                      aria-label="Remove package">
+                      ×
+                    </button>
+                  </div>
+                </div>
+            `;
+
+            selectedWrapper.appendChild(row);
+            updateTotals();
+
+            // Initialize PayPal buttons after package selection
+            setTimeout(initPayPalButtons, 100);
+
+            // Feedback message
+            Swal.fire({
+                icon: 'success',
+                title: wasEmpty ? 'Package Selected!' : 'Package Changed!',
+                text: `${pkg.name} (ID: ${pkg.id.toUpperCase()})`,
+                timer: 1800,
+                showConfirmButton: false
+            });
+        }
+
+        // "Get Started" buttons inside modal - REPLACE package
+        document.querySelectorAll('.package-get-started').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const pkg = {
+                    id: this.dataset.packageId,
+                    name: this.dataset.packageName,
+                    price: parseFloat(this.dataset.packagePrice)
+                };
+
+                replacePackage(pkg);
+
+                // Close modal
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            });
+        });
+
+        // Remove package (X button)
+        selectedWrapper.addEventListener('click', e => {
+            if (e.target.classList.contains('remove-pkg')) {
+                e.target.closest('[data-item="1"]').remove();
+                updateTotals();
+
+                if (selectedWrapper.children.length === 0) {
+                    subtotalEl.textContent = '$0.00';
+                    grandTotalEl.textContent = '$0.00';
+                    payBtn.textContent = 'Pay $0.00';
+                    // Remove PayPal buttons when no package selected
+                    const paypalContainer = document.getElementById('paypal-button-container');
+                    if (paypalContainer) {
+                        paypalContainer.innerHTML = '<p class="text-gray-500 text-sm">Please select a package to proceed with payment</p>';
+                    }
+                }
+            }
+        });
+
+        function updateTotals() {
+            let total = 0;
+            selectedWrapper.querySelectorAll('[data-item="1"]').forEach(el => {
+                total += parseFloat(el.dataset.price || 0);
+            });
+            const amount = fmt.format(total);
+            subtotalEl.textContent = amount;
+            grandTotalEl.textContent = amount;
+            payBtn.textContent = `Pay ${amount}`;
+        }
+
+        // Collapsible Summary
+        if (hiddenSummary) {
+            hiddenSummary.classList.add('collapsed');
+        }
+        if (toggleSummaryBtn) {
+            toggleSummaryBtn.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            toggleSummaryBtn.addEventListener('click', () => {
+                hiddenSummary.classList.toggle('collapsed');
+                toggleSummaryBtn.classList.toggle('fa-chevron-up');
+                toggleSummaryBtn.classList.toggle('fa-chevron-down');
+            });
+        }
+
+        // Modal Controls
+        const modalToggle = document.getElementById('modal-package-toggle');
+        const modalClose = document.getElementById('modal-close');
+
+        if (modalToggle) {
+            modalToggle.addEventListener('click', () => {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            });
+        }
+        if (modalClose) {
+            modalClose.addEventListener('click', () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            });
+        }
+        if (modal) {
+            modal.addEventListener('click', e => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            });
+        }
+
+        // Form Submit
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            let isValid = true;
+
+            // Validate inputs
+            inputs.forEach(input => {
+                if (!validateField(input)) isValid = false;
+            });
+
+            // Terms checkbox
+            const termsCheckbox = document.querySelector('input[type="checkbox"][required]');
+            const termsLabel = termsCheckbox?.closest('label');
+
+            if (termsCheckbox && !termsCheckbox.checked) {
+                isValid = false;
+                if (termsLabel) {
+                    termsLabel.style.color = '#ef4444';
+                    termsLabel.style.fontWeight = '600';
+                }
+            } else {
+                if (termsLabel) {
+                    termsLabel.style.color = '';
+                    termsLabel.style.fontWeight = '';
+                }
+            }
+
+            // Must have exactly one package
+            if (selectedWrapper.children.length === 0) {
+                isValid = false;
+            }
+
+            if (!isValid) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Please Complete the Form',
+                    html: `
+                        <ul class="text-left text-sm">
+                            ${!termsCheckbox?.checked ? '<li>Accept Privacy & Terms Policy</li>' : ''}
+                            ${selectedWrapper.children.length === 0 ? '<li>Select a package</li>' : ''}
+                            ${[...inputs].some(i => i.closest('.floating-label-group')?.classList.contains('error')) ? '<li>Fix highlighted fields</li>' : ''}
+                        </ul>
+                    `,
+                    confirmButtonColor: '#ef4444'
+                });
+                return;
+            }
+
+            // Confirmation dialog
+            const result = await Swal.fire({
+                icon: 'question',
+                title: 'Confirm Your Order',
+                html: `
+                    <div class="text-left max-h-96 overflow-y-auto">
+                        ${Array.from(selectedWrapper.children).map(row => {
+                            const name = row.querySelector('.package-name')?.textContent || 'Unknown';
+                            const id = row.querySelector('.package-id')?.textContent || '';
+                            const price = row.querySelector('.package-price')?.textContent || '$0.00';
+                            return `
+                                <div class="flex justify-between mb-3 p-3 bg-gray-50 rounded">
+                                    <div>
+                                        <strong>${name}</strong><br>
+                                        <small class="text-gray-500">ID: ${id}</small>
+                                    </div>
+                                    <span class="font-bold">${price}</span>
+                                </div>
+                            `;
+                        }).join('')}
+                        <hr class="my-4 border-gray-300">
+                        <div class="flex justify-between text-xl font-bold">
+                            <span>Total:</span>
+                            <span>${grandTotalEl.textContent}</span>
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Complete Purchase',
+                cancelButtonText: 'Review Order',
+                confirmButtonColor: '#10b981',
+                width: '600px'
+            });
+
+            if (result.isConfirmed) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Purchase Successful!',
+                    text: 'Thank you! Confirmation email sent.',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+                // form.submit(); // Uncomment when live
+            }
+        });
+
+        // Auto-select package if plan data is available
+        if (planData) {
+            const autoSelectedPackage = {
+                id: planData.id.toString(),
+                name: planData.name,
+                price: parseFloat(planData.price)
+            };
+            replacePackage(autoSelectedPackage);
+        }
+
+        updateTotals();
+    });
+</script>
 @endsection
