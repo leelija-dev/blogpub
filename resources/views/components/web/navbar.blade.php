@@ -26,7 +26,7 @@
 
         <!-- Desktop Login Button -->
         <div class="hidden lg:flex items-center">
-          <a href="#" class="btn-primary px-8 py-[0.3rem] text-[17px]">
+          <a href="{{route('login')}}" class="btn-primary px-8 py-[0.3rem] text-[17px]">
             Login
           </a>
         </div>
