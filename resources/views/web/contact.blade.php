@@ -75,7 +75,7 @@
 
             <!-- Right side - Contact Form -->
             <div class="bg-white rounded-2xl shadow-[0_6px_19px_#ccc] p-8 lg:p-10">
-                <form class="space-y-6">
+                <form id="contact-us" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Full Name -->
                         <div>

@@ -547,7 +547,7 @@
 
             <!-- RIGHT FORM -->
             <div class="w-full lg:w-2/3 lg:p-6 p-4">
-                <form class="space-y-6">
+                <form id="contact-us" class="space-y-6">
 
                     <!-- NAME ROW -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -563,43 +563,21 @@
                                 class="mt-1 w-full border-t-0 border-l-0  border-r-0 border-gray-300 form-input-cus outline-none py-2" />
                         </div>
                     </div>
-
-                    <!-- EMAIL / PHONE -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-gray-700">Email</label>
-                            <input type="email" placeholder="email@example.com"
-                                class="mt-1 w-full border-t-0 border-l-0  border-r-0 border-gray-300 form-input-cus outline-none py-2" />
-                        </div>
-
-                        <div>
-                            <label class="block text-gray-700">Phone Number</label>
-                            <input type="text" placeholder="+1 012 3456 789"
-                                class="mt-1 w-full border-t-0 border-l-0  border-r-0 border-gray-300 form-input-cus outline-none py-2" />
-                        </div>
+                    <div>
+                        <label class="block text-gray-700">Email</label>
+                        <input type="email" placeholder="email@example.com"
+                            class="mt-1 w-full border-t-0 border-l-0  border-r-0 border-gray-300 form-input-cus outline-none py-2" />
                     </div>
 
                     <!-- SUBJECT -->
                     <div>
-                        <label class="block text-gray-700">Select Subject?</label>
-
-                        <div class="flex flex-wrap gap-4 mt-2 text-gray-700">
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="subject" checked class="accent-black" /> General Inquiry
-                            </label>
-
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="subject" class="accent-black" /> General Inquiry
-                            </label>
-
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="subject" class="accent-black" /> General Inquiry
-                            </label>
-
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="subject" class="accent-black" /> General Inquiry
-                            </label>
-                        </div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                        <select class="w-full px-4 py-3 text-[#625e5e] border border-t-0 border-l-0  border-r-0 border-gray-300   transition" style="box-shadow: none !important;">
+                            <option>General Inquiry</option>
+                            <option>Support</option>
+                            <option>Partnership</option>
+                            <option>Feedback</option>
+                        </select>
                     </div>
 
                     <!-- MESSAGE -->
