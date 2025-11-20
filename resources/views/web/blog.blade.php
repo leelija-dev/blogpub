@@ -22,127 +22,137 @@
             text-decoration: none !important;
         }
     </style>
-    <div class="d-flex min-vh-100">
+    <div class="d-flex min-vh-100" style="background: white;">
         <!-- Sidebar -->
         <div class="w-64 border-end p-4 bg-light">
             @include('web.sidebar')
         </div>
 
         <!-- Main content -->
-        <div class="flex-grow-1 p-4">
 
-            <div class="col-md-12">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="col-md-6 d-flex justify-content-start mb-3" style="width:500px;">
-                            <input type="text" class="form-control" id="searchInput" placeholder="Search">
-                            <button class="btn btn-primary ms-3" id="searchBtn">Search</button>
+        <div class="flex-grow-1 p-4">
+            @if ($mail_available):
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="col-md-6 d-flex justify-content-start mb-3" style="width:500px;">
+                                <input type="text" class="form-control" id="searchInput" placeholder="Search">
+                                <button class="btn btn-primary ms-3" id="searchBtn">Search</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="d-flex justify-content-end mb-3">
-                            <span class="fw-bold me-2" style="font-size:20px">Selected site:</span>
-                            <span id="selectedCount" style="font-size:20px">0</span>
-                            {{-- @if ($mail_available->available_mail <= 0)
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-end mb-3">
+                                <span class="fw-bold me-2" style="font-size:20px">Selected site:</span>
+                                <span id="selectedCount" style="font-size:20px">0</span>
+                                {{-- @if ($mail_available->available_mail <= 0)
                 <button class="btn btn-primary ms-3" id="notMailAvailable">Send Mail</button>
                 @else
                 <button class="btn btn-primary ms-3" id="openMailModalBtn">Send Mail</button>
                 @endif --}}
-                            <button class="btn btn-primary ms-3" id="openMailModalBtn"
-                                data-available-mail="{{ $mail_available->available_mail ?? 0 }}"
-                                data-total-mail="{{ $mail_available->total_mail ?? 0 }}"
-                                >
-                                Send Mail
-                            </button>
+                                <button class="btn btn-primary ms-3" id="openMailModalBtn"
+                                    data-available-mail="{{ $mail_available->available_mail ?? 0 }}"
+                                    data-total-mail="{{ $mail_available->total_mail ?? 0 }}">
+                                    Send Mail
+                                </button>
 
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
 
-            <table class="table  table-hover bg-white">
-                <div class="table-responsive">
+                <table class="table  table-hover bg-white">
+                    <div class="table-responsive">
 
-                    <thead class="table-success text-center">
-                        <tr>
-                            <th></th>
-                            <th>ID</th>
-                            <th>Website Name</th>
-                            <th>Site Url</th>
-                            <th>Website Niche</th>
-                            <th>DA</th>
-                            <th>DR</th>
-                            <th>Ahrefs Traffic</th>
-                            <th>Mail</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if ($pagination)
-                            @foreach ($pagination['data'] as $blog)
-                                <!-- Main row -->
-                                <tr class="main-row cursor-pointer" data-target="#expandRow{{ $blog['blog_id'] }}">
-                                    <td class="text-center" onclick="event.stopPropagation();">
-                                        <input type="checkbox" class="selectSiteCheckbox" value="{{ $blog['blog_id'] }}"
-                                            onclick="event.stopPropagation();">
-                                    </td>
-                                    <td class="text-center">#{{ $blog['blog_id'] ?? '' }}</td>
-                                    <td class="text-center">{{ $blog['website_name'] ?? '' }}</td>
-                                    <td class="text-center">{{ $blog['site_url'] ?? '' }} </td>
-                                    <td class="text-center">{{ $blog['website_niche'] ?? ''}}</td>
-                                    <td class="text-center">{{ $blog['moz_da'] ?? ''}}</td>
-                                    <td class="text-center">{{ $blog['ahrefs_dr'] ?? ''}}</td>
-                                    <td class="text-center">{{ $blog['ahrefs_traffic'] ?? ''}}</td>
-                                    <td class="text-center" onclick="event.stopPropagation();">
-                                        {{-- <a href="{{ route('blog.viewMail', encrypt($blog['created_by'])) }}"><button
+                        <thead class="table-success text-center">
+                            <tr>
+                                <th></th>
+                                <th>ID</th>
+                                <th>Website Name</th>
+                                <th>Site Url</th>
+                                <th>Website Niche</th>
+                                <th>DA</th>
+                                <th>DR</th>
+                                <th>Ahrefs Traffic</th>
+                                <th>Mail</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if ($pagination)
+                                @foreach ($pagination['data'] as $blog)
+                                    <!-- Main row -->
+                                    <tr class="main-row cursor-pointer" data-target="#expandRow{{ $blog['blog_id'] }}">
+                                        <td class="text-center" onclick="event.stopPropagation();">
+                                            <input type="checkbox" class="selectSiteCheckbox"
+                                                value="{{ $blog['blog_id'] }}" onclick="event.stopPropagation();">
+                                        </td>
+                                        <td class="text-center">#{{ $blog['blog_id'] ?? '' }}</td>
+                                        <td class="text-center">{{ $blog['website_name'] ?? '' }}</td>
+                                        <td class="text-center">{{ $blog['site_url'] ?? '' }} </td>
+                                        <td class="text-center">{{ $blog['website_niche'] ?? '' }}</td>
+                                        <td class="text-center">{{ $blog['moz_da'] ?? '' }}</td>
+                                        <td class="text-center">{{ $blog['ahrefs_dr'] ?? '' }}</td>
+                                        <td class="text-center">{{ $blog['ahrefs_traffic'] ?? '' }}</td>
+                                        <td class="text-center" onclick="event.stopPropagation();">
+                                            {{-- <a href="{{ route('blog.viewMail', encrypt($blog['created_by'])) }}"><button
                                             class="btn btn-primary btn-sm">Send Mail</button> </a> --}}
 
-                                        <button class="btn btn-primary btn-sm rowMailBtn"
-                                            data-available-mail="{{ $mail_available->available_mail ?? 0 }}"
-                                            data-total-mail="{{ $mail_available->total_mail ?? 0 }}"
-                                            id="openMailModalBtn"
-                                            data-url="{{ route('blog.viewMail', encrypt($blog['blog_id'])) }}">
-                                            Send Mail
-                                        </button>
+                                            <button class="btn btn-primary btn-sm rowMailBtn"
+                                                data-available-mail="{{ $mail_available->available_mail ?? 0 }}"
+                                                data-total-mail="{{ $mail_available->total_mail ?? 0 }}"
+                                                id="openMailModalBtn"
+                                                data-url="{{ route('blog.viewMail', encrypt($blog['blog_id'])) }}">
+                                                Send Mail
+                                            </button>
 
-                                    </td>
-                                </tr>
+                                        </td>
+                                    </tr>
 
-                                <!-- Expandable row (hidden by default) -->
-                                <tr class="expandable-row" id="expandRow{{ $blog['blog_id'] }}" style="display:none;">
-                                    <td colspan="9" class="bg-light">
-                                        <div>
-                                            <b>Website Name:</b> {{ $blog['website_name'] ?? '—' }} <br>
-                                            <b>Site URL:</b> {{ $blog['site_url'] ?? '—' }} <br>
-                                            <b>Website Niche:</b> {{ $blog['website_niche'] ?? '—' }} <br>
-                                            <b>Moz DA:</b> {{ $blog['moz_da'] ?? '—' }} <br>
-                                            <b>DR:</b> {{ $blog['ahrefs_dr'] ?? '—' }} <br>
-                                            <b>Ahrefs Traffic:</b> {{ $blog['ahrefs_traffic'] ?? '—' }}
-                                        </div>
-                                    </td>
+                                    <!-- Expandable row (hidden by default) -->
+                                    <tr class="expandable-row" id="expandRow{{ $blog['blog_id'] }}"
+                                        style="display:none;">
+                                        <td colspan="9" class="bg-light">
+                                            <div>
+                                                <b>Website Name:</b> {{ $blog['website_name'] ?? '—' }} <br>
+                                                <b>Site URL:</b> {{ $blog['site_url'] ?? '—' }} <br>
+                                                <b>Website Niche:</b> {{ $blog['website_niche'] ?? '—' }} <br>
+                                                <b>Moz DA:</b> {{ $blog['moz_da'] ?? '—' }} <br>
+                                                <b>DR:</b> {{ $blog['ahrefs_dr'] ?? '—' }} <br>
+                                                <b>Ahrefs Traffic:</b> {{ $blog['ahrefs_traffic'] ?? '—' }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="9" class="text-center" id="noResult">No blog found.</td>
                                 </tr>
-                            @endforeach
-                        @else
-                            <tr>
-                                <td colspan="9" class="text-center" id="noResult">No blog found.</td>
+                            @endif
+                            <tr id="noResultsRow" style="display: none;">
+                                <td colspan="9" class="text-center  fw-bold">
+                                    No blog found.
+                                </td>
                             </tr>
-                        @endif
-                        <tr id="noResultsRow" style="display: none;">
-                            <td colspan="9" class="text-center  fw-bold">
-                                No blog found.
-                            </td>
-                        </tr>
 
 
-                    </tbody>
-            
-            {{-- @if (isset($pagination))
+                        </tbody>
+                    </div>
+                    {{-- @if (isset($pagination))
                 <div class="d-flex justify-content-center mt-3">
                     {{ $pagination->links('pagination::bootstrap-5') }}
                 </div>
             @endif --}}
                 </table>
         </div>
+        @else
+        <div
+            style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 20vh; text-align: center; gap: 5x;background:rgb(245, 243, 243);">
+            <p><h4>You have not purchased any plan.</h4></p>
+            <a href="{{ route('home') }}">
+                <button class="btn btn-primary" style="width: 100px; height: 40px;">Buy</button>
+            </a>
+        </div>
+        @endif
     </div>
 
     <!-- Modal -->
@@ -152,7 +162,7 @@
             <div class="modal-content">
                 <!-- Form pointing to your route -->
                 <form id="sendMailForm" class="mail-validation" method="POST" action="{{ route('blog.sendMail') }}"
-                   enctype="multipart/form-data" novalidate>
+                    enctype="multipart/form-data" novalidate>
                     @csrf
                     <!-- Hidden input to hold selected blog IDs -->
                     <input type="hidden" name="selected_ids" id="selectedIdsInput">
@@ -181,7 +191,8 @@
                         <div class="mb-3">
                             <label class="form-label">Message</label>
                             <textarea id="summernote" name="message" required></textarea>
-                            <input type="file" name="attachments[]" id="attachments" multiple style="display:none">
+                            <input type="file" name="attachments[]" id="attachments" multiple
+                                style="display:none">
                             <div class="invalid-feedback">Message can not be blank!</div>
                             @error('message')
                                 {{ $message }}
@@ -196,9 +207,8 @@
                 </form>
             </div>
         </div>
+    
     </div>
-
-
     <script>
         // $(document).ready(function() {
         //     // Update counter when checkbox changes
@@ -256,9 +266,9 @@
             });
             $('#openMailModalBtn').click(function(event) {
                 event.preventDefault(); // Prevent modal from auto opening
-    
+
                 let availableMail = $(this).data('available-mail');
-                let total_mail=$(this).data('total-mail');
+                let total_mail = $(this).data('total-mail');
                 let selectedIds = [];
 
                 $('.selectSiteCheckbox:checked').each(function() {
@@ -334,101 +344,104 @@
             //     placeholder: 'Write your message...',
             //     height: 200
             // });
-            
-$('#summernote').summernote({
-    placeholder: 'Write your message...',
-    height: 200,
-    toolbar: [
-        ['style', ['bold', 'italic', 'underline']],
-        ['font', ['fontname', 'fontsize']],
-        ['color', ['color']],
-        ['para', ['ul', 'ol', 'paragraph']],
-        ['insert', ['link', 'picture', 'video', 'fileUpload']]
-    ],
-    buttons: {
-        fileUpload: function(context) {
-            var ui = $.summernote.ui;
-            var button = ui.button({
-                contents: '<i class="fa fa-paperclip"/> File',
-                tooltip: 'Attach File',
-                click: function() {
-                    $('#attachments').click();
+
+            $('#summernote').summernote({
+                placeholder: 'Write your message...',
+                height: 200,
+                toolbar: [
+                    ['style', ['bold', 'italic', 'underline']],
+                    ['font', ['fontname', 'fontsize']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'picture', 'video', 'fileUpload']]
+                ],
+                buttons: {
+                    fileUpload: function(context) {
+                        var ui = $.summernote.ui;
+                        var button = ui.button({
+                            contents: '<i class="fa fa-paperclip"/> File',
+                            tooltip: 'Attach File',
+                            click: function() {
+                                $('#attachments').click();
+                            }
+                        });
+                        return button.render();
+                    }
                 }
             });
-            return button.render();
-        }
-    }
-});
 
-let selectedFiles = [];
+            let selectedFiles = [];
 
-$('#attachments').on('change', function() {
-    let files = this.files;
-    
-    for (let i = 0; i < files.length; i++) {
-        let file = files[i];
-        
-        // Check if file already exists
-        const fileExists = selectedFiles.some(f => f.name === file.name && f.size === file.size);
-        if (!fileExists) {
-            selectedFiles.push(file);
-            
-            // Create file badge in Summernote
-            var container = document.createElement('span');
-            container.style.cssText = 'display:inline-block;margin:2px 5px;padding:2px 5px;border:1px solid #ccc;border-radius:4px;background:#f1f1f1;';
-            container.setAttribute('contenteditable', 'false');
+            $('#attachments').on('change', function() {
+                let files = this.files;
 
-            var fileName = document.createElement('span');
-            fileName.innerText = file.name;
-            fileName.style.marginRight = '5px';
+                for (let i = 0; i < files.length; i++) {
+                    let file = files[i];
 
-            var removeBtn = document.createElement('span');
-            removeBtn.innerHTML = '&times;';
-            removeBtn.style.color = 'red';
-            removeBtn.style.cursor = 'pointer';
-            removeBtn.style.marginLeft = '5px';
-            removeBtn.addEventListener('click', function() {
-                // Remove file from selectedFiles array
-                selectedFiles = selectedFiles.filter(f => f !== file);
-                container.remove();
-                updateFileInput(); // Update the actual file input
+                    // Check if file already exists
+                    const fileExists = selectedFiles.some(f => f.name === file.name && f.size === file
+                    .size);
+                    if (!fileExists) {
+                        selectedFiles.push(file);
+
+                        // Create file badge in Summernote
+                        var container = document.createElement('span');
+                        container.style.cssText =
+                            'display:inline-block;margin:2px 5px;padding:2px 5px;border:1px solid #ccc;border-radius:4px;background:#f1f1f1;';
+                        container.setAttribute('contenteditable', 'false');
+
+                        var fileName = document.createElement('span');
+                        fileName.innerText = file.name;
+                        fileName.style.marginRight = '5px';
+
+                        var removeBtn = document.createElement('span');
+                        removeBtn.innerHTML = '&times;';
+                        removeBtn.style.color = 'red';
+                        removeBtn.style.cursor = 'pointer';
+                        removeBtn.style.marginLeft = '5px';
+                        removeBtn.addEventListener('click', function() {
+                            // Remove file from selectedFiles array
+                            selectedFiles = selectedFiles.filter(f => f !== file);
+                            container.remove();
+                            updateFileInput(); // Update the actual file input
+                        });
+
+                        container.appendChild(fileName);
+                        container.appendChild(removeBtn);
+
+                        $('#summernote').next('.note-editor').find('.note-editable').append(container)
+                            .append(' ');
+                    }
+                }
+
+                updateFileInput(); // Update the actual file input after adding new files
             });
 
-            container.appendChild(fileName);
-            container.appendChild(removeBtn);
+            // Function to update the actual file input with selected files
+            function updateFileInput() {
+                const input = document.getElementById("attachments");
+                const dataTransfer = new DataTransfer();
 
-            $('#summernote').next('.note-editor').find('.note-editable').append(container).append(' ');
-        }
-    }
-    
-    updateFileInput(); // Update the actual file input after adding new files
-});
+                selectedFiles.forEach(file => {
+                    dataTransfer.items.add(file);
+                });
 
-// Function to update the actual file input with selected files
-function updateFileInput() {
-    const input = document.getElementById("attachments");
-    const dataTransfer = new DataTransfer();
-    
-    selectedFiles.forEach(file => {
-        dataTransfer.items.add(file);
-    });
-    
-    input.files = dataTransfer.files;
-    
-    // Log for debugging
-    console.log('Files in input:', input.files.length);
-}
+                input.files = dataTransfer.files;
 
-// Update file input before form submission
-document.querySelector("mailForm").addEventListener("submit", function(e) {
-    // Ensure files are updated before submission
-    updateFileInput();
-    
-    // Optional: Add a small delay to ensure the update happens
-    setTimeout(() => {
-        console.log('Final files before submit:', $('#attachments')[0].files);
-    }, 100);
-});
+                // Log for debugging
+                console.log('Files in input:', input.files.length);
+            }
+
+            // Update file input before form submission
+            document.querySelector("mailForm").addEventListener("submit", function(e) {
+                // Ensure files are updated before submission
+                updateFileInput();
+
+                // Optional: Add a small delay to ensure the update happens
+                setTimeout(() => {
+                    console.log('Final files before submit:', $('#attachments')[0].files);
+                }, 100);
+            });
         });
 
         $(document).ready(function() {
@@ -577,22 +590,22 @@ $(document).ready(function () {
         // For individual row Send Mail button
         $('.rowMailBtn').click(function(event) {
             let availableMail = $(this).data('available-mail');
-            let total_mail =$(this).data('total-mail');
+            let total_mail = $(this).data('total-mail');
             let url = $(this).data('url');
 
             if (availableMail > total_mail) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Mail Available Issue!',
-                        text: 'Please check available mail and total mail',
-                        confirmButtonText: 'Buy Now',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = "#"; // Replace with your purchase route
-                        }
-                    });
-                    return;
-                }
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Mail Available Issue!',
+                    text: 'Please check available mail and total mail',
+                    confirmButtonText: 'Buy Now',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "#"; // Replace with your purchase route
+                    }
+                });
+                return;
+            }
 
             if (availableMail <= 0 && availableMail <= total_mail) {
                 event.preventDefault();
