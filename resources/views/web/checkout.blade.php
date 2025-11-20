@@ -5,57 +5,6 @@
 @section('content')
 
 <style>
-    .floating-label-group {
-        position: relative;
-        /* margin-bottom: 1.5rem; */
-    }
-
-    .floating-label-group input,
-    .floating-label-group select {
-        width: 100%;
-        padding: 12px 16px;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        font-size: 16px;
-        transition: all 0.2s;
-        background: transparent;
-    }
-
-    .floating-label-group label {
-        position: absolute;
-        top: 50%;
-        left: 16px;
-        transform: translateY(-50%);
-        background: white;
-        padding: 0 4px;
-        color: #9ca3af;
-        font-size: 16px;
-        pointer-events: none;
-        transition: all 0.2s;
-    }
-
-    .floating-label-group.focused label,
-    .floating-label-group.has-value label {
-        top: 0;
-        font-size: 12px;
-        color: #3b82f6;
-    }
-
-    .floating-label-group input:focus,
-    .floating-label-group select:focus {
-        outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-
-    .floating-label-group input.error,
-    .floating-label-group select.error {
-        border-color: #ef4444;
-    }
-
-    .floating-label-group input.valid {
-        border-color: #22c55e;
-    }
 
     .error-msg {
         position: absolute;

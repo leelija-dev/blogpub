@@ -16,7 +16,7 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-
+    <link rel="stylesheet" href="{{asset('css/floating-label/floating-label.css')}}">
 
 
 

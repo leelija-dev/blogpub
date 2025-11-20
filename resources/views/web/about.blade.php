@@ -8,7 +8,7 @@
 
         <!-- LEFT IMAGE -->
         <div class="lg:block hidden relative overflow-hidden rounded-xl shadow-md ">
-            <div class="absolute top-[-27%] right-[-6%] w-[300px] h-[260px] rounded-full bg-gradient-to-t from-primary to-secondary"></div>
+            <div class="absolute top-[-185px] right-[-94px] w-[300px] h-[260px] rounded-full bg-gradient-to-t from-primary to-secondary"></div>
 
             <img src="{{asset('images/bg-8.webp')}}" class="h-full w-full object-cover" alt="">
         </div>
@@ -23,8 +23,8 @@
             </div>
 
             <h2 class="text-h2-xs sm:text-h2-sm md:text-h2-md lg:text-h2-lg lgg:text-h2-lgg xl:text-h2-xl 2xl:text-h2-2xl
- font-bold text-gray-900 leading-snug mb-4">
-                We are a best IT <br> solution provider
+         font-bold text-gray-900 leading-snug mb-4">
+                We are a best IT  solution provider
             </h2>
 
             <p class="text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg lgg:text-p-lgg xl:text-p-xl 2xl:text-p-2xl text-gray-600 mb-6">
@@ -311,7 +311,7 @@
                 type="email"
                 placeholder="Enter Your Email"
                 class="smx:px-6 px-4  smx:py-4 py-2  w-full text-gray-700 placeholder-gray-500 focus:outline-none focus:shadow-none smx:border-0 border-[1px] border-[#aeaeae] smx:rounded-none rounded-full smx:mb-0  mb-2 text-lg"
-                required />
+                style="box-shadow: none !important;" required />
 
             <!-- Subscribe Button -->
             <button

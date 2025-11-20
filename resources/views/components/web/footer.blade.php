@@ -145,7 +145,7 @@
           type="email"
           placeholder="Enter Your Email"
           class="smx:px-6 px-4  smx:py-4 py-2  w-full text-gray-700 placeholder-gray-500 focus:outline-none focus:shadow-none smx:border-0 border-[1px] border-[#aeaeae] smx:rounded-none rounded-full smx:mb-0  mb-2 text-lg"
-          required />
+          style="box-shadow: none !important;" required />
 
         <!-- Subscribe Button -->
         <button
