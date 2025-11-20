@@ -30,10 +30,12 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
 
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
-Route::get('/Mail/{email}', [BlogController::class, 'viewMail'])->name('blog.viewMail');
+Route::get('/Mail/{id}', [BlogController::class, 'viewMail'])->name('blog.viewMail');
 Route::post('/sendMail', [BlogController::class, 'sendMail'])->name('blog.sendMail');
+Route::post('/singleMail', [BlogController::class, 'singleMail'])->name('blog.singleMail');
 
 Route::get('/mailHistory/{id}', [MailController::class, 'mailHistory'])->name('blog.mailHistory');
 Route::get('/viewMail/{id}', [MailController::class, 'viewMail'])->name('blog.view-mail');
+
 });
 require __DIR__.'/auth.php';

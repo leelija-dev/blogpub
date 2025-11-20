@@ -10,7 +10,7 @@ class MailController extends Controller
 {
 public function mailHistory($id){
     $id=decrypt($id);
-    $mails=UserMailHistory::where('user_id',$id)->get();
+    $mails=UserMailHistory::where('user_id',$id)->paginate(10);;
     return view('web.mail-history',compact('mails'));
 }
 public function viewMail($id){

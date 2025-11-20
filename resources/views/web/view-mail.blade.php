@@ -28,8 +28,21 @@
                 <p><?= $mail->site_url ?></p>
                 <p><?= $mail->created_at->format('d M Y,h:i a') ?></p>
                 <p><?= $mail->subject ?></p>
-                <p><?= $mail->message ?></p>
-               
+                <p><?= $mail->message ?></p><p>
+                    @if($mail->file)
+                        @php
+                            $files = explode(',', $mail->file); // convert string back to array
+                        @endphp
+                        <ul>
+                            @foreach($files as $file)
+                                <li>
+                                    <a href="{{ asset($file) }}" target="_blank">{{ basename($file) }}</a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                    </p>
+
             </div>
          </div>
         

@@ -41,7 +41,8 @@
                         @if($mails)
                         @foreach($mails as $mail)
                         <tr>
-                            <td class="text-center">{{$loop->iteration}}</td>
+                            @php $page=isset($_GET['page'])?$_GET['page'] : 1; @endphp
+                            <td class="text-center">{{(((($page*10)-9)+$loop->iteration)-1)}}</td>
                             <td class="text-center">{{$mail->site_url}}</td>
                             <td class="text-center">
                                 @if(strlen($mail->subject)>20)
@@ -71,6 +72,10 @@
 
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-center mt-3">
+                  {{ $mails->links('pagination::bootstrap-5') }}
+
+                </div>
             </div>
         </div>
 </x-app-layout>

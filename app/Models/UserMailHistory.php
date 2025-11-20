@@ -13,6 +13,7 @@ class UserMailHistory extends Model
         'site_url',
         'subject',
         'message',
+        'file',
         
     ];
 }
