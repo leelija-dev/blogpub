@@ -407,7 +407,8 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         // Pass plan data from PHP to JavaScript
-        const planData = @json($plan ?? null);
+        // const planData = @json($plan ?? null);
+        const planData = @json($planModel ?? null);
 
         const form = document.querySelector('form');
         const inputs = document.querySelectorAll('.floating-label-group input, .floating-label-group select');

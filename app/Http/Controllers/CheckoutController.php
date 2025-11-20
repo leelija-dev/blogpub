@@ -17,7 +17,7 @@ class CheckoutController extends Controller
 {
     private function getPayPalClient(): PayPalHttpClient
     {
-        $environment = config('paypal.mode') === 'live' 
+        $environment = config('paypal.mode') === 'live'
             ? new ProductionEnvironment(config('paypal.client_id'), config('paypal.client_secret'))
             : new SandboxEnvironment(config('paypal.client_id'), config('paypal.client_secret'));
 
@@ -27,24 +27,47 @@ class CheckoutController extends Controller
     /**
      * Display the checkout page for a specific plan
      */
-    public function show(Request $request): View
-    {
-        $planId = $request->query('plan');
-        
-        if (!$planId) {
-            abort(404, 'Plan not found');
-        }
+    // public function show(Request $request): View
+    // {
+    //     $planId = $request->query('plan');
 
-        $plan = Plan::with('features')
-            ->where('id', $planId)
-            ->where('is_active', true)
-            ->first();
+    //     if (!$planId) {
+    //         abort(404, 'Plan not found');
+    //     }
+
+    //     $plan = Plan::with('features')
+    //         ->where('id', $planId)
+    //         ->where('is_active', true)
+    //         ->first();
+
+    //     if (!$plan) {
+    //         abort(404, 'Plan not found');
+    //     }
+
+    //     return view('web.checkout', compact('plan'));
+    // }
+
+    public function show(Request $request, $plan = null): View
+    {
+        // If plan is not provided in URL, check query parameter for backward compatibility
+        if (!$plan) {
+            $plan = $request->query('plan');
+        }
 
         if (!$plan) {
             abort(404, 'Plan not found');
         }
 
-        return view('web.checkout', compact('plan'));
+        $planModel = Plan::with('features')
+            ->where('id', $plan)
+            ->where('is_active', true)
+            ->first();
+
+        if (!$planModel) {
+            abort(404, 'Plan not found');
+        }
+
+        return view('web.checkout', compact('planModel'));
     }
 
     /**
@@ -60,7 +83,7 @@ class CheckoutController extends Controller
 
             $plan = Plan::findOrFail($request->plan_id);
             $client = $this->getPayPalClient();
-            
+
             $orderRequest = new OrdersCreateRequest();
             $orderRequest->prefer('return=representation');
             $orderRequest->body = [
@@ -80,13 +103,12 @@ class CheckoutController extends Controller
             ];
 
             $response = $client->execute($orderRequest);
-            
+
             return response()->json([
                 'success' => true,
                 'order_id' => $response->result->id,
                 'status' => $response->result->status
             ]);
-            
         } catch (\Exception $e) {
             \Log::error('PayPal order creation failed: ' . $e->getMessage());
             return response()->json([
@@ -108,15 +130,14 @@ class CheckoutController extends Controller
 
             $client = $this->getPayPalClient();
             $captureRequest = new OrdersCaptureRequest($request->order_id);
-            
+
             $response = $client->execute($captureRequest);
-            
+
             return response()->json([
                 'success' => true,
                 'transaction_id' => $response->result->purchase_units[0]->payments->captures[0]->id,
                 'status' => $response->result->status
             ]);
-            
         } catch (\Exception $e) {
             \Log::error('PayPal payment capture failed: ' . $e->getMessage());
             return response()->json([
@@ -134,20 +155,28 @@ class CheckoutController extends Controller
         // Verify webhook signature (PayPal SDK)
         // Process the webhook data
         // Update order status in database
-        
+
         return response()->json(['status' => 'ok']);
     }
 
     /**
      * Show payment success page
      */
+    // public function success(Request $request): View
+    // {
+    //     $transactionId = $request->query('transaction_id');
+
+    //     return view('web.checkout-success', compact('transactionId'));
+    // }
+
+
     public function success(Request $request): View
     {
+           
         $transactionId = $request->query('transaction_id');
-        
+
         return view('web.checkout-success', compact('transactionId'));
     }
-
     /**
      * Show payment cancel page
      */
