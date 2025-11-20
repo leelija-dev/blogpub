@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Plan;
+use App\Models\PlanOrder;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
@@ -17,7 +19,7 @@ class CheckoutController extends Controller
 {
     private function getPayPalClient(): PayPalHttpClient
     {
-        $environment = config('paypal.mode') === 'live'
+        $environment = config('paypal.mode') === 'live' 
             ? new ProductionEnvironment(config('paypal.client_id'), config('paypal.client_secret'))
             : new SandboxEnvironment(config('paypal.client_id'), config('paypal.client_secret'));
 
@@ -27,26 +29,6 @@ class CheckoutController extends Controller
     /**
      * Display the checkout page for a specific plan
      */
-    // public function show(Request $request): View
-    // {
-    //     $planId = $request->query('plan');
-
-    //     if (!$planId) {
-    //         abort(404, 'Plan not found');
-    //     }
-
-    //     $plan = Plan::with('features')
-    //         ->where('id', $planId)
-    //         ->where('is_active', true)
-    //         ->first();
-
-    //     if (!$plan) {
-    //         abort(404, 'Plan not found');
-    //     }
-
-    //     return view('web.checkout', compact('plan'));
-    // }
-
     public function show(Request $request, $plan = null): View
     {
         // If plan is not provided in URL, check query parameter for backward compatibility
@@ -55,17 +37,10 @@ class CheckoutController extends Controller
         }
 
         if (!$plan) {
-            abort(404, 'Plan not found');
+            abort(404, 'Plan not specified');
         }
 
-        $planModel = Plan::with('features')
-            ->where('id', $plan)
-            ->where('is_active', true)
-            ->first();
-
-        if (!$planModel) {
-            abort(404, 'Plan not found');
-        }
+        $planModel = Plan::with('features')->findOrFail($plan);
 
         return view('web.checkout', compact('planModel'));
     }
@@ -73,50 +48,70 @@ class CheckoutController extends Controller
     /**
      * Create PayPal order
      */
-    public function createOrder(Request $request): JsonResponse
-    {
-        try {
-            $request->validate([
-                'plan_id' => 'required|string',
-                'billing_info' => 'required|array'
-            ]);
+  /**
+ * Create PayPal order
+ */
+public function createOrder(Request $request): JsonResponse
+{
+    try {
+        $request->validate([
+            'plan_id' => 'required|string',
+            'billing_info' => 'required|array'
+        ]);
 
-            $plan = Plan::findOrFail($request->plan_id);
-            $client = $this->getPayPalClient();
+        // Get plan details from database
+        $plan = Plan::findOrFail($request->plan_id);
 
-            $orderRequest = new OrdersCreateRequest();
-            $orderRequest->prefer('return=representation');
-            $orderRequest->body = [
-                "intent" => "CAPTURE",
-                "purchase_units" => [[
-                    "reference_id" => $plan->id,
-                    "amount" => [
-                        "value" => number_format($plan->price, 2, '.', ''),
-                        "currency_code" => "USD"
-                    ],
-                    "description" => "Package: " . $plan->name
-                ]],
-                "application_context" => [
-                    "cancel_url" => route('checkout.cancel'),
-                    "return_url" => route('checkout.success')
-                ]
-            ];
+        // Create order record in database (keep original currency)
+        $order = PlanOrder::create([
+            'user_id' => Auth::id(),
+            'plan_id' => $plan->id,
+            'amount' => $plan->price,
+            'currency' => $plan->currency, // Store original currency
+            'status' => 'pending',
+            'billing_info' => $request->billing_info,
+        ]);
 
-            $response = $client->execute($orderRequest);
+        $client = $this->getPayPalClient();
 
-            return response()->json([
-                'success' => true,
-                'order_id' => $response->result->id,
-                'status' => $response->result->status
-            ]);
-        } catch (\Exception $e) {
-            \Log::error('PayPal order creation failed: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create PayPal order: ' . $e->getMessage()
-            ], 500);
-        }
+        $orderRequest = new OrdersCreateRequest();
+        $orderRequest->prefer('return=representation');
+        $orderRequest->body = [
+            "intent" => "CAPTURE",
+            "purchase_units" => [[
+                "reference_id" => $order->id,
+                "amount" => [
+                    "value" => number_format($plan->price, 2, '.', ''), // Keep original amount
+                    "currency_code" => "USD" // Force USD for PayPal
+                ],
+                "description" => "Package: " . $plan->name
+            ]],
+            "application_context" => [
+                "cancel_url" => route('checkout.cancel'),
+                "return_url" => route('checkout.success')
+            ]
+        ];
+
+        $response = $client->execute($orderRequest);
+
+        // Update order with PayPal order ID
+        $order->update([
+            'paypal_order_id' => $response->result->id
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'order_id' => $response->result->id,
+            'status' => $response->result->status
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('PayPal order creation failed: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to create order: ' . $e->getMessage()
+        ], 500);
     }
+}
 
     /**
      * Capture PayPal payment
@@ -133,13 +128,34 @@ class CheckoutController extends Controller
 
             $response = $client->execute($captureRequest);
 
+            $transactionId = $response->result->purchase_units[0]->payments->captures[0]->id;
+
+            // Find and update the order in database
+            $order = PlanOrder::where('paypal_order_id', $request->order_id)->first();
+            
+            if ($order) {
+                $order->update([
+                    'transaction_id' => $transactionId,
+                    'status' => 'completed',
+                    'payment_details' => $response->result,
+                    'paid_at' => now(),
+                ]);
+            }
+
             return response()->json([
                 'success' => true,
-                'transaction_id' => $response->result->purchase_units[0]->payments->captures[0]->id,
+                'transaction_id' => $transactionId,
                 'status' => $response->result->status
             ]);
         } catch (\Exception $e) {
             \Log::error('PayPal payment capture failed: ' . $e->getMessage());
+            
+            // Update order status to failed
+            $order = PlanOrder::where('paypal_order_id', $request->order_id)->first();
+            if ($order) {
+                $order->update(['status' => 'failed']);
+            }
+
             return response()->json([
                 'success' => false,
                 'message' => 'Payment capture failed: ' . $e->getMessage()
@@ -162,21 +178,21 @@ class CheckoutController extends Controller
     /**
      * Show payment success page
      */
-    // public function success(Request $request): View
-    // {
-    //     $transactionId = $request->query('transaction_id');
-
-    //     return view('web.checkout-success', compact('transactionId'));
-    // }
-
-
     public function success(Request $request): View
     {
-           
         $transactionId = $request->query('transaction_id');
+        
+        // Get order details for success page
+        $order = null;
+        if ($transactionId) {
+            $order = PlanOrder::with(['plan', 'user'])
+                ->where('transaction_id', $transactionId)
+                ->first();
+        }
 
-        return view('web.checkout-success', compact('transactionId'));
+        return view('web.checkout-success', compact('transactionId', 'order'));
     }
+
     /**
      * Show payment cancel page
      */
