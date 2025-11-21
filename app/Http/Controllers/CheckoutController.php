@@ -124,6 +124,53 @@ public function createOrder(Request $request): JsonResponse
     /**
      * Capture PayPal payment
      */
+    // public function capturePayment(Request $request): JsonResponse
+    // {
+    //     try {
+    //         $request->validate([
+    //             'order_id' => 'required|string',
+    //         ]);
+
+    //         $client = $this->getPayPalClient();
+    //         $captureRequest = new OrdersCaptureRequest($request->order_id);
+
+    //         $response = $client->execute($captureRequest);
+
+    //         $transactionId = $response->result->purchase_units[0]->payments->captures[0]->id;
+
+    //         // Find and update the order in database
+    //         $order = PlanOrder::where('paypal_order_id', $request->order_id)->first();
+            
+    //         if ($order) {
+    //             $order->update([
+    //                 'transaction_id' => $transactionId,
+    //                 'status' => 'completed',
+    //                 'payment_details' => $response->result,
+    //                 'paid_at' => now(),
+    //             ]);
+    //         }
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'transaction_id' => $transactionId,
+    //             'status' => $response->result->status
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         \Log::error('PayPal payment capture failed: ' . $e->getMessage());
+            
+    //         // Update order status to failed
+    //         $order = PlanOrder::where('paypal_order_id', $request->order_id)->first();
+    //         if ($order) {
+    //             $order->update(['status' => 'failed']);
+    //         }
+
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Payment capture failed: ' . $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
     public function capturePayment(Request $request): JsonResponse
     {
         try {
@@ -148,6 +195,9 @@ public function createOrder(Request $request): JsonResponse
                     'payment_details' => $response->result,
                     'paid_at' => now(),
                 ]);
+
+                // Store transaction_id in session for the success page
+                session(['last_transaction_id' => $transactionId]);
             }
 
             return response()->json([
@@ -186,9 +236,28 @@ public function createOrder(Request $request): JsonResponse
     /**
      * Show payment success page
      */
+    // public function success(Request $request): View
+    // {
+    //     $transactionId = $request->query('transaction_id');
+        
+    //     // Get order details for success page
+    //     $order = null;
+    //     if ($transactionId) {
+    //         $order = PlanOrder::with(['plan', 'user'])
+    //             ->where('transaction_id', $transactionId)
+    //             ->first();
+    //     }
+
+    //     return view('web.checkout-success', compact('transactionId', 'order'));
+    // }
+
     public function success(Request $request): View
     {
-        $transactionId = $request->query('transaction_id');
+        // Get transaction_id from session instead of URL parameter
+        $transactionId = session('last_transaction_id');
+        
+        // Clear the session value after use
+        session()->forget('last_transaction_id');
         
         // Get order details for success page
         $order = null;
