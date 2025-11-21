@@ -1,6 +1,7 @@
 @php
     use Illuminate\Support\Facades\Auth;
-    $loggedUserId = Auth::id(); // or Auth::user()->id
+    $loggedUserId = Auth::id();
+    // or Auth::user()->id
 @endphp
 <x-app-layout>
 
@@ -33,7 +34,7 @@
         <div class="flex-grow-1 p-4">
             @if($isValidPlan)
                 @if($mail_available)
-                       <h5 >dsdsd</h5>
+                
                 <div class="col-md-12">
                     <div class="row">
                         <div class="col-md-6">

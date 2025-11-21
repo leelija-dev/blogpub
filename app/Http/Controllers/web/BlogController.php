@@ -23,16 +23,17 @@ class BlogController extends Controller
         $response = Http::get(env('API_BASE_URL') . '/api/blogs');
         
         $mail_available = MailAvailable::where('user_id', Auth::user()->id)->latest()->first(); // or ->orderBy('id','desc')
+        $isValidPlan = false;
         if($mail_available){
             $plan_order_id= $mail_available->order_id; 
            
             $plan_order=PlanOrder::where('id', $plan_order_id)->latest()->first();
             
-            $plan_id=Plan::where('id', $plan_order->plan_id)->first();
+            $plan_id=Plan::where('id', $plan_order->plan_id)->first() ;
             // $plan_expire=$plan_id->duration >=$plan_order->created_at;
-            $expiryDate = Carbon::parse($plan_order->created_at)->addDays($plan_id->duration);
+            $expiryDate = Carbon::parse($plan_order->created_at)->addDays($plan_id->duration) ;
 
-            $isValidPlan = Carbon::now()->lessThanOrEqualTo($expiryDate) ?? false;
+            $isValidPlan = Carbon::now()->lessThanOrEqualTo($expiryDate) ? Carbon::now()->lessThanOrEqualTo($expiryDate): false;
             
 
         }
