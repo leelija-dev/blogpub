@@ -27,8 +27,8 @@ class MailAvailable extends Model
     /**
      * Relation: MailAvailable belongs to Order
      */
-    // public function order()
-    // {
-    //     return $this->belongsTo(Order::class);
-    // }
+    public function PlanOrder()
+    {
+        return $this->belongsTo(PlanOrder::class);
+    }
 }

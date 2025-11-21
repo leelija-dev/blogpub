@@ -13,15 +13,17 @@ return new class extends Migration
     {
         Schema::create('mail_available', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+           $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('order_id')->nullable();
             $table->integer('total_mail')->default(0);
             $table->integer('available_mail')->default(0);
             $table->timestamps();
+             $table->softDeletes();
 
             
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
+            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+             $table->foreign('user_id', 'fk_mail_available_user')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('order_id')->references('id')->on('plan_orders')->onDelete('cascade');
         });
         
     }
