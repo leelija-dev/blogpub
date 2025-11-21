@@ -46,8 +46,11 @@ class CheckoutController extends Controller
         }
 
         $planModel = Plan::with('features')->findOrFail($plan);
+        
+        // Get all active plans for the modal
+        $allPlans = Plan::with('features')->where('is_active', true)->orderBy('price', 'asc')->get();
 
-        return view('web.checkout', compact('planModel'));
+        return view('web.checkout', compact('planModel', 'allPlans'));
     }
 
     /**

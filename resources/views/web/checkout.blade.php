@@ -5,7 +5,6 @@
 @section('content')
 
 <style>
-
     .error-msg {
         position: absolute;
         left: 0;
@@ -237,9 +236,9 @@
 
         <h2 class="text-xl font-semibold mb-4">Choose Your Package</h2>
 
-        <div class="max-w-7xl mx-auto lg:px-6 px-0 grid grid-cols-1 md:grid-cols-3 gap-8 ">
+        <!-- <div class="max-w-7xl mx-auto lg:px-6 px-0 grid grid-cols-1 md:grid-cols-3 gap-8 ">
 
-            <!-- Basic Plan -->
+      
             <div class="bg-white rounded-2xl shadow-md px-8 pb-8 pt-0 border border-gray-100 overflow-hidden hover:scale-[1.04] transition-all duration-300 ease-in-out">
                 <div class="text-center">
                     <div class="bg-purple-100  text-purple-600 relative top-[-3px] py-[7px] px-[22px] mb-[3rem] rounded-b-[10px] text-sm font-semibold inline-block">
@@ -274,7 +273,7 @@
                 </div>
             </div>
 
-            <!-- Standard Package (Highlighted) -->
+          
             <div class="bg-gradient-to-br from-black to-primary text-white rounded-2xl shadow-xl px-8 pb-8  overflow-hidden hover:scale-[1.04] transition-all duration-300 ease-in-out">
                 <div class="text-center">
                     <div class="bg-purple-600 text-white relative top-[-3px] py-[7px] px-[22px] mb-[3rem] rounded-b-[10px] text-sm font-semibold inline-block">
@@ -309,7 +308,7 @@
                 </div>
             </div>
 
-            <!-- Premium Package -->
+    
             <div class="bg-white rounded-2xl shadow-md px-8 pb-8 border border-gray-100 overflow-hidden hover:scale-[1.04] transition-all duration-300 ease-in-out">
                 <div class="text-center">
                     <div class="bg-purple-100 text-purple-600 relative top-[-3px] py-[7px] px-[22px] mb-[3rem] rounded-b-[10px] text-sm font-semibold inline-block">
@@ -344,6 +343,56 @@
                 </div>
             </div>
 
+        </div> -->
+
+        <div class="max-w-7xl mx-auto lg:px-6 px-0 grid grid-cols-1 md:grid-cols-3 gap-8">
+            @foreach($allPlans as $index => $plan)
+            @php
+            $isHighlighted = $index === 1; // Highlight second plan (Standard)
+            $badgeColors = [
+            ['bg' => 'bg-purple-100', 'text' => 'text-purple-600', 'badge' => 'STARTER BOOST'],
+            ['bg' => 'bg-purple-600', 'text' => 'text-white', 'badge' => 'GROWTH ACCELERATOR'],
+            ['bg' => 'bg-purple-100', 'text' => 'text-purple-600', 'badge' => 'MARKET LEADER']
+            ];
+            $badge = $badgeColors[$index % count($badgeColors)] ?? $badgeColors[0];
+            $icons = ['🚀', '⚙️', '👑'];
+            $icon = $icons[$index % count($icons)] ?? '📦';
+            @endphp
+
+            <div class="bg-white rounded-2xl shadow-md px-8 pb-8 pt-0 border border-gray-100 overflow-hidden hover:scale-[1.04] transition-all duration-300 ease-in-out {{ $isHighlighted ? 'bg-gradient-to-br from-black to-primary text-white shadow-xl' : '' }}">
+                <div class="text-center">
+                    <div class="bg-{{ $badge['bg'] }} {{ $badge['text'] }} relative top-[-3px] py-[7px] px-[22px] mb-[3rem] rounded-b-[10px] text-sm font-semibold inline-block">
+                        {{ $badge['badge'] }}
+                    </div>
+
+                    <div class="flex justify-center mb-6">
+                        <div class="w-16 h-16 {{ $isHighlighted ? 'bg-white/20' : 'bg-purple-50' }} rounded-full flex justify-center items-center">
+                            <span class="{{ $isHighlighted ? 'text-white' : 'text-purple-600' }} text-3xl">{{ $icon }}</span>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-semibold">{{ $plan->name }}</h3>
+                    <p class="text-4xl font-bold mt-2">${{ number_format($plan->price) }}<span class="text-base font-medium">/month</span></p>
+                    <p class="{{ $isHighlighted ? 'text-purple-200' : 'text-gray-500' }} text-sm mb-4">Billed Annually</p>
+                    <span class="inline-block {{ $isHighlighted ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-700' }} text-xs px-3 py-1 rounded-full mb-6">
+                        Up to {{ $index + 1 }} Platforms
+                    </span>
+                </div>
+
+                <ul class="space-y-3 {{ $isHighlighted ? 'text-purple-100' : 'text-gray-600' }}">
+                    @foreach($plan->features as $feature)
+                    <li>• {{ $feature->feature }}</li>
+                    @endforeach
+                </ul>
+
+                <div class="text-center my-10">
+                    <a href="#" class="btn-{{ $isHighlighted ? 'secondary' : 'primary' }} package-get-started rounded-full w-full block"
+                        data-package-id="{{ $plan->id }}"
+                        data-package-name="{{ $plan->name }}"
+                        data-package-price="{{ $plan->price }}">Get Started</a>
+                </div>
+            </div>
+            @endforeach
         </div>
 
     </div>
