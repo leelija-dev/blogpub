@@ -143,14 +143,14 @@ Route::middleware(['web'])->group(function () {
     Route::post('/checkout/create-order', [CheckoutController::class, 'createOrder'])->name('checkout.create-order');
     Route::post('/checkout/capture-payment', [CheckoutController::class, 'capturePayment'])->name('checkout.capture-payment');
     Route::post('/checkout/webhook', [CheckoutController::class, 'webhook'])->name('checkout.webhook');
+
+    Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
+    Route::get('/checkout/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
 });
 // Checkout routes (require authentication AND email verification)
 Route::middleware(['auth', 'verified'])->group(function () {
     // Route::get('/checkout/{plan?}', [CheckoutController::class, 'show'])->name('checkout');
     Route::match(['GET', 'POST'], '/checkout/{plan?}', [CheckoutController::class, 'show'])->name('checkout');
-    
-    Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
-    Route::get('/checkout/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
 
 
     Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
