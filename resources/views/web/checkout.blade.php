@@ -106,7 +106,7 @@
                         </div>
 
                         <!-- Checkboxes -->
-                        <div class="space-y-4 pt-4">
+                        <!-- <div class="space-y-4 pt-4">
                             <label class="flex items-center gap-3 text-gray-700 cursor-pointer">
                                 <input type="checkbox" checked class="w-4 h-4 text-blue-600 rounded" />
                                 <span>My billing and shipping address are the same</span>
@@ -116,7 +116,7 @@
                                 <input type="checkbox" class="w-4 h-4 text-blue-600 rounded" />
                                 <span>Create an account for later use</span>
                             </label>
-                        </div>
+                        </div> -->
 
                     </div>
                 </div>
@@ -152,7 +152,7 @@
 
                         <div class="floating-label-group ">
                             <input type="text" id="discount" placeholder=" " value="" required />
-                            <label for="discount">Discount</label>
+                            <label for="discount">Discount Coupon Code</label>
                         </div>
 
 
@@ -553,7 +553,7 @@
                         .then(data => {
                             if (data.success) {
                                 // Redirect to success page
-                                window.location.href = `/checkout/success?transaction_id=${data.transaction_id}`;
+                                window.location.href = `/checkout/success`;
                             } else {
                                 throw new Error(data.message || 'Payment failed');
                             }
@@ -689,6 +689,47 @@
             row.dataset.price = pkg.price;
             row.dataset.packageId = pkg.id;
 
+            // row.innerHTML = `
+            //     <div class="flex flex-col smx:flex-row smx:items-center gap-2 sm:gap-6 w-full ">
+            //       <!-- Left side: Icon + Package Info -->
+            //       <div class="flex items-center gap-4 flex-1 min-w-0 xs:flex-row flex-col ">
+            //         <!-- Icon -->
+            //         <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg flex-shrink-0">
+            //           Check
+            //         </div>
+
+            //         <!-- Package Details -->
+            //         <div class="xs:flex-1 xs:min-w-0 xs:w-auto w-full xs:text-left text-center">
+            //           <p class="package-name font-bold text-gray-800 text-lg truncate ">
+            //             ${pkg.name}
+            //           </p>
+            //           <p class="text-sm text-gray-600 mt-1">
+            //             <span class="font-medium">Package ID:</span>
+            //             <span class="font-mono bg-gray-200 px-2 py-1 rounded text-xs package-id ml-1">
+            //               ${pkg.id.toUpperCase()}
+            //             </span>
+            //           </p>
+            //           <p class="text-xs text-gray-500 mt-1">
+            //             $${pkg.price.toLocaleString()}/month • Billed Annually
+            //           </p>
+            //         </div>
+            //       </div>
+
+            //       <!-- Right side: Price + Remove button -->
+            //       <div class="flex items-center  xs:justify-end justify-center  gap-4 mt-2 smxl:mt-0">
+            //         <p class="package-price text-[1.2rem] font-bold text-gray-900 whitespace-nowrap ">
+            //           ${fmt.format(pkg.price)}
+            //         </p>
+            //         <button 
+            //           type="button" 
+            //           class="remove-pkg text-red-500 hover:text-red-700 text-4xl font-light leading-none absolute top-0 right-[3px]"
+            //           aria-label="Remove package">
+            //           ×
+            //         </button>
+            //       </div>
+            //     </div>
+            // `;
+
             row.innerHTML = `
                 <div class="flex flex-col smx:flex-row smx:items-center gap-2 sm:gap-6 w-full ">
                   <!-- Left side: Icon + Package Info -->
@@ -715,17 +756,11 @@
                     </div>
                   </div>
 
-                  <!-- Right side: Price + Remove button -->
-                  <div class="flex items-center  xs:justify-end justify-center  gap-4 mt-2 smxl:mt-0">
+                  <!-- Right side: Price only (removed cross button) -->
+                  <div class="flex items-center xs:justify-end justify-center mt-2 smxl:mt-0">
                     <p class="package-price text-[1.2rem] font-bold text-gray-900 whitespace-nowrap ">
                       ${fmt.format(pkg.price)}
                     </p>
-                    <button 
-                      type="button" 
-                      class="remove-pkg text-red-500 hover:text-red-700 text-4xl font-light leading-none absolute top-0 right-[3px]"
-                      aria-label="Remove package">
-                      ×
-                    </button>
                   </div>
                 </div>
             `;
@@ -737,13 +772,13 @@
             setTimeout(initPayPalButtons, 100);
 
             // Feedback message
-            Swal.fire({
-                icon: 'success',
-                title: wasEmpty ? 'Package Selected!' : 'Package Changed!',
-                text: `${pkg.name} (ID: ${pkg.id.toUpperCase()})`,
-                timer: 1800,
-                showConfirmButton: false
-            });
+            // Swal.fire({
+            //     icon: 'success',
+            //     title: wasEmpty ? 'Package Selected!' : 'Package Changed!',
+            //     text: `${pkg.name} (ID: ${pkg.id.toUpperCase()})`,
+            //     timer: 1800,
+            //     showConfirmButton: false
+            // });
         }
 
         // "Get Started" buttons inside modal - REPLACE package
