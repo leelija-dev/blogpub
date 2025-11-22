@@ -16,6 +16,10 @@ pipeline {
                 script {
                     sh '''
                         echo "🚀 Deploying Production..."
+
+                        # Add the deployment directory as a safe directory for git
+                        git config --global --add safe.directory /var/www/gpsites.io
+
                         cd /var/www/gpsites.io
                         git checkout main
                         git pull origin main
