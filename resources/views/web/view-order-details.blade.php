@@ -33,6 +33,17 @@
         <!--Main content -->
         <div class="card-body">
                 <h5 class="card-title">Order Details</h5>
+                <p>Order ID: {{ $order->id }}</p>
+                <p>Transaction ID: {{ $order->transaction_id }}</p>
+                <p>Plan: {{ $order->plan->name }}</p>
+                <p>Amount: {{ $order->currency }} {{ number_format($order->amount, 2) }}</p>
+                <p>Status: 
+                    <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full 
+                        {{ $order->status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
+                        {{ ucfirst($order->status) }}
+                    </span>
+                </p>
+                <p>Date: {{ $order->paid_at ? $order->paid_at->format('M d, Y H:i') : 'N/A' }}</p>
             
                 
         </div>

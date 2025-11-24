@@ -86,7 +86,7 @@
                                     @endif
 
                                 </td>
-                                <td class="text-center"><a href="{{route('view-my-order',['id'=>$order->id])}}">view</a></td>
+                                <td class="text-center"><a href="{{route('view-my-order',encrypt(['id'=>$order->id]))}}">view</a></td>
                                 
                             </tr>
                         @endforeach
