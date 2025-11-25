@@ -52,7 +52,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if($orders)
+                    
+                    @if($orders->isNotEmpty())
                         
                         @foreach ($orders as $order)
                                 @php
@@ -86,13 +87,13 @@
                                     @endif
 
                                 </td>
-                                <td class="text-center"><a href="{{route('view-my-order',['id'=>$order->id])}}">view</a></td>
+                                <td class="text-center"><a href="{{route('view-my-order',encrypt(['id'=>$order->id]))}}">view</a></td>
                                 
                             </tr>
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="7" class="p-4 text-center">No mail history found.</td>
+                            <td colspan="9" class="p-4 text-center">No order yet!</td>
                         </tr>
                     @endif
 
