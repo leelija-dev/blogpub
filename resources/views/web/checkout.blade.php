@@ -512,16 +512,12 @@
                     }
 
                     // Create order via AJAX
-                    return fetch('/checkout/create-order', {
+                    return fetch('{{ route("checkout.create-order") }}', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
                             },
-                            // body: JSON.stringify({
-                            //     plan_id: selectedPackage.id,
-                            //     billing_info: getBillingInfo()
-                            // })
                             body: JSON.stringify({
                                 plan_id: selectedPackage.id,
                                 billing_info: getBillingInfo()
