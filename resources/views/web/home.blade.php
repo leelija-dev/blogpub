@@ -574,19 +574,51 @@
             <!-- RIGHT FORM -->
             <div class="w-full lg:w-2/3 lg:p-6 p-4">
                 <form id="contact-us" method="POST" action="{{route('contact.store')}}" class="space-y-6" novalidate>
-
+                    
+                    <!-- Success Message -->
+                    @if(session('success'))
+                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6" role="alert">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                {{ session('success') }}
+                            </div>
+                        </div>
+                    @endif
+                    
+                    <!-- Error Message -->
+                    @if(session('error'))
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6" role="alert">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                                {{ session('error') }}
+                            </div>
+                        </div>
+                    @endif
+                    
+                    @csrf
+                    
                     <!-- NAME ROW -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-gray-700">Full Name</label>
-                            <input type="text" id="full_name" name="name" placeholder="John Doe" required
-                                class="mt-1 w-full border-t-0 border-l-0 border-r-0 border-gray-300 form-input-cus outline-none py-2" />
+                            <input type="text" id="full_name" name="name" value="{{ old('name') }}" placeholder="John Doe" required
+                                class="mt-1 w-full border-t-0 border-l-0 border-r-0 @error('name') border-red-500 @else border-gray-300 @enderror form-input-cus outline-none py-2 transition" />
+                            @error('name')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div>
                             <label class="block text-gray-700">Email</label>
-                            <input type="email" id="email" name="email" placeholder="email@example.com" required
-                                class="mt-1 w-full border-t-0 border-l-0 border-r-0 border-gray-300 form-input-cus outline-none py-2" />
+                            <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="email@example.com" required
+                                class="mt-1 w-full border-t-0 border-l-0 border-r-0 @error('email') border-red-500 @else border-gray-300 @enderror form-input-cus outline-none py-2 transition" />
+                            @error('email')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
@@ -594,25 +626,38 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
                         <select id="subject" required
-                            class="w-full px-4 py-3 text-[#625e5e] border border-t-0 border-l-0 border-r-0 border-gray-300 transition"
+                            class="w-full px-4 py-3 text-[#625e5e] border @error('subject') border-red-500 @else border-t-0 border-l-0 border-r-0 border-gray-300 @enderror transition"
                             style="box-shadow: none !important;" name="subject">
                             <option value="">Select a subject</option>
-                            <option value="General Inquiry">General Inquiry</option>
-                            <option value="Support">Support</option>
-                            <option value="Partnership">Partnership</option>
-                            <option value="Feedback">Feedback</option>
+                            <option value="General Inquiry" {{ old('subject') == 'General Inquiry' ? 'selected' : '' }}>General Inquiry</option>
+                            <option value="Support" {{ old('subject') == 'Support' ? 'selected' : '' }}>Support</option>
+                            <option value="Partnership" {{ old('subject') == 'Partnership' ? 'selected' : '' }}>Partnership</option>
+                            <option value="Feedback" {{ old('subject') == 'Feedback' ? 'selected' : '' }}>Feedback</option>
                         </select>
+                        @error('subject')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- MESSAGE -->
                     <div>
                         <label class="block text-gray-700">Message</label>
                         <textarea id="message" placeholder="Write your message..." name="message" required
-                            class="mt-1 w-full border-t-0 border-l-0 min-h-[150px] border-r-0 border-gray-300 form-input-cus outline-none py-2 h-24"></textarea>
+                            class="mt-1 w-full border-t-0 border-l-0 min-h-[150px] @error('message') border-red-500 @else border-r-0 border-gray-300 @enderror form-input-cus outline-none py-2 h-24 transition">{{ old('message') }}</textarea>
+                        @error('message')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    <button type="submit" class="btn-primary mt-2">
-                        Send Message
+                    <button type="submit" class="btn-primary mt-2 disabled:opacity-50 disabled:cursor-not-allowed" id="submit-btn">
+                        <span id="btn-text">Send Message</span>
+                        <span id="btn-loading" class="hidden">
+                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Sending...
+                        </span>
                     </button>
                 </form>
             </div>
