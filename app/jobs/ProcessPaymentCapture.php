@@ -158,6 +158,13 @@ class ProcessPaymentCapture implements ShouldQueue
                 'result' => $response->result
             ]);
 
+            $transactionId = $response->result->purchase_units[0]->payments->captures[0]->id;
+
+            \Log::info('Transaction ID extracted', [
+                'paypal_order_id' => $this->paypalOrderId,
+                'transaction_id' => $transactionId
+            ]);
+
             // Find and update the order
             $order = PlanOrder::where('paypal_order_id', $this->paypalOrderId)->first();
 
@@ -223,8 +230,6 @@ class ProcessPaymentCapture implements ShouldQueue
             throw $e;
         }
     }
-
-
     private function getPayPalClient(): PayPalHttpClient
     {
         $environment = config('paypal.mode') === 'live'
