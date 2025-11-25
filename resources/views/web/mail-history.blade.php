@@ -31,7 +31,7 @@
 
                     <tr>
                         <th scope="col">SL No</th>
-                        <th scope="col">Site URL</th>
+                        <th scope="col">Site url</th>
                         <th scope="col">Subject</th>
                         <th scope="col">Message</th>
                         <th scope="col">Sent At</th>
