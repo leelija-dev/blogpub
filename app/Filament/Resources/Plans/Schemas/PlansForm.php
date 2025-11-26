@@ -6,6 +6,7 @@ use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Get;
 use Illuminate\Support\HtmlString;
 
 class PlansForm
@@ -79,10 +80,32 @@ class PlansForm
                     ->schema([
                         \Filament\Forms\Components\Hidden::make('id'),
                         \Filament\Forms\Components\TextInput::make('feature')
-                            ->label('Feature Name'),
+                            ->label('Feature Name')
+                            ->rules([
+                                'required',
+                                'string',
+                                'min:1',
+                                function ($state) {
+                                    if (is_string($state) && trim($state) === '') {
+                                        return 'Feature name cannot be empty';
+                                    }
+                                    return null;
+                                }
+                            ])
+                            ->validationMessages([
+                                'required' => 'Feature name is required',
+                                'string' => 'Feature must be a string',
+                                'min' => 'Feature name must be at least 1 character',
+                            ])
+                            ->dehydrateStateUsing(fn ($state) => is_string($state) ? trim($state) : $state),
                     ])
-                    ->createItemButtonLabel('Add More Feature')
+                    ->createItemButtonLabel('Add Feature')
                     ->columns(1)
+                    ->itemLabel(fn (array $state): ?string => $state['feature'] ?? 'New Feature')
+                    ->default([])
+                    ->reorderable(false)
+                    ->addAction(fn ($action) => $action->label('Add Feature'))
+                    ->reorderableWithButtons()
                   
 
             ]);
