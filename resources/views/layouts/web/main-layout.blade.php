@@ -121,6 +121,8 @@
                         }
                     });
 
+                    
+
                     document.querySelectorAll('form[id*="contact"], form.contact-form').forEach(form => {
                         form.setAttribute('novalidate', true);
 

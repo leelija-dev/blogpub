@@ -139,19 +139,51 @@
           <p class="lg:text-p-lgg sm:text-p-md text-p-sm text-gray-400">Subscribe to our Newsletter & Event Right Now to be Updated</p>
         </div>
       </div>
-      <form class="flex items-center smx:flex-row flex-col bg-white smx:rounded-full rounded-[10px] shadow-lg overflow-hidden  smx:pe-2 smx:p-0 p-4">
-        <!-- Email Input -->
+      <!-- <form class="flex items-center smx:flex-row flex-col bg-white smx:rounded-full rounded-[10px] shadow-lg overflow-hidden  smx:pe-2 smx:p-0 p-4">
+      
         <input
           type="email"
           placeholder="Enter Your Email"
           class="smx:px-6 px-4  smx:py-4 py-2  w-full text-gray-700 placeholder-gray-500 focus:outline-none focus:shadow-none smx:border-0 border-[1px] border-[#aeaeae] smx:rounded-none rounded-full smx:mb-0  mb-2 text-lg"
           style="box-shadow: none !important;" required />
 
-        <!-- Subscribe Button -->
+        
         <button
           type="submit"
           class="btn-primary min-w-[180px] px-2 py-2 rounded-full">
           Subscribe Now
+        </button>
+      </form> -->
+
+      <form 
+        method="POST"
+        action="{{ route('newsletter.subscribe') }}"
+        id="footer-newsletter-form"
+        class="flex items-center smx:flex-row flex-col bg-white smx:rounded-full rounded-[10px] shadow-lg overflow-hidden smx:pe-2 smx:p-0 p-4">
+        @csrf
+        <input type="hidden" name="source" value="footer">
+        <input type="hidden" name="redirect_to" value="{{ url()->current() }}">
+
+        <input
+          type="email"
+          name="email"
+          value="{{ old('email', request()->routeIs('newsletter.subscribe') ? old('email') : '') }}"
+          placeholder="Enter Your Email"
+          class="smx:px-6 px-4 smx:py-4 py-2 w-full text-gray-700 placeholder-gray-500 focus:outline-none focus:shadow-none smx:border-0 border-[1px] border-[#aeaeae] smx:rounded-none rounded-full smx:mb-0 mb-2 text-lg @error('email') border-red-500 @enderror"
+          style="box-shadow: none !important;"
+          required />
+
+        <button
+          type="submit"
+          class="btn-primary min-w-[180px] px-2 py-2 rounded-full disabled:opacity-50 disabled:cursor-not-allowed">
+          <span class="footer-newsletter-btn-text">Subscribe Now</span>
+          <span class="footer-newsletter-btn-loading hidden">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Subscribing...
+          </span>
         </button>
       </form>
     </div>

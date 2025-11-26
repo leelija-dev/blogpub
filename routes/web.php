@@ -83,6 +83,7 @@ use App\Http\Controllers\web\BlogController;
 use App\Http\Controllers\web\MailController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\web\OrderController;
+use App\Http\Controllers\web\NewsletterController;  
 use Illuminate\Support\Facades\Route;
 use App\Models\Plan;
 
@@ -173,7 +174,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
 });
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+// Add this near other public routes
+// Add this before the POST route
+Route::get('/newsletter/subscribe', function() {
+    return redirect()->route('contact');
+})->name('newsletter.subscribe.get');
 
+// Keep your existing POST route
+Route::post('/newsletter/subscribe', [NewsletterController::class, 'store'])->name('newsletter.subscribe');
 // Authenticated routes (require authentication only)
 Route::middleware('auth')->group(function () {
     // Email verification notice (requires authenticated user)
