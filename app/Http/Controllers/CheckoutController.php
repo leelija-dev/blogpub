@@ -16,6 +16,8 @@ use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
 use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use App\Jobs\ProcessPaymentCapture;
+use Illuminate\Support\Facades\Mail;
+
 
 class CheckoutController extends Controller
 {
@@ -246,6 +248,43 @@ class CheckoutController extends Controller
                         'transaction_id' => $paypalOrder->purchase_units[0]->payments->captures[0]->id,
                         'payment_details' => json_encode($paypalOrder)
                     ]);
+                    $plan = Plan::findOrFail($order->plan_id);
+                MailAvailable::create([
+                    'user_id' => $order->user_id,
+                    'order_id' => $order->id,
+                    'total_mail' => $plan->mail_available,
+                    'available_mail' => $plan->mail_available,
+                    'created_at' => now(),
+                ]);
+                
+                //order mail for user
+                $userEmail = $order->user->email;
+                $userSubject = "Your plan '{$plan->name}' is activated!";
+                $userBody = "Hello {$order->user->name},\n\n"
+                . "Your order for the plan '{$plan->name}' has been successfully completed.\n"
+              . "Transaction ID: {$order->transaction_id}\n"
+              . "Plan Duration: {$plan->duration} Day\n"
+              . "Mail Credits: {$plan->mail_available}\n\n"
+              . "Thank you for choosing " . config('app.name') . ".";
+
+            Mail::raw($userBody, function ($message) use ($userEmail, $userSubject) {
+                $message->to($userEmail)
+                        ->subject($userSubject);
+            });
+            //admin mail 
+            $adminEmail = config('mail.admin_email'); // set in .env
+            $adminSubject = "New Plan Ordered";
+            $adminBody = "User: {$order->user->name} ({$order->user->email})\n"
+                    . "Plan: {$plan->name}\n"
+                    . "Amount: {$order->amount} {$order->currency}\n"
+                    . "Transaction ID: {$order->transaction_id}\n"
+                    . "Paid at: " . now()->toDateTimeString();
+
+            Mail::raw($adminBody, function ($message) use ($adminEmail, $adminSubject) {
+                $message->to($adminEmail)
+                        ->subject($adminSubject);
+            });
+            //end mail
 
                     // Update user's plan
                     $user = Auth::user();

@@ -16,7 +16,7 @@ class MailAvailable extends Model
         'order_id',
         'total_mail',
         'available_mail',
-        'deleted_at',
+        
         
     ];
     public function user()
