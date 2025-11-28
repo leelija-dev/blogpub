@@ -89,11 +89,43 @@ class BlogController extends Controller
         return view('web.blog', compact('pagination', 'total_mail_available','isValidPlan','total_mail'));
     }
     public function viewMail($id)
-    {
+    {   
         $id = decrypt($id);
+        
+        $mail_available = MailAvailable::where('user_id', Auth::user()->id)->get();
+        
+        $isValidPlan = false;
+        $total_mail_available=0;
+        $total_mail=0;
+        if($mail_available){
+            foreach($mail_available as $mail_available){
+                
+            $plan_order_id= $mail_available->order_id;
+    
+            $plan_order=PlanOrder::where('id', $plan_order_id)->latest()->first();
+            
+            $plan_id=Plan::where('id', $plan_order->plan_id)->first() ;
+            // $plan_expire=$plan_id->duration >=$plan_order->created_at;
+            $expiryDate = Carbon::parse($plan_order->created_at)->addDays($plan_id->duration) ;
 
+            $isValid = Carbon::now()->lessThanOrEqualTo($expiryDate) ? Carbon::now()->lessThanOrEqualTo($expiryDate): false;
+            if(!$isValid){ // is expired 
+                
+                continue;    
+            }else{
+                $isValidPlan=true;
+                $total_mail_available += $mail_available->available_mail;
+                $total_mail +=$mail_available->total_mail;   
+            }
+                  
+            }
+            }else{
+                return view('web.client_Mail', compact('isValidPlan'));
+            }
+        
 
-        return view('web.client_Mail', compact('id'));
+        
+        return view('web.client_Mail', compact('id','isValidPlan','total_mail_available'));
     }
     public function sendMail(Request $request)
     {
@@ -176,15 +208,21 @@ class BlogController extends Controller
             'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png,txt|max:20480|nullable',
         ]);
 
-        $id = $request->id;
-        $response = Http::get(env('API_BASE_URL') . '/api/blogs');
+        $id = (int)$request->id;
+        print_r($id);
+      
+
+        // $response = Http::get(env('API_BASE_URL') . "/api/blogs/$id");
+       $response = Http::get(env('API_BASE_URL') . "/api/blogs/$id");
+
         if ($response->failed()) {
             return 'API Request Failed: ' . $response->status();
         }
 
-        $blogs = $response->json();
-        $blog = collect($blogs['data'])->firstWhere('blog_id', $id);
-
+        $blog = $response->json();
+       
+    // $blog = collect($blogs['data'])->where('blog_id', (int) $id);
+ 
         $email = $blog['created_by'];
         $subject = $request->input('subject');
         $messageBody = $request->input('message');
