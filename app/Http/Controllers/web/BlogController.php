@@ -90,10 +90,40 @@ class BlogController extends Controller
     }
     public function viewMail($id)
     {
+        $mail_available = MailAvailable::where('user_id', Auth::user()->id)->get();
+        
+        $isValidPlan = false;
+        $total_mail_available=0;
+        $total_mail=0;
+        if($mail_available){
+            foreach($mail_available as $mail_available){
+                
+            $plan_order_id= $mail_available->order_id;
+    
+            $plan_order=PlanOrder::where('id', $plan_order_id)->latest()->first();
+            
+            $plan_id=Plan::where('id', $plan_order->plan_id)->first() ;
+            // $plan_expire=$plan_id->duration >=$plan_order->created_at;
+            $expiryDate = Carbon::parse($plan_order->created_at)->addDays($plan_id->duration) ;
+
+            $isValid = Carbon::now()->lessThanOrEqualTo($expiryDate) ? Carbon::now()->lessThanOrEqualTo($expiryDate): false;
+            if(!$isValid){ // is expired 
+                
+                continue;    
+            }else{
+                $isValidPlan=true;
+                $total_mail_available += $mail_available->available_mail;
+                $total_mail +=$mail_available->total_mail;   
+            }
+                  
+            }
+            }else{
+                return view('web.client_Mail', compact('isValidPlan'));
+            }
         $id = decrypt($id);
 
-
-        return view('web.client_Mail', compact('id'));
+        
+        return view('web.client_Mail', compact('id','isValidPlan','total_mail_available'));
     }
     public function sendMail(Request $request)
     {

@@ -49,26 +49,16 @@
                             <td class="px-4 py-3">{{ $blog['ahrefs_traffic'] ?? '—' }}</td>
 
                             <td class="px-4 py-3" onclick="event.stopPropagation();">
-                                <button class="bg-primary hover:bg-purple-800 text-white text-xs font-semibold px-3 py-2 rounded-xl shadow-md transition"
-                                    data-url="{{ route('blog.viewMail', encrypt($blog['blog_id'])) }}">
+                            
+                                <a href="{{ route('blog.viewMail', encrypt($blog['blog_id'])) }}" ><button class="bg-primary hover:bg-purple-800 text-white text-xs font-semibold px-3 py-2 rounded-xl shadow-md transition"
+                        >
                                     Send Mail
-                                </button>
+                                </button></a>
                             </td>
                         </tr>
+                        
 
-                        <!-- Expandable Details -->
-                        <tr id="expandRow{{ $blog['blog_id'] }}" class="hidden bg-gray-50">
-                            <td colspan="9" class="p-4 text-left text-gray-600">
-                                <div class="space-y-1">
-                                    <div><span class="font-semibold">Website:</span> {{ $blog['website_name'] }}</div>
-                                    <div><span class="font-semibold">URL:</span> {{ $blog['site_url'] }}</div>
-                                    <div><span class="font-semibold">Niche:</span> {{ $blog['website_niche'] }}</div>
-                                    <div><span class="font-semibold">DA:</span> {{ $blog['moz_da'] }}</div>
-                                    <div><span class="font-semibold">DR:</span> {{ $blog['ahrefs_dr'] }}</div>
-                                    <div><span class="font-semibold">Traffic:</span> {{ $blog['ahrefs_traffic'] }}</div>
-                                </div>
-                            </td>
-                        </tr>
+                       
 
                     @endforeach
                 @else
@@ -80,8 +70,11 @@
                 @endif
             </tbody>
         </table>
-    </div>
-</div>
+        </div></div>
+        <div class="text-center"><a><button class="btn-primary">View more</button></a>
+                        </div>
+    
+
 
 </script>
 @endsection
