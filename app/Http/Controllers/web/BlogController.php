@@ -89,7 +89,9 @@ class BlogController extends Controller
         return view('web.blog', compact('pagination', 'total_mail_available','isValidPlan','total_mail'));
     }
     public function viewMail($id)
-    {
+    {   
+        $id = decrypt($id);
+        
         $mail_available = MailAvailable::where('user_id', Auth::user()->id)->get();
         
         $isValidPlan = false;
@@ -120,7 +122,7 @@ class BlogController extends Controller
             }else{
                 return view('web.client_Mail', compact('isValidPlan'));
             }
-        $id = decrypt($id);
+        
 
         
         return view('web.client_Mail', compact('id','isValidPlan','total_mail_available'));
@@ -206,15 +208,21 @@ class BlogController extends Controller
             'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png,txt|max:20480|nullable',
         ]);
 
-        $id = $request->id;
-        $response = Http::get(env('API_BASE_URL') . '/api/blogs');
+        $id = (int)$request->id;
+        print_r($id);
+      
+
+        // $response = Http::get(env('API_BASE_URL') . "/api/blogs/$id");
+       $response = Http::get(env('API_BASE_URL') . "/api/blogs/$id");
+
         if ($response->failed()) {
             return 'API Request Failed: ' . $response->status();
         }
 
-        $blogs = $response->json();
-        $blog = collect($blogs['data'])->firstWhere('blog_id', $id);
-
+        $blog = $response->json();
+       
+    // $blog = collect($blogs['data'])->where('blog_id', (int) $id);
+ 
         $email = $blog['created_by'];
         $subject = $request->input('subject');
         $messageBody = $request->input('message');
