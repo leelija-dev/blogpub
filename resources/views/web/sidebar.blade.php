@@ -14,13 +14,13 @@ $loggedUserId = Auth::id(); // or Auth::user()->id
          <li>
     <a href="{{ route('blog.index') }}"
        class="flex items-center px-2 py-1.5 rounded-base group 
-       {{ request()->routeIs('blog.index','blog.viewMail') 
+       {{ request()->routeIs('blog.index','blog.viewMail','find.niches') 
             ? 'text-blue-500 font-semibold'
             : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand'
        }}">
         
         <svg class="w-5 h-5 transition duration-75 
-            {{ request()->routeIs('blog.index','blog.viewMail') 
+            {{ request()->routeIs('blog.index','blog.viewMail','find.niches') 
                 ? 'text-blue-500'
                 : 'group-hover:text-fg-brand'
             }}"

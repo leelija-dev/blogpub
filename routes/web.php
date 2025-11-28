@@ -91,7 +91,7 @@ use App\Models\Plan;
 // ... existing routes ...
 
 
-Route::get('/',[HomeController::class,'index'])->name('home');
+
 
 Route::get('/about', function () {
     return view('web.about');
@@ -135,7 +135,7 @@ Route::middleware('guest')->group(function () {
         ->name('password.store');
 });
 
-
+Route::get('/',[HomeController::class,'index'])->name('home');
 Route::middleware(['web'])->group(function () {
     Route::post('/checkout/create-order', [CheckoutController::class, 'createOrder'])->name('checkout.create-order');
     Route::post('/checkout/capture-payment', [CheckoutController::class, 'capturePayment'])->name('checkout.capture-payment');
