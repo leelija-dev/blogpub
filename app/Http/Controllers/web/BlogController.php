@@ -271,76 +271,86 @@ class BlogController extends Controller
 }
 public function findNiches(Request $request)
 {
-    // Convert input to readable array (["Technology", "Health"])
+    // Selected Niches
     $niches = $request->niches;
+    
+    
     if (is_string($niches)) {
         $decoded = json_decode($niches, true);
         $niches = json_last_error() === JSON_ERROR_NONE ? $decoded : explode(',', $niches);
     }
     $niches = array_map('trim', (array)$niches);
-
-    // Store for login redirect
+    
+    // Store temporary in session
     session(['selected_niches' => $niches]);
 
-    // Login check
+    // Login required
     if (!Auth::check()) {
         return redirect()->route('login')
             ->with('error', 'Please login to see filtered blogs.');
     }
 
     // Check active plan
-    $mail_available = MailAvailable::where('user_id', Auth::id())->get();
-    $isValidPlan = $total_mail_available = $total_mail = 0;
+    $mailData = MailAvailable::where('user_id', Auth::id())->get();
+    $isValidPlan = false;
+    $total_mail_available = 0;
+    $total_mail = 0;
 
-    foreach ($mail_available as $item) {
-        $order = PlanOrder::find($item->order_id);
+    foreach ($mailData as $mail) {
+        $order = PlanOrder::find($mail->order_id);
+        if (!$order) continue;
+
         $plan = Plan::find($order->plan_id);
+        if (!$plan) continue;
 
-        $expiry = Carbon::parse($order->created_at)->addDays($plan->duration);
-        if (Carbon::now()->lte($expiry)) {
+        if (now()->lte($order->created_at->addDays($plan->duration))) {
             $isValidPlan = true;
-            $total_mail_available += $item->available_mail;
-            $total_mail += $item->total_mail;
+            $total_mail_available += $mail->available_mail;
+            $total_mail += $mail->total_mail;
         }
     }
 
-    if (!$isValidPlan) {
-        return redirect()->route('pricing')->with('error', 'Please purchase a plan first!');
-    }
+    // if (!$isValidPlan) {
+    //     return redirect()->route('pricing')->with('error', 'Please purchase a valid plan first!');
+    // }
 
-    // Call API
-    $response = Http::get(env('API_BASE_URL').'/api/blogs', [
+    // Build API Request
+    $response = Http::get(env('API_BASE_URL') . '/api/blogs/search', [
+        'niche' => implode(',', $niches),
+        'da_max' => $request->get('da_max'),
+        'da_min'=>$request->get('da_min'),
+        'dr_max' => $request->get('dr_max'),
+        'dr_min' => $request->get('dr_min'),
+        'traffic_min' => $request->get('traffic_min'),
+        'traffic_max'=>$request->get('traffic_max'),
         'page' => $request->get('page', 1),
-        'per_page' => 500 // fetch more so filter works
+        // 'per_page' => 20,
     ]);
-
+    // print_r($response);die;
+    
     if ($response->failed()) {
-        return back()->with('error', 'API Request Failed');
+        return back()->with('error', 'API Failed: ' . $response->status());
     }
 
-    $blogs = $response->json();
-
-    // Filter blogs by niche
-    $filteredBlogs = collect($blogs['data'])
-        ->filter(fn($blog) => in_array($blog['website_niche'], $niches))
-        ->values();
-
-    // Pagination (Manual for filtered results)
-    $currentPage = LengthAwarePaginator::resolveCurrentPage();
-    $perPage = 20;
-    $currentItems = $filteredBlogs->slice(($currentPage - 1) * $perPage, $perPage);
-
+    $apiBlogs = $response->json();
+    // Setup pagination from API response
     $pagination = new LengthAwarePaginator(
-        $currentItems,
-        $filteredBlogs->count(),
-        $perPage,
-        $currentPage,
+        $apiBlogs['data'],
+        $apiBlogs['total'] ?? count($apiBlogs['data']),
+        $apiBlogs['per_page'],
+        $apiBlogs['current_page'],
         ['path' => url()->current(), 'query' => $request->query()]
     );
-    // print_r($blogs);die;
-
-    return view('web.blog', compact('pagination', 'total_mail_available', 'total_mail', 'isValidPlan', 'niches'));
+    // print_r($pagination);die;
+    return view('web.blog', compact(
+        'pagination',
+        'total_mail_available',
+        'total_mail',
+        'isValidPlan',
+        'niches'
+    ));
 }
+
 
 
 

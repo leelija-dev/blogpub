@@ -150,14 +150,24 @@
                 {{-- <button class="mt-10 w-full bg-primary hover:bg-purple-800 text-white font-bold py-4 rounded-xl transition text-lg">
                     Find Now
                 </button> --}}
-                <form action="{{ route('find.niches') }}" method="GET">
-                <input type="hidden" id="niche-values" name="niches" />
-                <button
-                    type="submit"
-                    class="mt-10 w-full bg-primary hover:bg-purple-800 text-white font-bold py-4 rounded-xl transition text-lg">
-                    Find Now
-                </button>
-            </form>
+                {{-- <form  action="{{ route('find.niches') }}" method="GET" > --}}
+                    <form id="searchForm" action="{{ route('find.niches') }}" method="GET">
+
+                        <!-- Hidden Inputs for Niches + Filters -->
+                        <input type="hidden" id="niche-values" name="niches">
+                        <input type="hidden" id="da-min-input" name="da_min">
+                        <input type="hidden" id="da-max-input" name="da_max">
+                        <input type="hidden" id="dr-min-input" name="dr_min">
+                        <input type="hidden" id="dr-max-input" name="dr_max">
+                        <input type="hidden" id="traffic-min-input" name="traffic_min">
+                        <input type="hidden" id="traffic-max-input" name="traffic_max">
+
+                        <button type="submit"
+                            class="mt-10 w-full bg-primary hover:bg-purple-800 text-white font-bold py-4 rounded-xl transition text-lg">
+                            Find Now
+                        </button>
+                    </form>
+
             </div>
         </div>
     </div>
@@ -797,6 +807,21 @@ const hiddenInput = document.getElementById('niche-values'); // ADD in HTML
 let selectedIndex = -1;
 let selectedValues = [];  // store selected niches
 
+// function renderSelected() {
+//     selectedBox.innerHTML = '';
+//     selectedValues.forEach(niche => {
+//         const tag = document.createElement('div');
+//         tag.className = "flex items-center gap-2 text-white bg-primary px-3 py-1 rounded-full text-sm";
+//         tag.innerHTML = `
+//             ${niche}
+//             <span class="cursor-pointer px-1" onclick="removeNiche('${niche}')">×</span>
+//         `;
+//         selectedBox.appendChild(tag);
+//     });
+
+//     // store values in hidden field (JSON)
+//     hiddenInput.value = JSON.stringify(selectedValues);
+// }
 function renderSelected() {
     selectedBox.innerHTML = '';
     selectedValues.forEach(niche => {
@@ -809,8 +834,8 @@ function renderSelected() {
         selectedBox.appendChild(tag);
     });
 
-    // store values in hidden field (JSON)
-    hiddenInput.value = JSON.stringify(selectedValues);
+    // FIX: Convert to comma-separated format for API
+    hiddenInput.value = selectedValues.join(",");
 }
 
 function removeNiche(niche) {
@@ -922,6 +947,17 @@ function highlightItems(items) {
         item.classList.toggle('font-medium', i === selectedIndex);
     });
 }
+document.getElementById("searchForm").addEventListener("submit", function () {
+    document.getElementById("da-min-input").value = document.getElementById("da-min").value;
+    document.getElementById("da-max-input").value = document.getElementById("da-max").value;
+
+    document.getElementById("dr-min-input").value = document.getElementById("dr-min").value;
+    document.getElementById("dr-max-input").value = document.getElementById("dr-max").value;
+
+    document.getElementById("traffic-min-input").value = document.getElementById("tar-min").value;
+    document.getElementById("traffic-max-input").value = document.getElementById("tar-max").value;
+});
+
 
 </script>
 

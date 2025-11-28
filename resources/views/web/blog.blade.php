@@ -83,7 +83,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @if ($pagination)
+                                @if ($pagination->isNotEmpty())
                                     @foreach ($pagination as $blog)
                                         <!-- Main row -->
                                         <tr class="main-row cursor-pointer"
