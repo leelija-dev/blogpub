@@ -220,6 +220,7 @@ class BlogController extends Controller
         }
 
         $blog = $response->json();
+        print_r($blog); die;
        
     // $blog = collect($blogs['data'])->where('blog_id', (int) $id);
  
