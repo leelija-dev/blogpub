@@ -343,7 +343,7 @@ public function findNiches(Request $request)
         ['path' => url()->current(), 'query' => $request->query()]
     );
     // print_r($pagination);die;
-    return view('web.blog', compact(
+    return view('web.niche_blog', compact(
         'pagination',
         'total_mail_available',
         'total_mail',
