@@ -136,6 +136,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::get('/',[HomeController::class,'index'])->name('home');
+
 Route::middleware(['web'])->group(function () {
     Route::post('/checkout/create-order', [CheckoutController::class, 'createOrder'])->name('checkout.create-order');
     Route::post('/checkout/capture-payment', [CheckoutController::class, 'capturePayment'])->name('checkout.capture-payment');
