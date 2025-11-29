@@ -220,11 +220,11 @@ class BlogController extends Controller
         }
 
         $blog = $response->json();
-        print_r($blog); die;
+        // print_r($blog); die;
        
     // $blog = collect($blogs['data'])->where('blog_id', (int) $id);
  
-        $email = $blog['created_by'];
+        $email = $blog['updated_by'];
         $subject = $request->input('subject');
         $messageBody = $request->input('message');
         $messageForDB = strip_tags($messageBody);
