@@ -10,6 +10,8 @@ class HomeController extends Controller
 {
     public function index()
     {
+        $APP_NAME = env('APP_NAME');
+        dd($APP_NAME);
         $APPURL  = env('API_BASE_URL') .'/api/niches';
         dd($APPURL);
         $response = Http::get($APPURL);
