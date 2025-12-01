@@ -72,7 +72,7 @@
                             <thead class="table-success text-center">
                                 <tr>
                                     <th></th>
-                                    <th>ID</th>
+                                    <th>SL No</th>
                                     <th>Website Name</th>
                                     <th>Site Url</th>
                                     <th>Website Niche</th>
@@ -93,10 +93,17 @@
                                                 <input type="checkbox" class="selectSiteCheckbox" 
                                                     value="{{ $blog['blog_id'] }}" onclick="event.stopPropagation();" autocomplete="off">
                                             </td>
-                                            <td class="text-center">#{{ $blog['blog_id'] ?? '' }}</td>
+                                
+                                            @php $page=isset($_GET['page'])?$_GET['page'] : 1; @endphp
+                                            <td class="text-center">{{ $page * 10 - 9 + $loop->iteration - 1 }}</td>
                                             <td class="text-center">{{ $blog['website_name'] ?? '' }}</td>
                                             <td class="text-center">{{ $blog['site_url'] ?? '' }} </td>
-                                            <td class="text-center">{{ $blog['website_niche'] ?? '' }}</td>
+                                            <td class="text-center">
+                                                {{ is_array($blog['website_niche']) 
+                                                    ? implode(', ', $blog['website_niche']) 
+                                                    : implode(', ', json_decode($blog['website_niche'], true) ?? []  ) 
+                                                }}
+                                            </td>
                                             <td class="text-center">{{ $blog['moz_da'] ?? '' }}</td>
                                             <td class="text-center">{{ $blog['ahrefs_dr'] ?? '' }}</td>
                                             <td class="text-center">{{ $blog['ahrefs_traffic'] ?? '' }}</td>

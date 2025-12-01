@@ -41,7 +41,7 @@
 
                     <tr>
                         <th scope="col">SL No</th>
-                        <th scope="col">Plan ID</th>
+                        <th scope="col">Plan Name</th>
                         <th scope="col">Amount</th>
                         <th scope="col">Payment Status</th>
                         <th scope="col">Total Mail</th>
@@ -67,7 +67,7 @@
                                 @endif
                                 @php $page=isset($_GET['page'])?$_GET['page'] : 1; @endphp
                                 <td class="text-center">{{ $page * 10 - 9 + $loop->iteration - 1 }}</td>
-                                <td class="text-center">{{ $order->plan_id }}</td>
+                                <td class="text-center">{{ $order->plan->name }}</td>
                                 <td class="text-center " >
                                     {{$order->amount}}
                                 </td>

@@ -61,7 +61,8 @@
                                 @else
                                 <tr class="table-secondary">
                             @endif
-                            <td class="text-center">{{ $loop->iteration }}</td>
+                            @php $page=isset($_GET['page'])?$_GET['page'] : 1; @endphp
+                            <td class="text-center">{{ $page * 10 - 9 + $loop->iteration - 1 }}</td>
                             <td class="text-center">{{ $bill->id ?? '' }}</td>
                             <td class="text-center">{{ $bill->mailAvailable->total_mail ?? 0}}</td>
 
