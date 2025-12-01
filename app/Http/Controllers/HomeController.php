@@ -91,19 +91,22 @@ class HomeController extends Controller
         return redirect()->route('checkout.success')->with('trial_completed', true);
     }
 
+    
     public function storeIntentPlan(Request $request)
-    {
-        $request->validate([
-            'plan' => 'required|integer|exists:plans,id'
-        ]);
+{
+    $request->validate([
+        'plan' => 'required|integer|exists:plans,id'
+    ]);
 
-        // Store intended plan in session
-        session(['intent_plan' => $request->input('plan')]);
+    // Store plan in session
+    session(['intent_plan' => $request->input('plan')]);
 
-        // Redirect to login with redirect back to checkout (no plan in URL)
-        return redirect()->route('login', [
-            'redirect' => route('checkout')
-        ]);
-    }
+    // Force Laravel to remember /checkout as intended URL
+    redirect()->setIntendedUrl(route('checkout'));
+
+    // Then send to login
+    return redirect()->route('login');
+}
+
 }
 
