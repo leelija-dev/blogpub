@@ -17,11 +17,16 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Carbon\Carbon;
 class BlogController extends Controller
 {
-
+    protected $APIBASEURL;
+    public function __construct()
+    {
+        $this->APIBASEURL = config('app.api_url');
+    }
     public function index(Request $request)
     {
-        // $response = Http::get(env('API_BASE_URL') . '/api/blogs');
-        $response = Http::get(env('API_BASE_URL') . '/api/blogs', [
+        $APPURL  = $this->APIBASEURL .'/api/blogs';
+        
+        $response = Http::get($APPURL, [
         'page' => $request->get('page', 1) // pass current page to API
         ]);
         
@@ -134,7 +139,8 @@ class BlogController extends Controller
             'message' => 'required|string',
             'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png,txt|max:20480|nullable',
         ]);
-        $response = Http::get(env('API_BASE_URL') . '/api/blogs');
+        $APIURL  = $this->APIBASEURL .'/api/blogs';
+        $response = Http::get($APIURL);
 
         if ($response->failed()) {
             return 'API Request Failed: ' . $response->status();
@@ -212,8 +218,7 @@ class BlogController extends Controller
         print_r($id);
       
 
-        // $response = Http::get(env('API_BASE_URL') . "/api/blogs/$id");
-       $response = Http::get(env('API_BASE_URL') . "/api/blogs/$id");
+       $response = Http::get($this->APIBASEURL . "/api/blogs/$id");
 
         if ($response->failed()) {
             return 'API Request Failed: ' . $response->status();
@@ -326,7 +331,7 @@ public function findNiches(Request $request)
 
     
     // Build API Request
-    $response = Http::get(env('API_BASE_URL') . '/api/blogs/search', [
+    $response = Http::get($this->APIBASEURL . '/api/blogs/search', [
         'niche' => implode(',', $niches),
         'da_max' => $request->get('da_max'),
         'da_min'=>$request->get('da_min'),
