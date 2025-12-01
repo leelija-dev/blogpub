@@ -41,22 +41,22 @@ class OrdersTable
                 TextColumn::make('status')
                     ->searchable()
                     ->badge()
-                 ->formatStateUsing(fn ($state) => match (strtolower($state)) {
-                    'completed' => 'Completed',
-                    'pending' => 'Pending',
-                    'failed' => 'Failed',
-                    'incomplete' => 'Incomplete',
-                    'processing' => 'Processing',
-                    default => ucfirst($state ?? ''),
-                })
-                ->color(fn ($state) => match (strtolower($state)) {
-                    'completed' => 'success',
-                    'pending' => 'warning',
-                    'failed' => 'danger',
-                    'incomplete' => 'danger',
-                    'processing' => 'warning',
-                    default => 'gray',
-                }),
+                    ->formatStateUsing(fn ($state) => match (strtolower($state)) {
+                        'completed' => 'Completed',
+                        'pending' => 'Pending',
+                        'failed' => 'Failed',
+                        'incomplete' => 'Incomplete',
+                        'processing' => 'Processing',
+                        default => ucfirst($state ?? ''),
+                    })
+                    ->color(fn ($state) => match (strtolower($state)) {
+                        'completed' => 'success',
+                        'pending' => 'warning',
+                        'failed' => 'danger',
+                        'incomplete' => 'danger',
+                        'processing' => 'warning',
+                        default => 'gray',
+                    }),
                 TextColumn::make('created_at')
                     ->dateTime()
             ])
