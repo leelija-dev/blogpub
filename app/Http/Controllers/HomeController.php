@@ -10,10 +10,8 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $APP_NAME = config('app.name', 'Laravel');
-        dd($APP_NAME);
-        $APPURL  = env('API_BASE_URL') .'/api/niches';
-        dd($APPURL);
+        $APPURL  = config('app.api_url') .'/api/niches';
+        
         $response = Http::get($APPURL);
         if ($response->successful()) {
             $niches_data = $response->json() ?? [];
