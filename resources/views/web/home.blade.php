@@ -33,9 +33,6 @@
             <div class="flex flex-col sm:flex-row gap-4 lg:justify-start sm:justify-center items-center">
                 <!-- Hero CTA -->
                 <button type="button" id="see-pricing" class="btn-primary"> See Pricing </button>
-                <a href="/contact"><button class="btn-secondary">
-                        Contact Us
-                    </button></a>
                 @auth
                 <form method="POST" action="{{ route('trial.start') }}">
                     @csrf
