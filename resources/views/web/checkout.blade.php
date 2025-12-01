@@ -87,7 +87,7 @@
                                     <option value="CA">California</option>
                                     <option value="NY">New York</option>
                                 </select>
-                                <label for="state">State/Province</label>
+                                <label for="state">Country</label>
                             </div>
 
                             <div class="floating-label-group">
@@ -812,14 +812,9 @@
                       <p class="package-name font-bold text-gray-800 text-lg truncate ">
                         ${pkg.name}
                       </p>
-                      <p class="text-sm text-gray-600 mt-1">
-                        <span class="font-medium">Package ID:</span>
-                        <span class="font-mono bg-gray-200 px-2 py-1 rounded text-xs package-id ml-1">
-                          ${pkg.id.toUpperCase()}
-                        </span>
-                      </p>
+                    
                       <p class="text-xs text-gray-500 mt-1">
-                        $${pkg.price.toLocaleString()}/month • Billed Annually
+                        $${pkg.price.toLocaleString()}
                       </p>
                     </div>
                   </div>
