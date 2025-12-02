@@ -1,17 +1,33 @@
 @php
-    use Illuminate\Support\Facades\Auth;
-    $loggedUserId = Auth::id();
-    // or Auth::user()->id
+use Illuminate\Support\Facades\Auth;
+$loggedUserId = Auth::id();
+// or Auth::user()->id
 @endphp
 <x-app-layout>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- include summernote css/js -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
+        /* Fix for Summernote Bootstrap 5 compatibility */
+        .note-editor .dropdown-toggle::after {
+            display: none !important;
+        }
+
+        .note-editor .dropdown-menu {
+            z-index: 1050 !important;
+        }
+
+        /* Ensure Summernote editor is visible */
+        .note-editor.note-frame {
+            display: block !important;
+            visibility: visible !important;
+        }
+
         /* Remove underline from all links */
         a {
             text-decoration: none !important;
@@ -21,172 +37,280 @@
         a:hover {
             text-decoration: none !important;
         }
-        
+
         /* Style for selected rows */
         .selected-row {
             background-color: #e8f4fd !important;
         }
+
+        /* Summernote custom styles */
+        .note-editor.note-frame {
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.375rem !important;
+        }
+
+        .note-editor.note-frame .note-toolbar {
+            background-color: #f9fafb !important;
+            border-bottom: 1px solid #d1d5db !important;
+        }
+
+        /* Pagination styling */
+        .pagination {
+            display: flex;
+            list-style: none;
+            gap: 0.5rem;
+        }
+
+        .page-link {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            color: #374151;
+            transition: all 0.2s;
+        }
+
+        .page-link:hover {
+            background-color: #f3f4f6;
+        }
+
+        .page-item.active .page-link {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .page-item.disabled .page-link {
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        /* File list styles */
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem;
+            background-color: #f9fafb;
+            border-radius: 0.375rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .file-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        .remove-file-btn {
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 1.25rem;
+            line-height: 1;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .remove-file-btn:hover {
+            background-color: #fee2e2;
+        }
+
+        #pagina-wrapper .flex-fill {
+            display: none !important;
+        }
+
+        #pagina-wrapper nav {
+            width: 100% !important;
+        }
+
+        #pagina-wrapper nav .d-none {
+            display: flex !important;
+            justify-content: space-between !important;
+            width: 100% !important;
+            flex-direction: row !important;
+        }
+
+        @media screen and (max-width: 500px) {
+            #pagina-wrapper nav .d-none {
+                flex-direction: column !important;
+                gap: 1rem;
+                align-items: center !important;
+            }
+
+        }
     </style>
-    <div class="d-flex min-vh-100" style="background: white;">
-        <!-- Sidebar -->
-        <div class="w-64 border-end p-4 bg-light">
-            @include('web.sidebar')
-        </div>
 
+    <div class="min-h-screen bg-white">
         <!-- Main content -->
-
-        <div class="flex-grow-1 p-4">
+        <div class="p-4 md:p-6">
             @if ($isValidPlan)
-                @if ($total_mail_available)
-
-                    <div class="col-md-12">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="col-md-6 d-flex justify-content-start mb-3" style="width:500px;">
-                                    <input type="text" class="form-control" id="searchInput" placeholder="Search">
-                                    <button class="btn btn-primary ms-3" id="searchBtn">Search</button>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="d-flex justify-content-end mb-3">
-                                    <span class="fw-bold me-2" style="font-size:20px">Selected site:</span>
-                                    <span id="selectedCount" style="font-size:20px">0</span>
-                                    <button class="btn btn-primary ms-3" id="openMailModalBtn"
-                                        data-available-mail="{{ $total_mail_available ?? 0 }}"
-                                        data-total-mail="{{ $total_mail ?? 0 }}">
-                                        Send Mail
-                                    </button>
-                                    <button class="btn btn-outline-danger ms-2" id="clearSelectionBtn">
-                                        Clear All
-                                    </button>
-
-                                </div>
-                            </div>
-                        </div>
+            @if ($total_mail_available)
+            <div class="space-y-4 md:space-y-0 md:flex md:items-center md:justify-between">
+                <!-- Search Section -->
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <input type="text"
+                            id="searchInput"
+                            placeholder="Search"
+                            class="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
                     </div>
-
-
-                    <table class="table  table-hover bg-white">
-                        <div class="table-responsive">
-
-                            <thead class="table-success text-center">
-                                <tr>
-                                    <th></th>
-                                    <th>SL No</th>
-                                    <th>Website Name</th>
-                                    <th>Site Url</th>
-                                    <th>Website Niche</th>
-                                    <th>DA</th>
-                                    <th>DR</th>
-                                    <th>Ahrefs Traffic</th>
-                                    <th>Mail</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if ($pagination->isNotEmpty())
-                                    @foreach ($pagination as $blog)
-                                        <!-- Main row -->
-                                        <tr class="main-row cursor-pointer"
-                                            data-target="#expandRow{{ $blog['blog_id'] }}"
-                                            data-blog-id="{{ $blog['blog_id'] }}">
-                                            <td class="text-center" onclick="event.stopPropagation();">
-                                                <input type="checkbox" class="selectSiteCheckbox" 
-                                                    value="{{ $blog['blog_id'] }}" onclick="event.stopPropagation();" autocomplete="off">
-                                            </td>
-                                
-                                            @php $page=isset($_GET['page'])?$_GET['page'] : 1; @endphp
-                                            <td class="text-center">{{ $page * 10 - 9 + $loop->iteration - 1 }}</td>
-                                            <td class="text-center">{{ $blog['website_name'] ?? '' }}</td>
-                                            <td class="text-center">{{ $blog['site_url'] ?? '' }} </td>
-                                            <td class="text-center">
-                                                {{ is_array($blog['website_niche']) 
-                                                    ? implode(', ', $blog['website_niche']) 
-                                                    : implode(', ', json_decode($blog['website_niche'], true) ?? []  )
-                                                }}
-                                            </td>
-                                            <td class="text-center">{{ $blog['moz_da'] ?? '' }}</td>
-                                            <td class="text-center">{{ $blog['ahrefs_dr'] ?? '' }}</td>
-                                            <td class="text-center">{{ $blog['ahrefs_traffic'] ?? '' }}</td>
-                                            <td class="text-center" onclick="event.stopPropagation();">
-                                                <button class="btn btn-primary btn-sm rowMailBtn"
-                                                    data-available-mail="{{ $total_mail_available ?? 0 }}"
-                                                    data-total-mail="{{ $total_mail ?? 0 }}" id="openMailModalBtn"
-                                                    data-url="{{ route('blog.viewMail', encrypt($blog['blog_id'])) }}">
-                                                    Send Mail
-                                                </button>
-                                            </td>
-                                        </tr>
-
-                                        <!-- Expandable row (hidden by default) -->
-                                        <tr class="expandable-row" id="expandRow{{ $blog['blog_id'] }}"
-                                            style="display:none;">
-                                            <td colspan="9" class="bg-light">
-                                                <div>
-                                                    <b>Website Name:</b> {{ $blog['website_name'] ?? '' }} <br>
-                                                    <b>Site URL:</b> {{ $blog['site_url'] ?? '' }} <br>
-                                                    <b>Website Niche:</b>  {{ is_array($blog['website_niche']) 
-                                                    ? implode(', ', $blog['website_niche']) 
-                                                    : implode(', ', json_decode($blog['website_niche'], true) ?? []  ) 
-                                                }} <br>
-                                                    <b>Moz DA:</b> {{ $blog['moz_da'] ?? '' }} <br>
-                                                    <b>DR:</b> {{ $blog['ahrefs_dr'] ?? '' }} <br>
-                                                    <b>Ahrefs Traffic:</b> {{ $blog['ahrefs_traffic'] ?? '' }}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @else
-                                    <tr>
-                                        <td colspan="9" class="text-center" id="noResult">No blog found.</td>
-                                    </tr>
-                                @endif
-                                <tr id="noResultsRow" style="display: none;">
-                                    <td colspan="9" class="text-center  fw-bold">
-                                        No blog found.
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </div>
-                    </table>
-                    @if (isset($pagination))
-                        <div class="d-flex justify-content-center mt-3">
-                            {{ $pagination->links('pagination::bootstrap-5') }}
-                        </div>
-                    @endif
-                @else
-                <div
-                    style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 20vh; text-align: center; gap: 5x;background:rgb(245, 243, 243);">
-                    <p>
-                    <h4>You have already used all mail services!</h4>
-                    </p>
-                    <a href="/#pricing"
-                            id="nav-pricing"
-                            class="pricing-link text-gray-700 hover:text-secondary font-medium transition-all duration-300 ease-in-out">
-                                <button class="btn btn-primary" style="width: 100px; height: 40px;">Buy</button>
-                    </a>
+                    <button id="searchBtn"
+                        class="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition">
+                        Search
+                    </button>
                 </div>
-                @endif
-            @else
-                <div
-                    style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 20vh; text-align: center; gap: 5x;background:rgb(245, 243, 243);">
-                    <p>
-                    <h4>You have not purchased any plan.</h4>
-                    </p>
-                    <a href="/#pricing"
-                            id="nav-pricing"
-                            class="pricing-link text-gray-700 hover:text-secondary font-medium transition-all duration-300 ease-in-out">
-                                <button class="btn btn-primary" style="width: 100px; height: 40px;">Buy</button>
-                            </a>
+
+                <!-- Selection Controls -->
+                <div class="flex items-center space-x-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="font-bold text-lg text-gray-700">Selected site:</span>
+                        <span id="selectedCount" class="text-lg font-semibold text-blue-600">0</span>
+                    </div>
+                    <button id="openMailModalBtn"
+                        data-available-mail="{{ $total_mail_available ?? 0 }}"
+                        data-total-mail="{{ $total_mail ?? 0 }}"
+                        class="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition">
+                        Send Mail
+                    </button>
+                    <button id="clearSelectionBtn"
+                        class="px-4 py-2 border border-red-600 text-red-600 font-medium rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition">
+                        Clear All
+                    </button>
                 </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="mt-6 overflow-x-auto bg-white rounded-lg shadow border border-gray-200">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-green-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"></th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Website Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Site Url</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Website Niche</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">DA</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">DR</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Ahrefs Traffic</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Mail</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @if ($pagination->isNotEmpty())
+                        @foreach ($pagination as $blog)
+                        <!-- Main row -->
+                        <tr class="main-row hover:bg-gray-50 cursor-pointer transition"
+                            data-target="#expandRow{{ $blog['blog_id'] }}"
+                            data-blog-id="{{ $blog['blog_id'] }}">
+                            <td class="px-6 py-4 whitespace-nowrap text-center" onclick="event.stopPropagation();">
+                                <input type="checkbox"
+                                    class="selectSiteCheckbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                    value="{{ $blog['blog_id'] }}"
+                                    onclick="event.stopPropagation();"
+                                    autocomplete="off">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
+                                #{{ $blog['blog_id'] ?? '' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
+                                {{ $blog['website_name'] ?? '' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
+                                {{ $blog['site_url'] ?? '' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
+                                {{ $blog['website_niche'] ?? '' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
+                                {{ $blog['moz_da'] ?? '' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
+                                {{ $blog['ahrefs_dr'] ?? '' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
+                                {{ $blog['ahrefs_traffic'] ?? '' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm" onclick="event.stopPropagation();">
+                                <button class="rowMailBtn px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition"
+                                    data-available-mail="{{ $total_mail_available ?? 0 }}"
+                                    data-total-mail="{{ $total_mail ?? 0 }}"
+                                    data-url="{{ route('blog.viewMail', encrypt($blog['blog_id'])) }}">
+                                    Send Mail
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Expandable row (hidden by default) -->
+                        <tr class="expandable-row bg-gray-50"
+                            id="expandRow{{ $blog['blog_id'] }}"
+                            style="display:none;">
+                            <td colspan="9" class="px-6 py-4">
+                                <div class="space-y-1">
+                                    <div><b>Website Name:</b> {{ $blog['website_name'] ?? '—' }}</div>
+                                    <div><b>Site URL:</b> {{ $blog['site_url'] ?? '—' }}</div>
+                                    <div><b>Website Niche:</b> {{ $blog['website_niche'] ?? '—' }}</div>
+                                    <div><b>Moz DA:</b> {{ $blog['moz_da'] ?? '—' }}</div>
+                                    <div><b>DR:</b> {{ $blog['ahrefs_dr'] ?? '—' }}</div>
+                                    <div><b>Ahrefs Traffic:</b> {{ $blog['ahrefs_traffic'] ?? '—' }}</div>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                        @else
+                        <tr>
+                            <td colspan="9" class="px-6 py-8 text-center text-gray-500">
+                                No blog found.
+                            </td>
+                        </tr>
+                        @endif
+                        <tr id="noResultsRow" style="display: none;">
+                            <td colspan="9" class="px-6 py-8 text-center text-gray-700 font-bold">
+                                No blog found.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            @if (isset($pagination))
+            <div id="pagina-wrapper" class="mt-6 flex justify-center">
+                {{ $pagination->links('pagination::bootstrap-5') }}
+            </div>
             @endif
-
+            @else
+            <div class="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg">
+                <h4 class="text-xl font-semibold text-gray-700 mb-4">
+                    You have already used all mail services!
+                </h4>
+                <a href="/#pricing"
+                    class="pricing-link text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300">
+                    <button class="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition">
+                        Buy
+                    </button>
+                </a>
+            </div>
+            @endif
+            @else
+            <div class="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg">
+                <h4 class="text-xl font-semibold text-gray-700 mb-4">
+                    You have not purchased any plan.
+                </h4>
+                <a href="/#pricing"
+                    class="pricing-link text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300">
+                    <button class="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition">
+                        Buy
+                    </button>
+                </a>
+            </div>
+            @endif
         </div>
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="sendMailModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
+    <div id="sendMailModal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+            <!-- Modal panel -->
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
                 <form id="sendMailForm" class="mail-validation" method="POST" action="{{ route('blog.sendMail') }}"
                     enctype="multipart/form-data" novalidate>
                     @csrf
@@ -195,40 +319,85 @@
                     <input type="hidden" name="availableMail" id="availableMail"
                         value="{{ $total_mail_available->available_mail ?? 0 }}">
 
-                    <div class="modal-header">
-                        <h5 class="modal-title">Send Mail</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                                    Send Mail
+                                </h3>
+                                <div class="mt-2">
+                                    <p class="text-sm text-gray-500 mb-4">
+                                        Selected Site: <span id="modalSelectedCount" class="font-semibold">0</span>
+                                    </p>
 
-                    <div class="modal-body">
-                        <p>Selected Site: <span id="modalSelectedCount">0</span></p>
-                        <p class="text-muted">From: {{ env('MAIL_USERNAME') }}</p>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                                Subject
+                                            </label>
+                                            <input type="text"
+                                                name="subject"
+                                                placeholder="Enter subject"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                                required>
+                                            <div class="mt-1 text-sm text-red-600 hidden">Subject can not be blank!</div>
+                                            @error('subject')
+                                            <div class="mt-1 text-sm text-red-600">{{ $message }}</div>
+                                            @enderror
+                                        </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Subject</label>
-                            <input type="text" class="form-control" name="subject" placeholder="Enter subject"
-                                required>
-                            <div class="invalid-feedback">Subject can not be blank!</div>
-                            @error('subject')
-                                {{ $message }}
-                            @enderror
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                                Message
+                                            </label>
+                                            <textarea id="summernote"
+                                                name="message"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                                required></textarea>
+                                            <div class="mt-1 text-sm text-red-600 hidden">Message can not be blank!</div>
+                                            @error('message')
+                                            <div class="mt-1 text-sm text-red-600">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                                Attachments
+                                            </label>
+                                            <div class="flex items-center space-x-2">
+                                                <input type="file"
+                                                    name="attachments[]"
+                                                    id="attachments"
+                                                    multiple
+                                                    class="block w-full text-sm text-gray-500
+                                                              file:mr-4 file:py-2 file:px-4
+                                                              file:rounded-md file:border-0
+                                                              file:text-sm file:font-medium
+                                                              file:bg-blue-50 file:text-blue-700
+                                                              hover:file:bg-blue-100">
+                                                <button type="button"
+                                                    id="clearAttachmentsBtn"
+                                                    class="px-3 py-2 text-sm text-red-600 hover:text-red-800 hidden">
+                                                    Clear All
+                                                </button>
+                                            </div>
+                                            <div id="fileList" class="mt-2 space-y-1"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Message</label>
-                            <textarea id="summernote" name="message" required></textarea>
-                            <input type="file" name="attachments[]" id="attachments" multiple
-                                style="display:none">
-                            <div class="invalid-feedback">Message can not be blank!</div>
-                            @error('message')
-                                {{ $message }}
-                            @enderror
-                        </div>
                     </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Send Mail</button>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button type="submit"
+                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm transition">
+                            Send Mail
+                        </button>
+                        <button type="button"
+                            id="closeModalBtn"
+                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition">
+                            Cancel
+                        </button>
                     </div>
                 </form>
             </div>
@@ -261,7 +430,7 @@
         // Function to restore checkbox states on page load
         function restoreCheckboxStates() {
             const selectedBlogs = getSelectedBlogs();
-            
+
             // Check checkboxes for selected blogs on current page
             $('.selectSiteCheckbox').each(function() {
                 const blogId = $(this).val();
@@ -273,7 +442,7 @@
                     $(this).closest('tr').removeClass('selected-row');
                 }
             });
-            
+
             updateSelectedCount();
         }
 
@@ -316,7 +485,7 @@
                     $('.selectSiteCheckbox').prop('checked', false);
                     $('.main-row').removeClass('selected-row');
                     updateSelectedCount();
-                    
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Cleared!',
@@ -330,7 +499,113 @@
             });
         }
 
+        // Summernote state management
+        let summernoteInitialized = false;
+
+        function initializeSummernote() {
+            console.log('Initializing Summernote...');
+
+            // Remove any existing Summernote instance first
+            if ($('#summernote').summernote('instance')) {
+                $('#summernote').summernote('destroy');
+            }
+
+            // Also remove any existing .note-editor divs
+            $('.note-editor').remove();
+
+            // Show the textarea
+            $('#summernote').show().css('display', 'block');
+
+            // Initialize Summernote
+            $('#summernote').summernote({
+                placeholder: 'Write your message...',
+                height: 200,
+                focus: true,
+                dialogsInBody: true, // Important for modals
+                toolbar: [
+                    ['style', ['bold', 'italic', 'underline']],
+                    ['font', ['fontname', 'fontsize']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'picture', 'video']]
+                ],
+                callbacks: {
+                    onInit: function() {
+                        console.log('Summernote initialized successfully');
+                        summernoteInitialized = true;
+
+                        // Fix for Bootstrap 5 compatibility
+                        $('.note-editor .dropdown-toggle').attr('data-bs-toggle', 'dropdown');
+                        $('.note-editor .dropdown-toggle').removeAttr('data-toggle');
+                    },
+                    onBlur: function() {
+                        // Update the hidden textarea value
+                        $('#summernote').val($('#summernote').summernote('code'));
+                    }
+                }
+            });
+        }
+
+        function destroySummernote() {
+            console.log('Destroying Summernote...');
+            if ($('#summernote').summernote('instance')) {
+                $('#summernote').summernote('destroy');
+            }
+            summernoteInitialized = false;
+            // Make sure textarea is visible after destroying
+            $('#summernote').show().css('display', 'block');
+        }
+
+        // Modal functions
+        function openModal() {
+            console.log('Opening modal...');
+
+            // Show the modal
+            const modal = document.getElementById('sendMailModal');
+            modal.classList.remove('hidden');
+
+            // Reset form
+            $('#sendMailForm')[0].reset();
+            selectedFiles = [];
+            $('#fileList').empty();
+            $('#clearAttachmentsBtn').addClass('hidden');
+
+            // Initialize Summernote after a brief delay to ensure DOM is ready
+            setTimeout(() => {
+                initializeSummernote();
+            }, 100);
+        }
+
+        function closeModal() {
+            console.log('Closing modal...');
+
+            // Hide the modal
+            const modal = document.getElementById('sendMailModal');
+            modal.classList.add('hidden');
+
+            // Destroy Summernote
+            destroySummernote();
+        }
+
+        // File attachment handling
+        let selectedFiles = [];
+
+        function updateFileInput() {
+            const input = document.getElementById("attachments");
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => {
+                dataTransfer.items.add(file);
+            });
+            input.files = dataTransfer.files;
+        }
+
         $(document).ready(function() {
+            console.log('Document ready...');
+
+            // Initial debug check
+            console.log('Summernote instances on load:', $('.note-editor').length);
+            console.log('Textarea visible on load?', $('#summernote').is(':visible'));
+
             // Restore checkbox states when page loads
             restoreCheckboxStates();
 
@@ -343,6 +618,7 @@
             // Open modal button
             $('#openMailModalBtn').click(function(event) {
                 event.preventDefault();
+                console.log('Open modal button clicked');
 
                 const availableMail = $(this).data('available-mail');
                 const total_mail = $(this).data('total-mail');
@@ -402,7 +678,17 @@
 
                 // Set selected IDs in hidden field and open modal
                 $('#selectedIdsInput').val(JSON.stringify(selectedBlogs));
-                new bootstrap.Modal(document.getElementById('sendMailModal')).show();
+                openModal();
+            });
+
+            // Close modal button
+            $('#closeModalBtn').click(closeModal);
+
+            // Close modal when clicking outside
+            document.getElementById('sendMailModal').addEventListener('click', function(e) {
+                if (e.target.id === 'sendMailModal') {
+                    closeModal();
+                }
             });
 
             // Individual row Send Mail button
@@ -442,77 +728,49 @@
                 }
             });
 
-            // Summernote initialization
-            $('#summernote').summernote({
-                placeholder: 'Write your message...',
-                height: 200,
-                toolbar: [
-                    ['style', ['bold', 'italic', 'underline']],
-                    ['font', ['fontname', 'fontsize']],
-                    ['color', ['color']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['insert', ['link', 'picture', 'video', 'fileUpload']]
-                ],
-                buttons: {
-                    fileUpload: function(context) {
-                        var ui = $.summernote.ui;
-                        var button = ui.button({
-                            contents: '<i class="fa fa-paperclip"/> File',
-                            tooltip: 'Attach File',
-                            click: function() {
-                                $('#attachments').click();
-                            }
-                        });
-                        return button.render();
-                    }
-                }
-            });
-
             // File attachment handling
-            let selectedFiles = [];
             $('#attachments').on('change', function() {
-                let files = this.files;
-                for (let i = 0; i < files.length; i++) {
-                    let file = files[i];
+                let files = Array.from(this.files);
+
+                files.forEach(file => {
                     const fileExists = selectedFiles.some(f => f.name === file.name && f.size === file.size);
                     if (!fileExists) {
                         selectedFiles.push(file);
-                        // Create file badge in Summernote
-                        var container = document.createElement('span');
-                        container.style.cssText = 'display:inline-block;margin:2px 5px;padding:2px 5px;border:1px solid #ccc;border-radius:4px;background:#f1f1f1;';
-                        container.setAttribute('contenteditable', 'false');
 
-                        var fileName = document.createElement('span');
-                        fileName.innerText = file.name;
-                        fileName.style.marginRight = '5px';
-
-                        var removeBtn = document.createElement('span');
-                        removeBtn.innerHTML = '&times;';
-                        removeBtn.style.color = 'red';
-                        removeBtn.style.cursor = 'pointer';
-                        removeBtn.style.marginLeft = '5px';
-                        removeBtn.addEventListener('click', function() {
-                            selectedFiles = selectedFiles.filter(f => f !== file);
-                            container.remove();
-                            updateFileInput();
-                        });
-
-                        container.appendChild(fileName);
-                        container.appendChild(removeBtn);
-                        $('#summernote').next('.note-editor').find('.note-editable').append(container).append(' ');
+                        // Add to file list display
+                        $('#fileList').append(`
+                        <div class="file-item" data-file-name="${file.name}">
+                            <span class="text-sm text-gray-700">${file.name} (${(file.size / 1024).toFixed(1)} KB)</span>
+                            <button type="button" 
+                                    class="remove-file-btn"
+                                    data-file-name="${file.name}">
+                                &times;
+                            </button>
+                        </div>
+                    `);
                     }
-                }
+                });
+
                 updateFileInput();
+                $('#clearAttachmentsBtn').toggleClass('hidden', selectedFiles.length === 0);
             });
 
-            function updateFileInput() {
-                const input = document.getElementById("attachments");
-                const dataTransfer = new DataTransfer();
-                selectedFiles.forEach(file => {
-                    dataTransfer.items.add(file);
-                });
-                input.files = dataTransfer.files;
-            }
+            // Remove individual file
+            $(document).on('click', '.remove-file-btn', function() {
+                const fileName = $(this).data('file-name');
+                selectedFiles = selectedFiles.filter(file => file.name !== fileName);
+                $(`[data-file-name="${fileName}"]`).remove();
+                updateFileInput();
+                $('#clearAttachmentsBtn').toggleClass('hidden', selectedFiles.length === 0);
+            });
+
+            // Clear all files
+            $('#clearAttachmentsBtn').click(function() {
+                selectedFiles = [];
+                $('#fileList').empty();
+                updateFileInput();
+                $(this).addClass('hidden');
+            });
 
             // Toggle expandable row on main row click
             $('.main-row').click(function() {
@@ -556,53 +814,57 @@
                 filterBlogs();
             });
 
-            // Bootstrap validation
-            (function() {
-                'use strict'
-                const forms = document.querySelectorAll('.mail-validation')
-                Array.from(forms).forEach(form => {
-                    form.addEventListener('submit', event => {
-                        if (!form.checkValidity()) {
-                            event.preventDefault()
-                            event.stopPropagation()
-                        }
-                        form.classList.add('was-validated')
-                    }, false)
-                })
-            })();
-        });
+            // Form validation
+            $('#sendMailForm').on('submit', function(e) {
+                let isValid = true;
+                const form = $(this);
 
-        // Clear selections when form is successfully submitted
-        document.getElementById('sendMailForm').addEventListener('submit', function() {
-            // Clear selections only if form is valid and will be submitted
-            setTimeout(() => {
-                localStorage.removeItem(SELECTED_BLOGS_STORAGE_KEY);
-            }, 1000);
-        });
-    </script>
+                // Reset previous validation
+                form.find('.text-red-600').addClass('hidden');
+                form.find('input, textarea').removeClass('border-red-500').addClass('border-gray-300');
 
-    <!-- SweetAlert for session messages -->
-    <script>
-        @if (Session::has('success'))
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: "{{ Session::get('success') }}",
-                showConfirmButton: false,
-                timer: 3000
+                // Check subject
+                const subject = form.find('input[name="subject"]').val().trim();
+                if (!subject) {
+                    form.find('input[name="subject"]').next('.text-red-600').removeClass('hidden');
+                    form.find('input[name="subject"]').removeClass('border-gray-300').addClass('border-red-500');
+                    isValid = false;
+                }
+
+                // Check message - get content from Summernote
+                let message = '';
+                if ($('#summernote').summernote('instance')) {
+                    message = $('#summernote').summernote('code').replace(/<[^>]*>/g, '').trim();
+                } else {
+                    message = $('#summernote').val().trim();
+                }
+
+                if (!message) {
+                    form.find('textarea[name="message"]').next('.text-red-600').removeClass('hidden');
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Clear selections only if form is valid and will be submitted
+                setTimeout(() => {
+                    localStorage.removeItem(SELECTED_BLOGS_STORAGE_KEY);
+                }, 1000);
             });
-        @endif
-        @if (Session::has('error'))
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'error',
-                title: "{{ Session::get('error') }}",
-                showConfirmButton: false,
-                timer: 3000
-            });
-        @endif
+
+            // Debug function to check Summernote state
+            window.debugSummernote = function() {
+                console.log('Summernote debug:');
+                console.log('Instance exists:', $('#summernote').summernote('instance'));
+                console.log('Textarea visible:', $('#summernote').is(':visible'));
+                console.log('Textarea value:', $('#summernote').val());
+                console.log('Summernote HTML:', $('#summernote').summernote('code'));
+                console.log('Note editor elements:', $('.note-editor').length);
+            };
+        });
     </script>
 
 </x-app-layout>
