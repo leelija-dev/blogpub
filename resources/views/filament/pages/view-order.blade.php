@@ -108,7 +108,7 @@
              <tr>
                 <th class="text-gray-500 font-semibold">State:</th>
                 <td class="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
-                    {{ ($this->record->billing_info['state']) }}
+                    {{ ($this->record->billing_info['country']) }}
                 </td>
             </tr>
              <tr>
