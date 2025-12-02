@@ -34,10 +34,6 @@
         $trialMode = session()->has('trial_mode') || (isset($_POST['plan']) && $_POST['plan'] === '14') || session('trial_plan') === 14;
         $trialUsed = session('trial_used', false) || (auth()->check() && (int)(auth()->user()->is_trial) === 1);
         @endphp
-        @php
-        $trialMode = session()->has('trial_mode');
-        $trialUsed = session('trial_used', false) || (auth()->check() && (int)(auth()->user()->is_trial) === 1);
-        @endphp
 
         <form class="flex gap-10 lg:flex-row flex-col " novalidate>
             <div class="w-full">
