@@ -1,73 +1,4 @@
 <?php
-// use App\Http\Controllers\ProfileController;
-// use App\Http\Controllers\CheckoutController;
-// use App\Http\Controllers\web\MailController;
-// use Illuminate\Support\Facades\Route;
-// use App\Models\Plan;
-
-// Route::get('/', function () {
-//     $plans = Plan::with('features')
-//         ->where('is_active', true)
-//         ->orderBy('price', 'asc')
-//         ->get();
-    
-//     return view('web.home', compact('plans'));
-// })->name('home');
-
-// Route::get('/', function () {
-//     $plans = Plan::with('features')
-//         ->where('is_active', true)
-//         ->orderBy('price', 'asc')
-//         ->get();
-    
-//     return view('web.home', compact('plans'));
-// })->name('home');
-
-// Route::get('/about', function () {
-//     return view('web.about');
-// });
-// Route::get('/contact', function () {
-//     return view('web.contact');
-// });
-
-// // Checkout routes
-// // Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
-// Route::match(['GET', 'POST'], '/checkout/success', [CheckoutController::class, 'success'])
-//     ->name('checkout.success');
-// Route::get('/checkout/{plan?}', [CheckoutController::class, 'show'])->name('checkout');
-// Route::post('/checkout/create-order', [CheckoutController::class, 'createOrder'])->name('checkout.create-order');
-// Route::post('/checkout/capture-payment', [CheckoutController::class, 'capturePayment'])->name('checkout.capture-payment');
-// Route::post('/checkout/webhook', [CheckoutController::class, 'webhook'])->name('checkout.webhook');
-// // Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
-
-// // Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
-// Route::get('/checkout/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
-
-// Checkout
-// Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
-// Route::get('/checkout/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
-
-// Route::get('/checkout/{plan?}', [CheckoutController::class, 'show'])->name('checkout');
-// Route::post('/checkout/create-order', [CheckoutController::class, 'createOrder'])->name('checkout.create-order');
-// Route::post('/checkout/capture-payment', [CheckoutController::class, 'capturePayment'])->name('checkout.capture-payment');
-// Route::post('/checkout/webhook', [CheckoutController::class, 'webhook'])->name('checkout.webhook');
-
-
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
-// Route::middleware('auth')->group(function () {
-//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-// });
-
-
-// require __DIR__.'/auth.php'; 
-
-
-
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -87,22 +18,31 @@ use App\Http\Controllers\web\OrderController;
 use App\Http\Controllers\web\NewsletterController;  
 use Illuminate\Support\Facades\Route;
 use App\Models\Plan;
+use App\Models\PlanOrder;
+use App\Models\MailAvailable;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 // ... existing routes ...
 
+Route::post('/start-trial', function (Request $request) {
+    session(['trial_plan' => 14]);
+    return redirect()->route('checkout');
+})->name('start.trial');
 
+Route::get('/',[HomeController::class,'index'])->name('home');
+Route::get('/find-niches', [BlogController::class, 'findNiches'])->name('find.niches');
 
+Route::get('/about', fn() => view('web.about'));
+Route::get('/contact', fn() => view('web.contact'))->name('contact');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
-Route::get('/about', function () {
-    return view('web.about');
-});
-Route::get('/contact', function () {
-    return view('web.contact');
-})->name('contact');
-
-// Blog routes
-
-
+Route::get('/newsletter/subscribe', function() {
+    return redirect()->route('contact');
+})->name('newsletter.subscribe.get');
+Route::post('/newsletter/subscribe', [NewsletterController::class, 'store'])->name('newsletter.subscribe');
 
 
 // Email verification routes (MUST be outside auth middleware)
@@ -137,6 +77,9 @@ Route::middleware('guest')->group(function () {
 
 Route::get('/',[HomeController::class,'index'])->name('home');
 
+// Public route to store intended plan in session for guests
+Route::post('/intent/plan', [HomeController::class, 'storeIntentPlan'])->name('intent.plan');
+
 Route::middleware(['web'])->group(function () {
     Route::post('/checkout/create-order', [CheckoutController::class, 'createOrder'])->name('checkout.create-order');
     Route::post('/checkout/capture-payment', [CheckoutController::class, 'capturePayment'])->name('checkout.capture-payment');
@@ -146,8 +89,11 @@ Route::middleware(['web'])->group(function () {
     Route::get('/checkout/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
 });
 // Checkout routes (require authentication AND email verification)
+Route::get('/find-niches', [BlogController::class, 'findNiches'])->name('find.niches');
+
+// Define specific checkout routes before the parameterized one
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Route::get('/checkout/{plan?}', [CheckoutController::class, 'show'])->name('checkout');
+    Route::post('/checkout/free-complete', [CheckoutController::class, 'completeTrial'])->name('checkout.free-complete');
     Route::match(['GET', 'POST'], '/checkout/{plan?}', [CheckoutController::class, 'show'])->name('checkout');
 
 
@@ -155,11 +101,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/mail/{id}', [BlogController::class, 'viewMail'])->name('blog.viewMail');
     Route::post('/sendMail', [BlogController::class, 'sendMail'])->name('blog.sendMail');
     Route::post('/singleMail', [BlogController::class, 'singleMail'])->name('blog.singleMail');
-    // web.php
-    Route::get('/find-niches', [BlogController::class, 'findNiches'])->name('find.niches');
-
-
-
 
     Route::get('/mailHistory/{id}', [MailController::class, 'mailHistory'])->name('blog.mailHistory');
     Route::get('/viewMail/{id}', [MailController::class, 'viewMail'])->name('blog.view-mail');
@@ -171,15 +112,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //contact routes
     
 });
-Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
-// Add this near other public routes
-// Add this before the POST route
-Route::get('/newsletter/subscribe', function() {
-    return redirect()->route('contact');
-})->name('newsletter.subscribe.get');
 
-// Keep your existing POST route
-Route::post('/newsletter/subscribe', [NewsletterController::class, 'store'])->name('newsletter.subscribe');
 // Authenticated routes (require authentication only)
 Route::middleware('auth')->group(function () {
     // Email verification notice (requires authenticated user)
@@ -188,11 +121,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
-
-    // Route::get('/dashboard', function () {
-    //     return view('dashboard');
-    // })->name('dashboard');
-
 
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -215,6 +143,11 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+    // Start Trial (no email verification required)
+    Route::post('/trial/start', [HomeController::class, 'startTrial'])->name('trial.start');
+    // Complete Trial (commit trial to DB)
+    Route::post('/trial/complete', [HomeController::class, 'completeTrial'])->name('trial.complete');
 });
 
 // In routes/web.php, ensure this route is outside auth middleware

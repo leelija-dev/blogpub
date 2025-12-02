@@ -20,8 +20,6 @@
         <div class="flex-1 p-6 lg:p-8">
             <div class="max-w-7xl mx-auto">
 
-              
-
                 <!-- Table Container -->
                 <div class="overflow-x-auto shadow-xl rounded-lg border border-gray-200">
                     <table class="min-w-full divide-y divide-gray-300">

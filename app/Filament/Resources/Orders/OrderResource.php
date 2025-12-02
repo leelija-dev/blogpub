@@ -17,6 +17,7 @@ use Filament\Tables\Table;
 
 class OrderResource extends Resource
 {
+    protected static ?int $navigationSort = 2;
     protected static ?string $model = PlanOrder::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
@@ -45,6 +46,11 @@ class OrderResource extends Resource
             //
         ];
     }
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+{
+    return parent::getEloquentQuery()->with(['plan']);
+}
+
 
     public static function getPages(): array
     {

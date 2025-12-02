@@ -33,9 +33,18 @@
             <div class="flex flex-col sm:flex-row gap-4 lg:justify-start sm:justify-center items-center">
                 <!-- Hero CTA -->
                 <button type="button" id="see-pricing" class="btn-primary"> See Pricing </button>
-                <a href="/contact"><button class="btn-secondary">
-                        Contact Us
-                    </button></a>
+                @auth
+                <form method="POST" action="{{ route('trial.start') }}">
+                    @csrf
+                    <button type="submit" class="btn-secondary">Start Trial</button>
+                </form>
+                @endauth
+                @guest
+                <form method="POST" action="{{ route('start.trial') }}" class="w-full">
+                    @csrf
+                    <button type="submit" class="btn-secondary w-full">Start Trial</button>
+                </form>
+                @endguest
             </div>
 
             <!-- Stats -->
@@ -101,8 +110,8 @@
                             <span class="tooltip right-tooltip" id="da-max-tooltip">0</span>
 
                             <!-- IMPORTANT: value="0" or remove value entirely -->
-                            <input type="range" min="0" max="90" value="0" class="thumb-right" id="da-max">
-                            <input type="range" min="0" max="90" value="0" class="thumb-left" id="da-min">
+                            <input type="range" min="0" max="100" value="0" class="thumb-right" id="da-max">
+                            <input type="range" min="0" max="100" value="0" class="thumb-left" id="da-min">
                         </div>
                     </div>
 
@@ -119,8 +128,8 @@
                             <span class="tooltip left-tooltip" id="dr-min-tooltip">0</span>
                             <span class="tooltip right-tooltip" id="dr-max-tooltip">0</span>
 
-                            <input type="range" min="0" max="85" value="0" class="thumb-right" id="dr-max">
-                            <input type="range" min="0" max="85" value="0" class="thumb-left" id="dr-min">
+                            <input type="range" min="0" max="100" value="0" class="thumb-right" id="dr-max">
+                            <input type="range" min="0" max="100" value="0" class="thumb-left" id="dr-min">
                         </div>
                     </div>
 
@@ -400,22 +409,21 @@
                 @else
                 <a href="{{ route('login') }}?redirect={{ urlencode(route('checkout', ['plan' => $plan->id])) }}" class="btn-{{ $isHighlighted ? 'secondary' : 'primary' }} rounded-full w-full block">Get Started</a>
                 @endauth -->
-                <div class="mt-8">
-                    @auth
-                    <form method="POST" action="{{ route('checkout') }}" class="w-full">
-                        @csrf
-                        <input type="hidden" name="plan" value="{{ $plan->id }}">
-                        <button type="submit" class="btn-{{ $isHighlighted ? 'secondary' : 'primary' }} rounded-full w-full block  ">Get Started</button>
-                    </form>
-                    @else
-                    {{-- <form method="POST" action="{{ route('login') }}" class="w-full">
+            <div class="mt-8">
+                @auth
+                <form method="POST" action="{{ route('checkout') }}" class="w-full">
                     @csrf
-                    <input type="hidden" name="redirect" value="{{ route('checkout', ['plan' => $plan->id]) }}">
+                    <input type="hidden" name="plan" value="{{ $plan->id }}">
                     <button type="submit" class="btn-{{ $isHighlighted ? 'secondary' : 'primary' }} rounded-full w-full block">Get Started</button>
-                    </form> --}}
-                    <a href="{{ route('login', ['redirect' => route('checkout', ['plan' => $plan->id])]) }}" class="btn-{{ $isHighlighted ? 'secondary' : 'primary' }} rounded-full w-full block text-center"> Get Started</a>
-                    @endauth
-                </div>
+                </form>
+                @else
+                <form method="POST" action="{{ route('intent.plan') }}" class="w-full">
+                    @csrf
+                    <input type="hidden" name="plan" value="{{ $plan->id }}">
+                    <button type="submit" class="btn-{{ $isHighlighted ? 'secondary' : 'primary' }} rounded-full w-full block">Get Started</button>
+                </form>
+                @endauth
+            </div>
             </div>
             @endforeach
         </div>
