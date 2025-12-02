@@ -431,7 +431,7 @@
         // Pass plan data from PHP to JavaScript
         // const planData = @json($plan ?? null);
         const planData = @json($planModel ?? null);
-        const trialMode = @json(session()->has('trial_mode'));
+        const trialMode = @json($trialMode ?? false);
 
         const form = document.querySelector('form');
         const inputs = document.querySelectorAll('.floating-label-group input, .floating-label-group select');
@@ -560,17 +560,30 @@
         let selectedPackage = null;
 
         function initPayPalButtons() {
-            if (trialMode) { return; }
+            if (trialMode) {
+                console.log('Skipping PayPal initialization for trial mode');
+                return;
+            }
 
             // Check if PayPal SDK is loaded
             if (typeof paypal === 'undefined') {
-                console.error('PayPal SDK not loaded');
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Payment Service Unavailable',
-                    text: 'PayPal payment service is currently unavailable. Please try again later.',
-                    confirmButtonColor: '#ef4444'
-                });
+                console.warn('PayPal SDK not loaded yet, retrying...');
+
+                // Retry after a short delay
+                setTimeout(() => {
+                    if (typeof paypal === 'undefined') {
+                        console.error('PayPal SDK failed to load');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Payment Service Unavailable',
+                            text: 'PayPal payment service is currently unavailable. Please refresh the page and try again.',
+                            confirmButtonColor: '#ef4444'
+                        });
+                    } else {
+                        // Try to initialize again
+                        initPayPalButtons();
+                    }
+                }, 2000);
                 return;
             }
 
