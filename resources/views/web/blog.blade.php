@@ -6,6 +6,7 @@ $loggedUserId = Auth::id();
 <x-app-layout>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
     <!-- include summernote css/js -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote.min.js"></script>
@@ -13,36 +14,15 @@ $loggedUserId = Auth::id();
 
     <style>
         /* Fix for Summernote compatibility */
-        .note-editor .dropdown-toggle::after {
-            display: none !important;
-        }
+        /* Summernote specific fixes */
 
-        .note-editor .dropdown-menu {
+        /* Fix for modal z-index conflicts */
+        .modal-overlay {
             z-index: 9999 !important;
         }
 
-        .note-modal {
-            z-index: 99999 !important;
-        }
-
-        .note-editor.note-frame .note-btn-group .note-btn {
-            padding: 0.375rem 0.75rem !important;
-            font-size: 14px !important;
-            line-height: 1.5 !important;
-        }
-
-        /* Ensure Summernote editor is visible */
-        .note-editor.note-frame {
-            display: block !important;
-            visibility: visible !important;
-            border: 1px solid #d1d5db !important;
-            border-radius: 0.375rem !important;
-        }
-
-        .note-editor.note-frame .note-toolbar {
-            background-color: #f9fafb !important;
-            border-bottom: 1px solid #d1d5db !important;
-            padding: 0.5rem !important;
+        .modal-container {
+            z-index: 10000 !important;
         }
 
         /* Remove underline from all links */
@@ -165,16 +145,7 @@ $loggedUserId = Auth::id();
             }
         }
 
-        /* Fix for Summernote tooltips */
-        .note-popover .popover .arrow,
-        .note-popover .popover .popover-content,
-        .note-toolbar .note-btn-group .note-btn {
-            z-index: 10000 !important;
-        }
-
-        .note-editable {
-            min-height: 150px !important;
-        }
+        
     </style>
 
     <div class="min-h-screen bg-white">
@@ -346,9 +317,9 @@ $loggedUserId = Auth::id();
     <!-- Custom Modal -->
     <div id="sendMailModal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden">
         <!-- Background overlay -->
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
-             onclick="closeModal()"></div>
-        
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+            onclick="closeModal()"></div>
+
         <!-- Modal container -->
         <div class="modal-container relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
             <div class="flex flex-col h-full">
@@ -357,9 +328,9 @@ $loggedUserId = Auth::id();
                     <h3 class="text-lg font-medium text-gray-900">
                         Send Mail
                     </h3>
-                    <button type="button" 
-                            onclick="closeModal()"
-                            class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                    <button type="button"
+                        onclick="closeModal()"
+                        class="text-gray-400 hover:text-gray-500 focus:outline-none">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -465,6 +436,7 @@ $loggedUserId = Auth::id();
     // Global variable to track Summernote state
     let summernoteInitialized = false;
     let isModalOpen = false;
+    let summernoteInstance = null;
 
     // Function to get selected blogs from localStorage
     function getSelectedBlogs() {
@@ -557,124 +529,140 @@ $loggedUserId = Auth::id();
         });
     }
 
-    // Summernote initialization function with tooltip workaround
+    // Proper Summernote initialization
     function initializeSummernote() {
         console.log('Initializing Summernote...');
         
-        if (summernoteInitialized) {
-            console.log('Summernote already initialized, destroying first...');
+        // Destroy any existing instance first
+        if (summernoteInitialized && summernoteInstance) {
+            console.log('Destroying previous Summernote instance...');
             try {
-                $('#summernote-editor').summernote('destroy');
+                summernoteInstance.summernote('destroy');
             } catch (e) {
                 console.log('Error destroying previous instance:', e);
             }
             summernoteInitialized = false;
+            summernoteInstance = null;
         }
         
-        // Clear the editor container
-        $('#summernote-editor').empty();
+        // Clear and prepare the editor container
+        $('#summernote-editor').empty().show();
         
-        // Create a workaround for jQuery tooltip to prevent errors
-        if (typeof $.fn.tooltip === 'undefined') {
-            $.fn.tooltip = function() {
-                // Return the jQuery object to allow chaining
-                return this;
-            };
-            console.log('Created dummy tooltip function');
-        }
+        // Create a new div for Summernote
+        $('#summernote-editor').html('<div id="summernote-content"></div>');
         
-        // Initialize Summernote with minimal configuration
+        // Initialize Summernote with proper configuration
         try {
-            $('#summernote-editor').summernote({
-                placeholder: 'Write your message...',
-                height: 200,
-                focus: false,
-                dialogsInBody: true,
-                disableResizeEditor: true,
-                toolbar: [
-                    ['style', ['style']],
-                    ['font', ['bold', 'italic', 'underline', 'clear']],
-                    ['fontname', ['fontname']],
-                    ['color', ['color']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['height', ['height']],
-                    ['insert', ['link', 'picture']],
-                    ['view', ['fullscreen', 'codeview', 'help']]
-                ],
-                callbacks: {
-                    onInit: function() {
-                        console.log('Summernote initialized successfully');
-                        summernoteInitialized = true;
-                        
-                        // Remove all title attributes that might trigger tooltips
-                        setTimeout(() => {
-                            $('.note-btn, .note-btn-group').removeAttr('title');
-                            $('.note-btn').off('mouseenter mouseleave');
-                        }, 500);
-                    },
-                    onChange: function(contents) {
-                        // Update the hidden textarea with the content
-                        $('#summernote').val(contents);
-                    },
-                    onBlur: function() {
-                        // Update the hidden textarea value
-                        $('#summernote').val($('#summernote-editor').summernote('code'));
-                    }
-                }
-            });
-            
-            // Force remove any tooltip data attributes
+            // Delay initialization slightly to ensure DOM is ready
             setTimeout(() => {
-                $('[data-toggle="tooltip"]').removeAttr('data-toggle');
-                $('[data-original-title]').removeAttr('data-original-title');
-                $('[aria-describedby]').removeAttr('aria-describedby');
-            }, 1000);
+                summernoteInstance = $('#summernote-content');
+                
+                summernoteInstance.summernote({
+                    placeholder: 'Write your message...',
+                    height: 200,
+                    focus: false,
+                    dialogsInBody: true,
+                    disableResizeEditor: true,
+                    toolbar: [
+                        ['style', ['style']],
+                        ['font', ['bold', 'italic', 'underline', 'clear']],
+                        ['fontname', ['fontname']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['height', ['height']],
+                        ['insert', ['link', 'picture', 'video']],
+                        ['view', ['fullscreen', 'codeview', 'help']]
+                    ],
+                    popover: {
+                        image: [
+                            ['image', ['resizeFull', 'resizeHalf', 'resizeQuarter', 'resizeNone']],
+                            ['float', ['floatLeft', 'floatRight', 'floatNone']],
+                            ['remove', ['removeMedia']]
+                        ],
+                        link: [
+                            ['link', ['linkDialogShow', 'unlink']]
+                        ]
+                    },
+                    callbacks: {
+                        onInit: function() {
+                            console.log('Summernote initialized successfully');
+                            summernoteInitialized = true;
+                            
+                            // Fix CSS for toolbar buttons
+                            setTimeout(() => {
+                                $('.note-toolbar .note-btn-group').css({
+                                    'display': 'flex',
+                                    'align-items': 'center',
+                                    'margin': '0 2px'
+                                });
+                                
+                                $('.note-toolbar .note-btn').css({
+                                    'padding': '4px 8px',
+                                    'margin': '0',
+                                    'border': '1px solid #dee2e6',
+                                    'border-radius': '3px'
+                                });
+                                
+                                // Remove any conflicting Bootstrap classes
+                                $('.note-btn-group').removeClass('btn-group');
+                                $('.note-btn').removeClass('btn btn-light');
+                                
+                                // Ensure dropdowns work properly
+                                $('.note-dropdown-menu').css({
+                                    'z-index': '9999',
+                                    'position': 'absolute'
+                                });
+                            }, 100);
+                        },
+                        onChange: function(contents) {
+                            // Update the hidden textarea with the content
+                            $('#summernote').val(contents);
+                        },
+                        onBlur: function() {
+                            // Update the hidden textarea value
+                            $('#summernote').val(summernoteInstance.summernote('code'));
+                        }
+                    }
+                });
+                
+                console.log('Summernote instance created:', summernoteInstance);
+                
+            }, 100);
             
         } catch (error) {
             console.error('Summernote initialization error:', error);
-            // Try a simpler initialization if the first fails
-            try {
-                $('#summernote-editor').summernote({
-                    placeholder: 'Write your message...',
-                    height: 200,
-                    toolbar: []
-                });
-                summernoteInitialized = true;
-            } catch (simpleError) {
-                console.error('Simple Summernote initialization also failed:', simpleError);
-            }
+            // Fallback: create a simple textarea
+            $('#summernote-editor').html('<textarea id="fallback-textarea" class="w-full h-48 border border-gray-300 rounded p-2"></textarea>');
+            $('#fallback-textarea').on('input', function() {
+                $('#summernote').val($(this).val());
+            });
         }
     }
 
-    // Clean up Summernote
+    // Clean up Summernote properly
     function destroySummernote() {
         console.log('Destroying Summernote...');
         
-        if (summernoteInitialized) {
+        if (summernoteInitialized && summernoteInstance) {
             try {
-                // Store the original tooltip function if it exists
-                const originalTooltip = $.fn.tooltip;
+                // Store content first
+                const content = summernoteInstance.summernote('code');
+                $('#summernote').val(content);
                 
-                // Temporarily override tooltip to prevent errors during destruction
-                $.fn.tooltip = function() { return this; };
+                // Destroy Summernote
+                summernoteInstance.summernote('destroy');
                 
-                $('#summernote-editor').summernote('destroy');
-                
-                // Restore original tooltip if it was a function
-                if (typeof originalTooltip === 'function') {
-                    $.fn.tooltip = originalTooltip;
-                }
             } catch (e) {
                 console.log('Error destroying Summernote:', e);
+            } finally {
+                // Clean up DOM elements
+                $('#summernote-editor').empty();
+                
+                // Reset variables
+                summernoteInitialized = false;
+                summernoteInstance = null;
             }
         }
-        
-        // Clean up DOM elements
-        $('.note-editor, .note-modal, .note-popover, .note-tooltip').remove();
-        $('#summernote-editor').empty().show();
-        $('#summernote').val('');
-        
-        summernoteInitialized = false;
     }
 
     // Modal functions
@@ -698,17 +686,23 @@ $loggedUserId = Auth::id();
         $('#clearAttachmentsBtn').addClass('hidden');
         $('#summernote').val('');
         
-        // Initialize Summernote after a short delay to ensure modal is visible
+        // Initialize Summernote - delay to ensure modal is fully visible
         setTimeout(() => {
-            if (isModalOpen && !summernoteInitialized) {
+            if (isModalOpen) {
                 initializeSummernote();
             }
-        }, 500);
+        }, 300);
     }
 
     function closeModal() {
         console.log('Closing modal...');
         isModalOpen = false;
+
+        // Store Summernote content before closing
+        if (summernoteInstance && summernoteInitialized) {
+            const content = summernoteInstance.summernote('code');
+            $('#summernote').val(content);
+        }
 
         // Hide the modal with animation
         const modal = document.getElementById('sendMailModal');
@@ -718,7 +712,7 @@ $loggedUserId = Auth::id();
         setTimeout(() => {
             modal.classList.add('hidden');
             
-            // Destroy Summernote
+            // Destroy Summernote after modal is hidden
             destroySummernote();
         }, 300);
     }
@@ -994,6 +988,11 @@ $loggedUserId = Auth::id();
             if (e.target === this && isModalOpen) {
                 closeModal();
             }
+        });
+        
+        // Handle page transitions or DOM changes
+        $(document).on('pjax:success', function() {
+            restoreCheckboxStates();
         });
     });
 </script>
