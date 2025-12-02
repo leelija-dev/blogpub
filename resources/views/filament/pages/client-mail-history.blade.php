@@ -38,7 +38,7 @@
                             <td class="p-2 border">
                            @if($user_mail->file)
                         @php
-                            // Remove wrong public/ prefix if exists
+                            
                             $fileName = str_replace('public/', '', $user_mail->file);
                         @endphp
 
@@ -52,7 +52,7 @@
                     @endif
                                             </td>
 
-                            <td class="p-2 border">{{ $user_mail->created_at->format('d M Y ') ?? '' }}</td> 
+                            <td class="p-2 border">{{ $user_mail->created_at->format('d-m-Y, h:i A ') ?? '' }}</td> 
                                                    
                         </tr>
                     @endforeach
