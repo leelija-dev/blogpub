@@ -76,7 +76,7 @@
                         </tr>
                         @endforeach
                         @else
-                            <tr><td colpan="7" class="p-4 text-center" >No Billing found!</td></tr>
+                            <tr><td colspan="7" class="p-4 text-center" >No Billing found!</td></tr>
                             
                         @endif
                     </tbody>

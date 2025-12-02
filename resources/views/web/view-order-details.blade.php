@@ -145,8 +145,8 @@
                             <td class="fw-medium">{{ $order->billing_info['city'] ?? '' }}</td>
                         </tr>
                         <tr>
-                            <th class="text-secondary">State:</th>
-                            <td class="fw-medium">{{ $order->billing_info['state'] ?? '' }}</td>
+                            <th class="text-secondary">Country:</th>
+                            <td class="fw-medium">{{ $order->billing_info['country'] ?? '' }}</td>
                             <th class="text-secondary">Phone:</th>
                             <td class="fw-medium">{{ $order->billing_info['phone'] ?? '' }}</td>
                         </tr>

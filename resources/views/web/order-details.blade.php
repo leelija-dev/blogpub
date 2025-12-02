@@ -46,7 +46,8 @@
                         <th scope="col">Payment Status</th>
                         <th scope="col">Total Mail</th>
                         <th scope="col">Mail Available</th>
-                        <th scope="col">Created At</th>
+                        <th scope="col">Order Date</th>
+                        <th scope="col">Plan Expiring</th>
                         <th scope="col">Plan Status</th>
                         <th scope="col">Action</th>
                     </tr>
@@ -86,6 +87,7 @@
                             <td class="text-center">{{$order->mailAvailable->total_mail ?? 0}}</td>
                                 <td class="text-center">{{$order->mailAvailable->available_mail ?? 0}}</td>
                                 <td class="text-center">{{ $order->created_at->format('d-m-Y') }}</td>
+                                <td class="text-center">{{ $expiryDate->format('d-m-Y') }}</td>
                                 <td class="text-center" style="position: relative">
                                     @if($order->status == 'completed')
                                         @if($isActive)
@@ -104,7 +106,7 @@
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="9" class="p-4 text-center">No order yet!</td>
+                            <td colspan="10" class="p-4 text-center">No order yet!</td>
                         </tr>
                     @endif
 
