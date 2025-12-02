@@ -34,9 +34,10 @@
                 <!-- Hero CTA -->
                 <button type="button" id="see-pricing" class="btn-primary"> See Pricing </button>
                 @auth
-                <form method="POST" action="{{ route('trial.start') }}">
+                <form method="POST" action="{{ route('checkout') }}" class="w-full">
                     @csrf
-                    <button type="submit" class="btn-secondary">Start Trial</button>
+                    <input type="hidden" name="plan" value="{{ config('paypal.trial_plan_id') }}">
+                    <button type="submit" class="btn-secondary w-full">Start Trial</button>
                 </form>
                 @endauth
                 @guest

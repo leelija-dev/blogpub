@@ -31,11 +31,7 @@
 <section class="flex justify-center items-center min-h-screen w-full h-auto px-6 py-12">
     <div class="max-w-7xl w-full">
         @php
-        $trialMode = session()->has('trial_mode') || (isset($_POST['plan']) && $_POST['plan'] === '14') || session('trial_plan') === 14;
-        $trialUsed = session('trial_used', false) || (auth()->check() && (int)(auth()->user()->is_trial) === 1);
-        @endphp
-        @php
-        $trialMode = session()->has('trial_mode');
+        $trialMode = session()->has('trial_mode') || (isset($_POST['plan']) && $_POST['plan'] == config('paypal.trial_plan_id')) || session('trial_plan') == config('paypal.trial_plan_id');
         $trialUsed = session('trial_used', false) || (auth()->check() && (int)(auth()->user()->is_trial) === 1);
         @endphp
 
@@ -1270,7 +1266,7 @@
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                         },
                         body: JSON.stringify({
-                            plan_id: '14',
+                            plan_id: '{{ config("paypal.trial_plan_id") }}',
                             billing_info: getBillingInfo()
                         })
                     });
@@ -1304,7 +1300,7 @@
         if (@json($trialMode ?? false)) {
             // Find plan with id 14 from allPlans
             const allPlans = @json($allPlans ?? []);
-            const trialPlan = allPlans.find(plan => plan.id === 14);
+            const trialPlan = allPlans.find(plan => plan.id == {{ config('paypal.trial_plan_id') }});
 
             if (trialPlan) {
                 console.log('Auto-selecting trial plan:', trialPlan.name);
@@ -1315,7 +1311,7 @@
                 });
                 console.log('Trial plan selected successfully');
             } else {
-                console.error('Trial plan (id: 14) not found');
+                console.error('Trial plan (id: {{ config("paypal.trial_plan_id") }}) not found');
             }
         }
 
