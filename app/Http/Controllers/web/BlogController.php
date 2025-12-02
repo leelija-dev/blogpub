@@ -51,8 +51,8 @@ class BlogController extends Controller
                     $plan = Plan::where('id', $plan_order->plan_id)->first();
 
                     if ($plan) {
-                        // Exclude trial plan (plan ID 14) from valid plans
-                        if ($plan->id === 14) {
+                        // Exclude trial plan from valid plans
+                        if ($plan->id == config('paypal.trial_plan_id')) {
                             continue; // Skip trial plan - trial users cannot access blog content
                         }
 
@@ -289,8 +289,8 @@ class BlogController extends Controller
     //         $plan = Plan::where('id', $order->plan_id)->first();
     //         if (!$plan) continue;
 
-    //         // Exclude trial plan (plan ID 14) from valid plans
-    //         if ($plan->id === 14) {
+        //         // Exclude trial plan from valid plans
+        //         if ($plan->id == config('paypal.trial_plan_id')) {
     //             continue; // Skip trial plan - trial users cannot access blog functionality
     //         }
 
@@ -497,8 +497,8 @@ class BlogController extends Controller
             $plan = Plan::find($order->plan_id);
             if (!$plan) continue;
 
-            // Exclude trial plan (plan ID 14) from valid plans
-            if ($plan->id === 14) {
+            // Exclude trial plan from valid plans
+            if ($plan->id == config('paypal.trial_plan_id')) {
                 continue; // Skip trial plan - trial users cannot access blog content
             }
 

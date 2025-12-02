@@ -36,7 +36,7 @@
                 @auth
                 <form method="POST" action="{{ route('checkout') }}" class="w-full">
                     @csrf
-                    <input type="hidden" name="plan" value="14">
+                    <input type="hidden" name="plan" value="{{ config('paypal.trial_plan_id') }}">
                     <button type="submit" class="btn-secondary w-full">Start Trial</button>
                 </form>
                 @endauth
