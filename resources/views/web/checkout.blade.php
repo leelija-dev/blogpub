@@ -87,7 +87,7 @@
                                     <option value="CA">California</option>
                                     <option value="NY">New York</option>
                                 </select>
-                                <label for="state">State/Province</label>
+                                <label for="state">Country</label>
                             </div>
 
                             <div class="floating-label-group">
@@ -454,6 +454,8 @@
             style: 'currency',
             currency: 'USD'
         });
+        // Track validation-blocked PayPal attempts to avoid showing payment error
+        let validationBlocked = false;
 
         // === PREVENT UNWANTED CHARACTERS IN PHONE FIELD WHILE TYPING ===
         const phoneInput = document.getElementById('phone');
@@ -542,7 +544,8 @@
                             `,
                             confirmButtonColor: '#ef4444'
                         });
-                        throw new Error('Form validation failed');
+                        validationBlocked = true;
+                        return actions.reject();
                     }
 
                     // Create order via AJAX
@@ -646,6 +649,8 @@
                 // }
                 onError: function(err) {
                     console.error('PayPal error:', err);
+                    // Suppress PayPal error UI if the flow was blocked by client-side validation
+                    if (validationBlocked) { validationBlocked = false; return; }
 
                     let errorMessage = 'There was an error with PayPal. Please try again.';
 
@@ -807,14 +812,9 @@
                       <p class="package-name font-bold text-gray-800 text-lg truncate ">
                         ${pkg.name}
                       </p>
-                      <!-- <p class="text-sm text-gray-600 mt-1">
-                        <span class="font-medium">Package ID:</span>
-                        <span class="font-mono bg-gray-200 px-2 py-1 rounded text-xs package-id ml-1">
-                          ${pkg.id.toUpperCase()}
-                        </span>
-                      </p> -->
+                    
                       <p class="text-xs text-gray-500 mt-1">
-                        $${pkg.price.toLocaleString()}/${pkg.validity} days 
+                        $${pkg.price.toLocaleString()}
                       </p>
                     </div>
                   </div>
