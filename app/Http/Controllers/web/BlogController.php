@@ -25,9 +25,11 @@ class BlogController extends Controller
         $this->APIBASEURL = config('app.api_url');
     }
     public function index(Request $request)
-    {
+    {   
+        $APPURL  = $this->APIBASEURL .'/api/blogs';
+
         // $response = Http::get(env('API_BASE_URL') . '/api/blogs');
-        $response = Http::get(env('API_BASE_URL') . '/api/blogs', [
+        $response = Http::get($APPURL , [
             'page' => $request->get('page', 1) // pass current page to API
         ]);
 
