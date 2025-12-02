@@ -36,6 +36,15 @@
                 <a href="/contact"><button class="btn-secondary">
                         Contact Us
                     </button></a>
+                @auth
+                <form method="POST" action="{{ route('trial.start') }}">
+                    @csrf
+                    <button type="submit" class="btn-secondary">Start Trial</button>
+                </form>
+                @endauth
+                @guest
+                <a href="{{ route('login', ['redirect' => url()->current()]) }}" class="btn-secondary">Start Trial</a>
+                @endguest
             </div>
 
             <!-- Stats -->
@@ -400,22 +409,21 @@
                 @else
                 <a href="{{ route('login') }}?redirect={{ urlencode(route('checkout', ['plan' => $plan->id])) }}" class="btn-{{ $isHighlighted ? 'secondary' : 'primary' }} rounded-full w-full block">Get Started</a>
                 @endauth -->
-                <div class="mt-8">
-                    @auth
-                    <form method="POST" action="{{ route('checkout') }}" class="w-full">
-                        @csrf
-                        <input type="hidden" name="plan" value="{{ $plan->id }}">
-                        <button type="submit" class="btn-{{ $isHighlighted ? 'secondary' : 'primary' }} rounded-full w-full block  ">Get Started</button>
-                    </form>
-                    @else
-                    {{-- <form method="POST" action="{{ route('login') }}" class="w-full">
+            <div class="mt-8">
+                @auth
+                <form method="POST" action="{{ route('checkout') }}" class="w-full">
                     @csrf
-                    <input type="hidden" name="redirect" value="{{ route('checkout', ['plan' => $plan->id]) }}">
+                    <input type="hidden" name="plan" value="{{ $plan->id }}">
                     <button type="submit" class="btn-{{ $isHighlighted ? 'secondary' : 'primary' }} rounded-full w-full block">Get Started</button>
-                    </form> --}}
-                    <a href="{{ route('login', ['redirect' => route('checkout', ['plan' => $plan->id])]) }}" class="btn-{{ $isHighlighted ? 'secondary' : 'primary' }} rounded-full w-full block text-center"> Get Started</a>
-                    @endauth
-                </div>
+                </form>
+                @else
+                <form method="POST" action="{{ route('intent.plan') }}" class="w-full">
+                    @csrf
+                    <input type="hidden" name="plan" value="{{ $plan->id }}">
+                    <button type="submit" class="btn-{{ $isHighlighted ? 'secondary' : 'primary' }} rounded-full w-full block">Get Started</button>
+                </form>
+                @endauth
+            </div>
             </div>
             @endforeach
         </div>
@@ -695,27 +703,38 @@
     // ================================================================
     // 1. FORCE ALL SLIDERS TO 0 ON PAGE LOAD (MOST IMPORTANT PART)
     // ================================================================
+    // 1. FORCE SLIDERS TO INITIAL VALUES ON PAGE LOAD
+    // ================================================================
     document.addEventListener('DOMContentLoaded', function () {
-        // List of all slider inputs that must start at 0
         const slidersToReset = ['da-min', 'da-max', 'dr-min', 'dr-max', 'tar-single'];
 
         slidersToReset.forEach(id => {
             const slider = document.getElementById(id);
             if (slider) {
-                slider.value = 0;
-                // Trigger visual update immediately
+                // DA & DR: min = 0, max = maximum
+                if (id.includes('-min')) {
+                    slider.value = slider.min || 0;
+                } else if (id.includes('-max')) {
+                    slider.value = slider.max || 100;        // fallback to 100 if no max
+                } 
+                // Traffic: always full (200k+)
+                else if (id === 'tar-single') {
+                    slider.value = slider.max || 200000;
+                }
+
+                // Trigger visual update
                 slider.dispatchEvent(new Event('input'));
             }
         });
 
-        // Now safely initialize everything
+        // Now initialize everything
         initDualSlider('da-min', 'da-max', 'da-values', 'da-fill', 'da-min-tooltip', 'da-max-tooltip');
         initDualSlider('dr-min', 'dr-max', 'dr-values', 'dr-fill', 'dr-min-tooltip', 'dr-max-tooltip');
         initTrafficSlider();
     });
 
     // ================================================================
-    // 2. DUAL RANGE SLIDER (DA & DR) – Starts at 0, shows "Any"
+    // 2. DUAL RANGE SLIDER – Starts FULL (0 to max) → shows "Any"
     // ================================================================
     function initDualSlider(minId, maxId, displayId, fillId, minTooltipId, maxTooltipId) {
         const minThumb = document.getElementById(minId);
@@ -738,7 +757,6 @@
                 }
             }
 
-            // Smart display text
             const minAtStart = minVal <= parseInt(minThumb.min);
             const maxAtEnd   = maxVal >= parseInt(maxThumb.max);
 
@@ -752,14 +770,12 @@
                 display.textContent = `${minVal} – ${maxVal}`;
             }
 
-            // Update tooltips
             minTip.textContent = minVal;
             maxTip.textContent = maxVal;
 
-            // Calculate positions
             const range = parseInt(minThumb.max) - parseInt(minThumb.min);
             const minPercent = ((minVal - minThumb.min) / range) * 100;
-            const maxPercent = ((maxVal - maxThumb.min) / range) * 100;
+            const maxPercent = ((maxVal - minThumb.min) / range) * 100;
 
             minTip.style.left = `${minPercent}%`;
             maxTip.style.left = `${maxPercent}%`;
@@ -769,11 +785,10 @@
             display.classList.remove('hidden');
         }
 
-        // Event listeners
         minThumb.addEventListener('input', update);
         maxThumb.addEventListener('input', update);
 
-        // Tooltip show/hide
+        // Tooltip logic unchanged …
         minThumb.addEventListener('input', () => { minTip.classList.add('active'); maxTip.classList.remove('active'); });
         maxThumb.addEventListener('input', () => { maxTip.classList.add('active'); minTip.classList.remove('active'); });
 
@@ -787,11 +802,11 @@
             maxThumb.addEventListener(ev, hideTooltips);
         });
 
-        update(); // First render (shows "Any")
+        update(); // Initial render → fill is full, shows "Any"
     }
 
     // ================================================================
-    // 3. TRAFFIC SINGLE SLIDER – Starts at 0 → 200k+
+    // 3. TRAFFIC SINGLE SLIDER – Starts at 200k+ (full)
     // ================================================================
     function initTrafficSlider() {
         const slider  = document.getElementById('tar-single');
@@ -825,7 +840,7 @@
         ['mouseup', 'touchend', 'mouseleave'].forEach(e => slider.addEventListener(e, hide));
         ['mousemove', 'touchmove'].forEach(e => slider.addEventListener(e, () => tooltip.classList.add('active')));
 
-        update(); // Show "0" on load
+        update(); // Shows "200k+" and full bar on load
     }
 
     // ================================================================
