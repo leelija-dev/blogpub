@@ -18,6 +18,11 @@ class MailHistory extends Page
     {
         return 'Promotion';
     }
+
+    public static function getNavigationSort(): int
+    {
+        return 8;  // Position of the group in the sidebar
+    }
     public function getLogs()
     {
         return MailHistories::where('sent_at','promotional mail')->get();
