@@ -53,12 +53,12 @@
                     <div class="text-sm text-gray-500">Years Experience</div>
                 </div>
                 <div>
-                    <div class="text-4xl font-bold text-gray-900">50K+</div>
-                    <div class="text-sm text-gray-500">Blogger Partner</div>
+                    <div class="text-4xl font-bold text-gray-900">500+ </div>
+                    <div class="text-sm text-gray-500">Agency Users</div>
                 </div>
                 <div>
-                    <div class="text-4xl font-bold text-gray-900">263</div>
-                    <div class="text-sm text-gray-500">Business Partners</div>
+                    <div class="text-4xl font-bold text-gray-900">50K+</div>
+                    <div class="text-sm text-gray-500">Blogger Partner</div>
                 </div>
             </div>
         </div>
