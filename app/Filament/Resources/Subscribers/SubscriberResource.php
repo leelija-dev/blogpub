@@ -17,12 +17,20 @@ use Filament\Tables\Table;
 
 class SubscriberResource extends Resource
 {
-    protected static ?int $navigationSort = 7;
     protected static ?string $model = Newsletter::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Bell;
 
     protected static ?string $recordTitleAttribute = 'subscriber';
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Promotion';
+    }
+    public static function getNavigationSort(): int
+    {
+        return 7;  // Position of the group in the sidebar
+    }
 
     public static function form(Schema $schema): Schema
     {

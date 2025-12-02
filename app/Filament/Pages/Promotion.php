@@ -39,7 +39,7 @@ class Promotion extends Page implements HasForms
     }
     public static function getNavigationSort(): int
     {
-        return 7;  // Position of the group in the sidebar
+        return 8;  // Position of the group in the sidebar
     }
 
     protected function getFormSchema(): array

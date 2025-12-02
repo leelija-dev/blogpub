@@ -9,11 +9,8 @@ use App\Models\MailHistories;
 class MailHistory extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Envelope;
-    
     protected string $view = 'filament.pages.mail-history';
     protected static ?string $title = 'Promotion Mail History';
-    // protected static ?int $navigationSort = 99;
-    protected static ?int $navigationSort = 99;
     public static function getNavigationGroup(): ?string
     {
         return 'Promotion';
@@ -21,15 +18,10 @@ class MailHistory extends Page
 
     public static function getNavigationSort(): int
     {
-        return 8;  // Position of the group in the sidebar
+        return 9;  // Position of the group in the sidebar
     }
     public function getLogs()
     {
         return MailHistories::where('sent_at','promotional mail')->get();
     }
-
-
-
-
-
 }
