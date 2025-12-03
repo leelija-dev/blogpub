@@ -1,7 +1,7 @@
 @php
     use Illuminate\Support\Facades\Auth;
     use Carbon\Carbon;
-
+    
     $loggedUserId = Auth::id();
     $expiryDate = Carbon::parse($order->created_at)->addDays($order->plan->duration);
     $isActive = Carbon::now()->lessThanOrEqualTo($expiryDate);
@@ -13,7 +13,7 @@
 <x-app-layout>
     <div class="min-h-screen bg-gray-50 py-8 px-6">
         <div class=" mx-auto">
-
+            
             <!-- Header -->
             <div class="mb-8">
                 <a href="{{ route('my-orders') }}" class="inline-flex items-center text-gray-600 hover:text-gray-900 mb-4">
@@ -44,87 +44,19 @@
                     </div>
                 </div>
 
-                <div class="p-8 space-y-10">
-
-                    <!-- Order Summary Table -->
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                            <svg class="w-7 h-7 mr-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                            </svg>
-                            Order Summary
-                        </h2>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                            <div class="space-y-5">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500 font-medium">Order ID</span>
-                                    <span class="font-semibold text-gray-900">#{{ $order->id }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500 font-medium">Plan Name</span>
-                                    <span class="font-semibold text-indigo-600">{{ $order->plan->name }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500 font-medium">Amount</span>
-                                    <span class="font-bold text-xl text-green-600">
-                                        {{ $order->currency }} {{ number_format($order->amount, 2) }}
-                                    </span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500 font-medium">Transaction ID</span>
-                                    <span class="font-mono text-xs bg-gray-100 px-3 py-1 rounded">
-                                        {{ $order->transaction_id ?? '—' }}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="space-y-5">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500 font-medium">Payment Status</span>
-                                    <span class="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider
-                                        {{ $order->status === 'completed'
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-yellow-100 text-yellow-800' }}">
-                                        {{ ucfirst($order->status ?? 'Pending') }}
-                                    </span>
-                                </div>
-
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500 font-medium">Plan Status</span>
-                                    @if($order->status === 'completed')
-                                        @if($isActive)
-                                            <span class="px-4 py-2 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 uppercase">
-                                                Active
-                                            </span>
-                                        @else
-                                            <span class="px-4 py-2 rounded-full text-xs font-bold bg-red-100 text-red-800 uppercase">
-                                                Expired
-                                            </span>
-                                        @endif
-                                    @else
-                                        <span class="text-gray-400">—</span>
-                                    @endif
-                                </div>
-
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500 font-medium">Payment Date</span>
-                                    <span class="font-medium">
-                                        {{ $order->paid_at ? $order->paid_at->format('d-m-Y, h:i A') : '' }}
-                                    </span>
-                                </div>
-
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500 font-medium">Expire Date</span>
-                                    <span class="font-medium {{ $isActive ? 'text-green-600' : 'text-red-600' }}">
-                                        @if($order->status === 'completed')
-                                            {{ $expiryDate->format('d-m-Y, h:i A') }}
-                                        @else
-                                            —
-                                        @endif
-                                    </span>
-                                </div>
-                            </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Plan Status</p>
+                            @if($order->status === 'completed')
+                                @if($isActive)
+                                    <span class="text-lg font-semibold text-green-600">Active</span>
+                                @else
+                                    <span class="text-lg font-semibold text-red-600">Expired</span>
+                                @endif
+                            @else
+                                <span class="text-lg font-semibold text-gray-400">—</span>
+                            @endif
                         </div>
                         <div class="p-2 rounded-lg {{ $isActive ? 'bg-green-100' : 'bg-red-100' }}">
                             <svg class="w-6 h-6 {{ $isActive ? 'text-green-600' : 'text-red-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -154,7 +86,7 @@
                 <div class="p-6 border-b">
                     <h2 class="text-xl font-semibold text-gray-800">Plan Information</h2>
                 </div>
-
+                
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Plan Details -->
@@ -199,7 +131,7 @@
                 <div class="p-6 border-b">
                     <h2 class="text-xl font-semibold text-gray-800">Email Usage</h2>
                 </div>
-
+                
                 <div class="p-6">
                     <!-- Progress Bar -->
                     <div class="mb-6">
@@ -209,7 +141,7 @@
                         </div>
                         <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
                             @if($totalMail > 0)
-                                <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"
+                                <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full" 
                                      style="width: {{ ($sentMail / $totalMail) * 100 }}%">
                                 </div>
                             @endif
@@ -220,7 +152,7 @@
                     </div>
 
                     <!-- Stats -->
-                    <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="grid sm:grid-cols-3 grid-cols-1 gap-4 text-center">
                         <div class="p-4 bg-blue-50 rounded-lg">
                             <p class="text-2xl font-bold text-blue-600">{{ $totalMail }}</p>
                             <p class="text-sm text-gray-600 mt-1">Total Emails</p>
@@ -242,7 +174,7 @@
                 <div class="p-6 border-b">
                     <h2 class="text-xl font-semibold text-gray-800">Billing Information</h2>
                 </div>
-
+                
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>

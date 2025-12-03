@@ -59,9 +59,8 @@ class OrdersTable
                     }),
 
                 TextColumn::make('created_at')
-                    ->dateTime('d-m-Y h:i a')
-                    ->sortable()
-                    ->searchable(),
+                    ->label('Order Date')
+                    ->dateTime()
             ])
             ->filters([
                 //
