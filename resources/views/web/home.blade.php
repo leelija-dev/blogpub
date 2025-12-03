@@ -431,6 +431,79 @@
     </div>
 </section>
 
+<!-- Trial Plan Section -->
+@if($trialPlan)
+<section class="bg-gradient-to-br from-purple-600 to-blue-600 py-16 px-6">
+    <div class="container mx-auto">
+        <div class="max-w-4xl mx-auto text-center text-white">
+            <div class="mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                    Start Your Free Trial Today
+                </h2>
+                <p class="text-xl text-purple-100 mb-8">
+                    Experience our powerful outreach system with no commitment
+                </p>
+            </div>
+
+            <!-- Trial Plan Card -->
+            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 mb-8 max-w-md mx-auto">
+                <div class="flex justify-center mb-4">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex justify-center items-center">
+                        <span class="text-white text-3xl">🚀</span>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-semibold mb-2">{{ $trialPlan->name }}</h3>
+                <div class="text-4xl font-bold mb-4">
+                    ${{ number_format($trialPlan->price) }}
+                    <span class="text-lg font-normal">/ {{ $trialPlan->duration }} days</span>
+                </div>
+
+                <div class="text-sm text-purple-100 mb-6">
+                    {{ $trialPlan->mail_available }} Mail Credits
+                </div>
+
+                @if($trialPlan->features && $trialPlan->features->count() > 0)
+                <ul class="text-left space-y-2 mb-8 text-purple-100">
+                    @foreach($trialPlan->features->where('is_active', true) as $feature)
+                    <li class="flex items-center">
+                        <span class="text-green-400 mr-2">✓</span>
+                        {{ $feature->feature }}
+                    </li>
+                    @endforeach
+                </ul>
+                @endif
+
+                <!-- Trial Buttons -->
+                <div class="space-y-3">
+                    @auth
+                    <form method="POST" action="{{ route('checkout') }}" class="w-full">
+                        @csrf
+                        <input type="hidden" name="plan" value="{{ config('paypal.trial_plan_id') }}">
+                        <button type="submit" class="w-full bg-white text-purple-600 font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition-all duration-300">
+                            Start Your Free Trial
+                        </button>
+                    </form>
+                    @else
+                    <form method="POST" action="{{ route('start.trial') }}" class="w-full">
+                        @csrf
+                        <button type="submit" class="w-full bg-white text-purple-600 font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition-all duration-300">
+                            Start Your Free Trial
+                        </button>
+                    </form>
+                    @endauth
+
+                    <p class="text-sm text-purple-200">
+                        No credit card required • Cancel anytime
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@endif
+
+
 <section class="bg-darkPrimary min-h-[250px] flex justify-center items-center lg:py-16 py-12 px-6 ">
     <div class="container mx-auto flex flex-col lg:flex-row items-center justify-between text-white">
         <!-- Left Section: Text -->

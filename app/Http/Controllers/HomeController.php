@@ -48,8 +48,15 @@ class HomeController extends Controller
             ->where('name', '!=', 'Trial') // Exclude trial plan from home page
             ->orderBy('price', 'asc')
             ->get();
+
+        // Get trial plan separately for the trial section
+        $trialPlan = Plan::with('features')
+            ->where('is_active', true)
+            ->where('name', 'Trial')
+            ->first();
+
         $faqs = HomeFaqs::index();
-        return view('web.home', compact('plans','niches_data','faqs'));
+        return view('web.home', compact('plans','niches_data','faqs','trialPlan'));
     }
 
     public function startTrial(Request $request)
