@@ -28,7 +28,7 @@
                                 <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Plan Name</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Amount</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Payment Status</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Total Mail</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Mail/Day</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Mail Available</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Order Date</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Plan Expiring</th>
@@ -70,7 +70,11 @@
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 text-center text-sm text-gray-700">
+                                            @if($order->plan->price == 0)
+                                            {{ $order->mailAvailable->total_mail ?? 0 }}(Total)
+                                            @else
                                             {{ $order->mailAvailable->total_mail ?? 0 }}
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 text-center text-sm font-medium text-blue-600">
                                             {{ $order->mailAvailable->available_mail ?? 0 }}

@@ -116,7 +116,7 @@
                                 <label class="block text-sm font-medium text-gray-500">Expires On</label>
                                 <p class="mt-1 text-lg font-semibold {{ $isActive ? 'text-green-600' : 'text-red-600' }}">
                                     @if($order->status === 'completed')
-                                        {{ $expiryDate->format('M d, Y') }}
+                                        {{ $expiryDate->format('M d, Y h:i A') }}
                                     @else
                                         —
                                     @endif
@@ -160,7 +160,11 @@
                     <div class="grid sm:grid-cols-3 grid-cols-1 gap-4 text-center">
                         <div class="p-4 bg-blue-50 rounded-lg">
                             <p class="text-2xl font-bold text-blue-600">{{ $totalMail }}</p>
+                            @if($plan->price == 0)
                             <p class="text-sm text-gray-600 mt-1">Total Emails</p>
+                            @else
+                            <p class="text-sm text-gray-600 mt-1">Mails/day</p>
+                            @endif
                         </div>
                         <div class="p-4 bg-green-50 rounded-lg">
                             <p class="text-2xl font-bold text-green-600">{{ $availableMail }}</p>

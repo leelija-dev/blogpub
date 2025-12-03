@@ -201,7 +201,7 @@ $loggedUserId = Auth::id();
         <!-- Main content -->
         <div class="p-4 md:p-6">
             @if ($isValidPlan)
-            @if ($total_mail_available)
+            {{-- @if ($total_mail_available) --}}
             <div class="space-y-4 md:space-y-0 md:flex md:items-center md:justify-between">
                 <!-- Search Section -->
                 <div class="flex smxl:flex-row flex-col gap-2 items-center ">
@@ -374,7 +374,7 @@ $loggedUserId = Auth::id();
             {{ $pagination->links('pagination::bootstrap-5') }}
         </div>
         @endif
-        @else
+        {{-- @else
         <div class="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg">
             <h4 class="text-xl font-semibold text-gray-700 mb-4">
                 You have already used all mail services!
@@ -386,7 +386,7 @@ $loggedUserId = Auth::id();
                 </button>
             </a>
         </div>
-        @endif
+        @endif --}}
         @else
         <div class="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg">
             <h4 class="text-xl font-semibold text-gray-700 mb-4">
@@ -404,120 +404,101 @@ $loggedUserId = Auth::id();
     </div>
 
     <!-- Custom Modal -->
-    <div id="sendMailModal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden">
-        <!-- Background overlay -->
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-            onclick="closeModal()"></div>
+    <div id="sendMailModal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 z-50 hidden">
+    <!-- Background overlay -->
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeModal()"></div>
 
-        <!-- Modal container -->
-        <div class="modal-container relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div class="flex flex-col h-full">
-                <!-- Modal header -->
-                <div class="flex items-center justify-between p-6 border-b border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900">
-                        Send Mail
-                    </h3>
-                    <button type="button"
-                        onclick="closeModal()"
-                        class="text-gray-400 hover:text-gray-500 focus:outline-none">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
+    <!-- Modal container - FIXED: removed overflow-hidden + proper flex setup -->
+    <div class="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+        
+        <!-- This inner wrapper ensures header/body/footer layout works perfectly -->
+        <div class="flex flex-col h-full min-h-0"> <!-- min-h-0 is CRUCIAL for flex children with overflow -->
 
-                <!-- Modal body -->
-                <!-- Modal body -->
-                <div class="flex-1 overflow-y-auto p-6">
-                    <form id="sendMailForm" class="mail-validation" method="POST" action="{{ route('blog.sendMail') }}"
-                        enctype="multipart/form-data" novalidate>
-                        @csrf
-                        <input type="hidden" name="selected_ids" id="selectedIdsInput">
-                        <input type="hidden" name="userId" id="userId" value="{{ $loggedUserId }}">
-                        <input type="hidden" name="availableMail" id="availableMail"
-                            value="{{ $total_mail_available->available_mail ?? 0 }}">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
+                <h3 class="text-lg font-medium text-gray-900">Send Mail</h3>
+                <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
 
-                        <div class="space-y-6">
+            <!-- Modal body - This is the ONLY scrollable part -->
+            <div class="flex-1 overflow-y-auto p-6">
+                <form id="sendMailForm" class="mail-validation" method="POST" action="{{ route('blog.sendMail') }}"
+                    enctype="multipart/form-data" novalidate>
+                    @csrf
+                    <input type="hidden" name="selected_ids" id="selectedIdsInput">
+                    <input type="hidden" name="userId" id="userId" value="{{ $loggedUserId }}">
+                    <input type="hidden" name="availableMail" id="availableMail"
+                        value="{{ $total_mail_available->available_mail ?? 0 }}">
+
+                    <div class="space-y-6">
+                        <div>
+                            <p class="text-sm text-gray-500 mb-4">
+                                Selected Site: <span id="modalSelectedCount" class="font-semibold text-gray-900">0</span>
+                            </p>
+                        </div>
+
+                        <div class="space-y-4">
                             <div>
-                                <p class="text-sm text-gray-500 mb-4">
-                                    Selected Site: <span id="modalSelectedCount" class="font-semibold text-gray-900">0</span>
-                                </p>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                                <input type="text" name="subject" placeholder="Enter subject"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                    required>
+                                <div class="mt-1 text-sm text-red-600 hidden">Subject can not be blank!</div>
+                                @error('subject')
+                                    <div class="mt-1 text-sm text-red-600">{{ $message }}</div>
+                                @enderror
                             </div>
 
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Subject
-                                    </label>
-                                    <input type="text"
-                                        name="subject"
-                                        placeholder="Enter subject"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                        required>
-                                    <div class="mt-1 text-sm text-red-600 hidden">Subject can not be blank!</div>
-                                    @error('subject')
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                                <textarea id="summernote" name="message" style="display: none;"></textarea>
+                                <div id="summernote-editor"></div>
+                                <div class="mt-1 text-sm text-red-600 hidden">Message can not be blank!</div>
+                                @error('message')
                                     <div class="mt-1 text-sm text-red-600">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                                @enderror
+                            </div>
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Message
-                                    </label>
-                                    <!-- Hidden textarea for form submission -->
-                                    <textarea id="summernote" name="message" style="display: none;"></textarea>
-                                    <!-- Container for Summernote Lite -->
-                                    <div id="summernote-editor"></div>
-                                    <div class="mt-1 text-sm text-red-600 hidden">Message can not be blank!</div>
-                                    @error('message')
-                                    <div class="mt-1 text-sm text-red-600">{{ $message }}</div>
-                                    @enderror
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Attachments</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="file" name="attachments[]" id="attachments" multiple
+                                        class="block w-full text-sm text-gray-500
+                                            file:mr-4 file:py-2 file:px-4
+                                            file:rounded-md file:border-0
+                                            file:text-sm file:font-medium
+                                            file:bg-blue-50 file:text-blue-700
+                                            hover:file:bg-blue-100">
+                                    <button type="button" id="clearAttachmentsBtn"
+                                        class="px-3 py-2 text-sm text-red-600 hover:text-red-800 hidden">
+                                        Clear All
+                                    </button>
                                 </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Attachments
-                                    </label>
-                                    <div class="flex items-center space-x-2">
-                                        <input type="file"
-                                            name="attachments[]"
-                                            id="attachments"
-                                            multiple
-                                            class="block w-full text-sm text-gray-500
-                                      file:mr-4 file:py-2 file:px-4
-                                      file:rounded-md file:border-0
-                                      file:text-sm file:font-medium
-                                      file:bg-blue-50 file:text-blue-700
-                                      hover:file:bg-blue-100">
-                                        <button type="button"
-                                            id="clearAttachmentsBtn"
-                                            class="px-3 py-2 text-sm text-red-600 hover:text-red-800 hidden">
-                                            Clear All
-                                        </button>
-                                    </div>
-                                    <div id="fileList" class="mt-2 space-y-1"></div>
-                                </div>
+                                <div id="fileList" class="mt-2 space-y-1 text-sm text-gray-600"></div>
                             </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
+            </div>
 
-                <!-- Modal footer -->
-                <div class="flex justify-end space-x-3 p-6 border-t border-gray-200">
-                    <button type="button"
-                        onclick="closeModal()"
-                        class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
-                        Cancel
-                    </button>
-                    <button type="submit"
-                        form="sendMailForm"
-                        class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
-                        Send Mail
-                    </button>
-                </div>
+            <!-- Modal footer -->
+            <div class="flex justify-end space-x-3 p-6 border-t border-gray-200 flex-shrink-0 bg-gray-50">
+                <button type="button" onclick="closeModal()"
+                    class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
+                    Cancel
+                </button>
+                <button type="submit" form="sendMailForm"
+                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
+                    Send Mail
+                </button>
             </div>
         </div>
     </div>
+</div>
 
     <script>
         // Storage key for selected blogs

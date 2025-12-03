@@ -17,7 +17,7 @@
                     <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
                         <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-6">
                             <h2 class="text-2xl font-bold">Send New Mail</h2>
-                            <p class="text-indigo-100">You have <strong>{{ $total_mail_available }}</strong> mail(s) available</p>
+                            <p class="text-indigo-100">You have <strong>{{ $total_mail_available }}</strong> mail(s) available for today</p>
                         </div>
 
                         <div class="p-8">
