@@ -171,7 +171,6 @@
                     <input type="hidden" id="dr-min-input" name="dr_min">
                     <input type="hidden" id="dr-max-input" name="dr_max">
                     <input type="hidden" id="traffic-min-input" name="traffic_min">
-                    <input type="hidden" id="traffic-max-input" name="traffic_max">
 
                     <button type="submit"
                         class="mt-10 w-full bg-primary hover:bg-purple-800 text-white font-bold py-4 rounded-xl transition text-lg">
@@ -236,76 +235,70 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- High Resolution -->
                 <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
-                    <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
+                    <div class="flex sm:flex-row flex-col  gap-2 sm:justify-start justify-center items-center">
+                        <div class="min-w-12 w-12 min-h-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center sm:mb-4 mb-0">
+                            <i class="fa-solid fa-link text-[1rem]  text-white"></i>
+                        </div>
+                        <h3 class="text-h4-xs sm:text-h4-sm md:text-h4-md  font-semibold text-gray-900 mb-2"> Automate Link Building Outreach</h3>
                     </div>
-                    <h3 class="text-h4-xs sm:text-h4-sm md:text-h4-md lg:text-h4-lg font-semibold text-gray-900 mb-2"> Automate Link Building Outreach</h3>
                     <p class="text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg text-gray-600">By streamlining your repetitive taskflows, we help you in mass prospect outreach for increased conversions & functional efficiency.</p>
                 </div>
                 <!-- High Resolution -->
                 <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
-                    <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
+                    <div class="flex sm:flex-row flex-col  gap-2 sm:justify-start justify-center items-center">
+                        <div class="min-w-12 w-12 min-h-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center sm:mb-4 mb-0">
+                            <i class="fa-solid fa-bars-progress text-[1rem] text-white"></i>
+                        </div>
+                        <h3 class="text-h4-xs sm:text-h4-sm md:text-h4-md   font-semibold text-gray-900 mb-2 ">Bulk Outreach Management</h3>
                     </div>
-                    <h3 class="text-h4-xs sm:text-h4-sm md:text-h4-md lg:text-h4-lg  font-semibold text-gray-900 mb-2 ">Bulk Outreach Management</h3>
                     <p class="text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg text-gray-600">
                         We automate outreach, scale link-building, ensure consistent pitching, and connect you with more prospects efficiently, all at once.
                     </p>
                 </div>
                 <!-- High Resolution -->
                 <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
-                    <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
+                    <div class="flex sm:flex-row flex-col  gap-2 sm:justify-start justify-center items-center">
+                        <div class="min-w-12 w-12 min-h-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center sm:mb-4 mb-0">
+                           <i class="fa-solid fa-bullseye text-[1rem] text-white"></i>
+                        </div>
+                        <h3 class="text-h4-xs sm:text-h4-sm md:text-h4-md   font-semibold text-gray-900 mb-2 ">Niche-Specific Target</h3>
                     </div>
-                    <h3 class="text-h4-xs sm:text-h4-sm md:text-h4-md lg:text-h4-lg  font-semibold text-gray-900 mb-2 ">Niche-Specific Target</h3>
                     <p class="text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg text-gray-600">
                         With AI, we analyze data, segment website owners, and send highly relevant & customized messages for niche-specific backlinks.
                     </p>
                 </div>
                 <!-- High Resolution -->
                 <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
-                    <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
+                    <div class="flex sm:flex-row flex-col  gap-2 sm:justify-start justify-center items-center">
+                        <div class="min-w-12 w-12 min-h-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center sm:mb-4 mb-0">
+                            <i class="fa-solid fa-person-walking-arrow-loop-left text-[1rem] text-white"></i>
+                        </div>
+                        <h3 class="text-h4-xs sm:text-h4-sm md:text-h4-md   font-semibold text-gray-900 mb-2 ">Automated Follow-Ups</h3>
                     </div>
-                    <h3 class="text-h4-xs sm:text-h4-sm md:text-h4-md lg:text-h4-lg  font-semibold text-gray-900 mb-2 ">Automated Follow-Ups</h3>
                     <p class="text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg text-gray-600">
                         By scheduling the follow-up pitches, we help you re-engage with target bloggers without manual efforts, in case the initial one goes unnoticed.
                     </p>
                 </div>
                 <!-- High Resolution -->
                 <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
-                    <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
+                    <div class="flex sm:flex-row flex-col  gap-2 sm:justify-start justify-center items-center">
+                        <div class="min-w-12 w-12 min-h-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center sm:mb-4 mb-0">
+                           <i class="fa-solid fa-certificate text-[1rem] text-white"></i>
+                        </div>
+                        <h3 class="text-h4-xs sm:text-h4-sm md:text-h4-md   font-semibold text-gray-900 mb-2 ">Verified Placements</h3>
                     </div>
-                    <h3 class="text-h4-xs sm:text-h4-sm md:text-h4-md lg:text-h4-lg  font-semibold text-gray-900 mb-2 ">Verified Placements</h3>
                     <p class="text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg text-gray-600">
                         Our automation outreach system increases link-building efficiency by securing guest post placements on pre-verified authority sites.
                     </p>
                 </div>
                 <!-- High Resolution -->
                 <div class="bg-[#eaeaea] feature-block-card rounded-xl p-6 flex flex-col sm:items-start items-center  sm:text-left text-center hover:shadow-lg transition-all duration-300 ease-in-out">
-                    <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
+                    <div class="flex sm:flex-row flex-col  gap-2 sm:justify-start justify-center items-center">
+                        <div class="min-w-12 w-12 min-h-12 h-12 bg-gradient-to-br from-primary to-secondary  rounded-full flex items-center justify-center sm:mb-4 mb-0">
+                           <i class="fa-solid fa-chart-pie text-[1rem]  text-white"></i>
+                        </div>
+                        <h3 class="text-h4-xs sm:text-h4-sm md:text-h4-md   font-semibold text-gray-900 mb-2 ">Performance Tracking</h3>
                     </div>
-                    <h3 class="text-h4-xs sm:text-h4-sm md:text-h4-md lg:text-h4-lg  font-semibold text-gray-900 mb-2 ">Performance Tracking</h3>
                     <p class="text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg text-gray-600">
                         Our backlink marketplace tools also provide real-time user analytics data & detailed insights into site metrics after link-building.
                     </p>
@@ -526,7 +519,7 @@
 
 
 <section class="bg-darkPrimary min-h-[250px] flex justify-center items-center lg:py-16 py-12 px-6 ">
-    <div class="container mx-auto flex flex-col lg:flex-row items-center justify-between text-white">
+    <div class="container mx-auto flex flex-col xl:flex-row items-center justify-between text-white gap-3">
         <!-- Left Section: Text -->
         <div class="mb-6 lg:mb-0 text-center md:text-left">
             <h2 class="text-h2-xs sm:text-h2-sm md:text-h2-md lg:text-h2-lg lgg:text-h2-lgg xl:text-h2-xl 2xl:text-h2-2xl font-bold leading-tight">
@@ -536,7 +529,7 @@
         </div>
 
         <!-- Right Section: Buttons -->
-        <div class="flex flex-col sm:flex-row gap-4">
+        <div class="flex flex-col sm:flex-row gap-4 lg:mt-0 mt-3">
             <a href="{{ route('contact') }}" class="btn-secondary">
                 Get Custom Plans
             </a>
@@ -809,9 +802,9 @@
                 } else if (id.includes('-max')) {
                     slider.value = slider.max || 100; // fallback to 100 if no max
                 }
-                // Traffic: always full (200k+)
+                // Default selected traffic (50K)
                 else if (id === 'tar-single') {
-                    slider.value = slider.max || 200000;
+                    slider.value = 50000;
                 }
 
                 // Trigger visual update
