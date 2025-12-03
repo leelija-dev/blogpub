@@ -34,7 +34,7 @@
                                     Plan Order ID
                                 </th>
                                 <th scope="col" class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider">
-                                    Total Mail
+                                    Mail/day
                                 </th>
                                 <th scope="col" class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider">
                                     Plan Status
@@ -68,7 +68,11 @@
                                             #{{ $bill->id ?? '-' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-700">
+                                            @if($bill->plan->price == 0)
+                                            {{ $bill->mailAvailable->total_mail ?? 0 }} (Total)
+                                            @else
                                             {{ $bill->mailAvailable->total_mail ?? 0 }}
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">
                                             @if($isActive)

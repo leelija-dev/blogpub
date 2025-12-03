@@ -369,7 +369,7 @@
 
                             {{-- <p class="{{ $isHighlighted ? 'text-purple-200' : 'text-gray-500' }} text-sm mb-4">--}}{{$plan->duration === 30||$plan->duration === 31 ? 'Month' : 'days' }}</span></p>
                     <span class="inline-block {{ $isHighlighted ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-700' }} text-xs px-3 py-1 rounded-full mb-6">
-                        {{ $plan->mail_available ?? '0' }} Mail
+                        {{ $plan->mail_available ?? '0' }} Mail/day
                     </span>
                 </div>
                 <div class="flex-1 mt-6">

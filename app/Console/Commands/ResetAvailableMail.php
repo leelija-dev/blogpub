@@ -38,7 +38,7 @@ class ResetAvailableMail extends Command
             foreach($all_mail as $order){
                 $order_plan=PlanOrder::where('id','=',$order->order_id)->first();
                 $plan=Plan::where('id','=',$order_plan->plan_id)->first();
-                if($plan->slug =='trial') continue;
+                if($plan->price == 0 ) continue;
 
                 $expiryDate = Carbon::parse($order_plan->created_at)->addDays($plan->duration);
                 $isValid = Carbon::now()->lessThanOrEqualTo($expiryDate);

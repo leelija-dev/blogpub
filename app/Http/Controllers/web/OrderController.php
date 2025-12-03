@@ -26,7 +26,8 @@ class OrderController extends Controller
     }
     public function show($id){
         $order=PlanOrder::where('id',decrypt($id))->first();
-        return view('web.view-order-details',compact('order'));
+        $plan=Plan::where('id',$order->plan_id)->first();
+        return view('web.view-order-details',compact('order','plan'));
 
     }
     // public function billing(){
