@@ -58,6 +58,7 @@ class OrdersTable
                         default => 'gray',
                     }),
                 TextColumn::make('created_at')
+                    ->label('Order Date')
                     ->dateTime()
             ])
             ->filters([
