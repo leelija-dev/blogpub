@@ -1,169 +1,124 @@
-<x-filament-panels::page class="space-y-6">
+<x-filament-panels::page>
+    @php
+        $expiryDate = \Carbon\Carbon::parse($this->record->created_at)->addDays($record->plan->duration);
+        $isActive = \Carbon\Carbon::now()->lessThanOrEqualTo($expiryDate);
+        $badgeColor = $isActive ? 'success' : ($isActive === false ? 'gray' : 'danger');
+        $badgeText = $isActive ? 'Active' : ($isActive === false ? 'Expired' : 'Unknown');
+    @endphp
 
-    {{-- Header --}}
-    <div class="flex items-center justify-between">
-        {{-- <h2 class="text-2xl font-bold text-gray-800">
-            Order Details
-        </h2> --}}
-    </div>
+    <x-filament::section>
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-bold tracking-tight">Order Details</h2>
+                <h5>Order ID #{{ $this->record->id }}</h5>
+                <x-filament::badge :color="$badgeColor" size="lg">
+                    {{ $badgeText }}
+                </x-filament::badge>
+            </div>
 
-    {{-- Order Details Card --}}
-    <div class="bg-white shadow-md rounded-xl p-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <x-filament::fieldset>
+                    <x-slot name="heading">
+                        <h3 class="text-base font-medium">
+                            Order Information
+                        </h3>
+                    </x-slot>
 
-        <table class="w-full text-left border-separate border-spacing-y-1">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="text-gray-500 font-semibold">Order Date:</th>
-                    <td>{{ $this->record->created_at->format('d-m-Y, h:i A') ?? ''}}</td>
-                </tr>
-                
-                <tr>   
-                    <th class="text-gray-500 font-semibold">Plan Expiring:</th>
-                    <?php 
-                    $expiryDate = \Carbon\Carbon::parse($this->record->created_at)->addDays($record->plan->duration);
-                    $isActive = \Carbon\Carbon::now()->lessThanOrEqualTo($expiryDate);
-                    ?>
+                    <dl class="space-y-3">
+                        <div class="grid grid-cols-3 gap-4 py-1">
+                            <dt class="text-sm font-medium text-gray-500">Order Date</dt>
+                            <dd class="col-span-2 text-sm text-gray-900">{{ $this->record->created_at->format('M d, Y h:i A') }}</dd>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 py-1">
+                            <dt class="text-sm font-medium text-gray-500">Plan Expires</dt>
+                            <dd class="col-span-2 text-sm text-gray-900">{{ $expiryDate->format('M d, Y h:i A') }}</dd>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 py-1">
+                            <dt class="text-sm font-medium text-gray-500">Total Mail</dt>
+                            <dd class="col-span-2 text-sm text-gray-900">{{ $record->MailAvailable['total_mail'] ?? '0' }}</dd>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 py-1">
+                            <dt class="text-sm font-medium text-gray-500">Available Mail</dt>
+                            <dd class="col-span-2 text-sm text-gray-900">{{ $record->mailAvailable['available_mail'] ?? '0' }}</dd>
+                        </div>
+                    </dl>
+                </x-filament::fieldset>
 
-                    <td class="ms-2">{{$expiryDate->format('d-m-Y, h:i A') }}</td>
-                </tr>
-                <tr>
-                    <th class="text-gray-500 font-semibold">Plan Status:</th>
-                    <td>
-                       @php
-                        $badgeColor = $isActive === true ? 'success' : ($isActive === false ? 'secondary' : 'danger');
-                        $badgeText  = $isActive === true ? 'Active' : ($isActive === false ? 'Expired' : 'Unknown');
-                    @endphp
+                <x-filament::fieldset>
+                    <x-slot name="heading">
+                        <h3 class="text-base font-medium">
+                            Order Summary
+                        </h3>
+                    </x-slot>
 
-                    <x-filament::badge :color="$badgeColor">
-                        {{ $badgeText }}
-                    </x-filament::badge>
+                    <dl class="space-y-3">
+                        <div class="grid grid-cols-3 gap-4 py-1">
+                            <dt class="text-sm font-medium text-gray-500">Customer ID</dt>
+                            <dd class="col-span-2 text-sm text-gray-900">{{ $this->record->user_id }}</dd>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 py-1">
+                            <dt class="text-sm font-medium text-gray-500">Plan Name</dt>
+                            <dd class="col-span-2 text-sm text-gray-900">{{ $this->record->plan->name ?? 'N/A' }}</dd>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 py-1">
+                            <dt class="text-sm font-medium text-gray-500">Amount</dt>
+                            <dd class="col-span-2 text-sm font-medium text-gray-900">${{ number_format($this->record->amount, 2) }}</dd>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 py-1">
+                            <dt class="text-sm font-medium text-gray-500">Payment</dt>
+                            <dd class="col-span-2">
+                                <x-filament::badge
+                                    :color="match($this->record->status) {
+                                        'completed' => 'success',
+                                        'pending' => 'warning',
+                                        default => 'danger',
+                                    }"
+                                    size="sm"
+                                >
+                                    {{ ucfirst($this->record->status) }}
+                                </x-filament::badge>
+                            </dd>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 py-1">
+                            <dt class="text-sm font-medium text-gray-500">Transaction ID</dt>
+                            <dd class="col-span-2 text-sm text-gray-900">{{ $this->record->transaction_id ?? 'N/A' }}</dd>
+                        </div>
+                    </dl>
+                </x-filament::fieldset>
+            </div>
+        </div>
+    </x-filament::section>
 
-                    </td>
-                </tr>
-                <tr>
-                    <th class="text-gray-500 font-semibold">Total Mail:</th>
-                    <td> {{$record->MailAvailable['total_mail'] ?? ''}}</td>
-                </tr>
-                <tr>
-                    <th class="text-gray-500 font-semibold">Available Mail:</th>
-                     <td> {{$record->mailAvailable['available_mail'] ?? ''}}</td>
-                </tr>
-             </thead>         
-            <tbody class="bg-white shadow-md rounded-xl p-6 space-y-4">
-                <tr>
-                <th><h3><b>Order Summary</b></h3></th>
-                <td></td>
-                </tr>
-                <tr>
+    <x-filament::section>
+        <x-slot name="heading">
+            <h2 class="text-lg font-medium">
+                Billing Information
+            </h2>
+        </x-slot>
 
-                <th class="text-gray-500 font-semibold w-1/4">Customer ID:</th>
-
-                <td class="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
-                    {{ $this->record->user_id ?? 0}}
-                </td>
-            </tr>
-            <tr>
-                <th class="text-gray-500 font-semibold w-1/4">Order ID:</th>
-                <td class="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
-                    {{ $this->record->id ?? ''}}
-                </td>
-            </tr>
-
-            <tr>
-                <th class="text-gray-500 font-semibold">Plan Name:</th>
-                <td class="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
-                    {{ $this->record->plan->name ?? '' }}
-                </td>
-            </tr>
-
-            <tr>
-                <th class="text-gray-500 font-semibold">Amount:</th>
-                <td class="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
-                    ${{ number_format($this->record->amount, 2 ) ?? '' }}
-                </td>
-            </tr>
-
-            <tr>
-                <th class="text-gray-500 font-semibold">Payment:</th>
-                <td>
-                <x-filament::badge
-                :color="$this->record->status === 'completed'
-                    ? 'success'
-                    : ($this->record->status === 'pending' ? 'warning' : 'danger')">
-                {{ ucfirst($this->record->status) }}
-            </x-filament::badge>
-
-            </td>
-
-            </tr>
-
-            <tr>
-                <th class="text-gray-500 font-semibold">Transaction ID:</th>
-                <td class="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
-                    {{ $this->record->transaction_id ?? '' }}
-                </td>
-            </tr>
-
-            <tr>
-                <th class="text-gray-500 font-semibold">Order Date:</th>
-                <td class="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
-                    {{ $this->record->created_at->format('d-m-Y, h:i A') ?? '' }}
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    {{-- Customer Details --}}
-    <div class="bg-white shadow-md rounded-xl p-6 space-y-4">
-        <h3 class="text-lg font-bold text-gray-800"><strong>Bill Details</strong></h3>
-
-        <table class="w-full text-left border-separate border-spacing-y-3">
-
-            <tr>
-                <th class="text-gray-500 font-semibold w-1/4">Name:</th>
-                <td class="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
-                    {{ ($this->record->billing_info['first_name']) .' '.($this->record->billing_info['last_name'])}}
-                </td>
-            </tr>
-
-            <tr>
-                <th class="text-gray-500 font-semibold">Email:</th>
-                <td class="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
-                    {{ ($this->record->billing_info['email']) }}
-                </td>
-            </tr>
-             <tr>
-                <th class="text-gray-500 font-semibold">Mobile:</th>
-                <td class="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
-                    {{ ($this->record->billing_info['phone']) }}
-                </td>
-            </tr>
-             <tr>
-                <th class="text-gray-500 font-semibold">Address :</th>
-                <td class="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
-                    {{ ($this->record->billing_info['address1']) }}
-                </td>
-            </tr>
-             <tr>
-                <th class="text-gray-500 font-semibold">City:</th>
-                <td class="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
-                    {{ ($this->record->billing_info['city']) }}
-                </td>
-            </tr>
-             <tr>
-                <th class="text-gray-500 font-semibold">Country:</th>
-                <td class="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
-                    {{ ($this->record->billing_info['country'] ?? $this->record->billing_info['state']  )  }}
-                </td>
-            </tr>
-             <tr>
-                <th class="text-gray-500 font-semibold">Zip Code:</th>
-                <td class="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
-                    {{ ($this->record->billing_info['zip']) }}
-                </td>
-            </tr>
-        </table>
-    </div>
-
+        <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-3">
+                    <h3 class="text-sm font-medium text-gray-900">Contact Information</h3>
+                    <div class="space-y-1">
+                        <p class="text-sm text-gray-900">
+                            {{ ($this->record->billing_info['first_name'] ?? '') . ' ' . ($this->record->billing_info['last_name'] ?? '') }}
+                        </p>
+                        <p class="text-sm text-gray-500">{{ $this->record->billing_info['email'] ?? 'N/A' }}</p>
+                        <p class="text-sm text-gray-500">{{ $this->record->billing_info['phone'] ?? 'N/A' }}</p>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="text-sm font-medium text-gray-900">Billing Address</h3>
+                    <div class="space-y-1">
+                        <p class="text-sm text-gray-500">{{ $this->record->billing_info['address1'] ?? 'N/A' }}</p>
+                        <p class="text-sm text-gray-500">
+                            {{ ($this->record->billing_info['city'] ?? '') . ', ' . ($this->record->billing_info['state'] ?? '') . ' ' . ($this->record->billing_info['zip'] ?? '') }}
+                        </p>
+                        <p class="text-sm text-gray-500">{{ $this->record->billing_info['country'] ?? 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </x-filament::section>
 </x-filament-panels::page>
