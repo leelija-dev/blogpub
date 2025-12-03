@@ -344,7 +344,7 @@
         </div>
 
         <!-- Pricing Cards Wrapper -->
-        <div class="max-w-7xl mx-auto lg:px-6 px-0 grid grid-cols-1 md:grid-cols-{{ $plans->count() }} gap-8 pb-16">
+        <div class="lg:max-w-7xl max-w-xl mx-auto lg:px-6 px-0 grid grid-cols-1 lg:grid-cols-{{ $plans->count() }} gap-8 pb-16">
             @foreach($plans as $index => $plan)
             @php
             $isHighlighted = $index === 1; // Make the middle plan highlighted
@@ -433,74 +433,95 @@
 
 <!-- Trial Plan Section -->
 @if($trialPlan)
-<section class="bg-gradient-to-br from-purple-600 to-blue-600 py-16 px-6">
+<section class="bg-gray-100 py-20 px-6">
     <div class="container mx-auto">
-        <div class="max-w-4xl mx-auto text-center text-white">
-            <div class="mb-8">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">
-                    Start Your Free Trial Today
-                </h2>
-                <p class="text-xl text-purple-100 mb-8">
-                    Experience our powerful outreach system with no commitment
-                </p>
-            </div>
+        <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-10">
 
-            <!-- Trial Plan Card -->
-            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 mb-8 max-w-md mx-auto">
-                <div class="flex justify-center mb-4">
-                    <div class="w-16 h-16 bg-white/20 rounded-full flex justify-center items-center">
-                        <span class="text-white text-3xl">🚀</span>
+            <div class="flex flex-col md:flex-row items-center justify-between gap-12">
+
+                <!-- Left Content -->
+                <div class="flex-1">
+                    <h2 class="text-h2-xs sm:text-h2-sm md:text-h2-md lg:text-h2-lg lgg:text-h2-lgg xl:text-h2-xl 2xl:text-h2-2xl
+ font-bold text-gray-900  mb-2">
+                        Start Your Free Trial Today
+                    </h2>
+
+                    <p class="text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg lgg:text-p-lgg xl:text-p-xl 2xl:text-p-2xl text-gray-600 mb-6">
+                        Experience our powerful outreach system with no commitment.
+                    </p>
+
+                    <!-- Trial Details -->
+                    <div>
+                        <h3 class="text-2xl font-semibold text-gray-900 mb-1">
+                            {{ $trialPlan->name }}
+                        </h3>
+
+                        <div class="text-4xl font-bold text-gray-900 mb-3">
+                            ${{ number_format($trialPlan->price) }}
+                            <span class="text-lg font-normal text-gray-600">
+                                / {{ $trialPlan->duration }} days
+                            </span>
+                        </div>
+
+                        <p class="text-gray-600 mb-4">
+                            {{ $trialPlan->mail_available }} Mail Credits Included
+                        </p>
+
+                        @if($trialPlan->features && $trialPlan->features->count() > 0)
+                        <ul class="space-y-2 text-gray-700 text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg">
+                            @foreach($trialPlan->features->where('is_active', true) as $feature)
+                            <li class="flex items-center">
+                                <span class="text-green-500 mr-2">✔</span>
+                                {{ $feature->feature }}
+                            </li>
+                            @endforeach
+                        </ul>
+                        @endif
                     </div>
                 </div>
 
-                <h3 class="text-2xl font-semibold mb-2">{{ $trialPlan->name }}</h3>
-                <div class="text-4xl font-bold mb-4">
-                    ${{ number_format($trialPlan->price) }}
-                    <span class="text-lg font-normal">/ {{ $trialPlan->duration }} days</span>
+                <!-- CTA Right Box -->
+                <div class="md:w-1/3 w-full">
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-8 shadow-sm text-center">
+
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex justify-center items-center mx-auto mb-6">
+                            <span class="text-3xl">🚀</span>
+                        </div>
+
+                        <!-- Buttons -->
+                        @auth
+                        <form method="POST" action="{{ route('checkout') }}" class="w-full mb-4">
+                            @csrf
+                            <input type="hidden" name="plan" value="{{ config('paypal.trial_plan_id') }}">
+                            <button
+                                type="submit"
+                                class="w-full bg-purple-600 text-white font-semibold py-3 rounded-lg hover:bg-purple-700 transition">
+                                Start Free Trial
+                            </button>
+                        </form>
+                        @else
+                        <form method="POST" action="{{ route('start.trial') }}" class="w-full mb-4">
+                            @csrf
+                            <button
+                                type="submit"
+                                class="w-full bg-purple-600 text-white font-semibold py-3 rounded-lg hover:bg-purple-700 transition">
+                                Start Free Trial
+                            </button>
+                        </form>
+                        @endauth
+
+                        <p class="text-xs text-gray-500">
+                            No credit card required · Cancel anytime
+                        </p>
+                    </div>
                 </div>
 
-                <div class="text-sm text-purple-100 mb-6">
-                    {{ $trialPlan->mail_available }} Mail Credits
-                </div>
-
-                @if($trialPlan->features && $trialPlan->features->count() > 0)
-                <ul class="text-left space-y-2 mb-8 text-purple-100">
-                    @foreach($trialPlan->features->where('is_active', true) as $feature)
-                    <li class="flex items-center">
-                        <span class="text-green-400 mr-2">✓</span>
-                        {{ $feature->feature }}
-                    </li>
-                    @endforeach
-                </ul>
-                @endif
-
-                <!-- Trial Buttons -->
-                <div class="space-y-3">
-                    @auth
-                    <form method="POST" action="{{ route('checkout') }}" class="w-full">
-                        @csrf
-                        <input type="hidden" name="plan" value="{{ config('paypal.trial_plan_id') }}">
-                        <button type="submit" class="w-full bg-white text-purple-600 font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition-all duration-300">
-                            Start Your Free Trial
-                        </button>
-                    </form>
-                    @else
-                    <form method="POST" action="{{ route('start.trial') }}" class="w-full">
-                        @csrf
-                        <button type="submit" class="w-full bg-white text-purple-600 font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition-all duration-300">
-                            Start Your Free Trial
-                        </button>
-                    </form>
-                    @endauth
-
-                    <p class="text-sm text-purple-200">
-                        No credit card required • Cancel anytime
-                    </p>
-                </div>
             </div>
         </div>
     </div>
 </section>
+
+
 @endif
 
 
