@@ -1,9 +1,12 @@
+@extends('layouts.app')
+
+@section('title','View Mail')
+@section('content')
 @php
     use Illuminate\Support\Facades\Auth;
     $loggedUserId = Auth::id();
 @endphp
 
-<x-app-layout>
     
 
     <style>
@@ -120,4 +123,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

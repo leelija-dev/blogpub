@@ -1,3 +1,8 @@
+@extends('layouts.app')
+
+@section('title','Order Details')
+@section('content')
+
 @php
     use Illuminate\Support\Facades\Auth;
     use Carbon\Carbon;
@@ -10,7 +15,7 @@
     $totalMail = $order->mailAvailable->total_mail ?? 0;
 @endphp
 
-<x-app-layout>
+
     <div class="min-h-screen bg-gray-50 py-8 px-6">
         <div class=" mx-auto">
             
@@ -211,4 +216,4 @@
 
         </div>
     </div>
-</x-app-layout>
+@endsection

@@ -1,9 +1,11 @@
+@extends('layouts.app')
+
+@section('title','Send Mail')
+@section('content')
 @php
     use Illuminate\Support\Facades\Auth;
     $loggedUserId = Auth::id();
 @endphp
-
-<x-app-layout>
     
 
     <div class="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-4">
@@ -188,4 +190,4 @@
         });
     });
 </script>
-</x-app-layout>
+@endsection

@@ -1,11 +1,12 @@
+@extends('layouts.app')
+
+@section('title','Billing')
+@section('content')
+
 @php
     use Illuminate\Support\Facades\Auth;
     $loggedUserId = Auth::id();
 @endphp
-
-<x-app-layout>
-    <!-- Tailwind CDN (remove if already included in your app) -->
-    
 
     <style>
         a {
@@ -112,4 +113,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

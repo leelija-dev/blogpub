@@ -21,12 +21,12 @@ class OrderController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10); ;
         
-         return view('web.order-details',compact('orders'));
+         return view('web.user.order-details',compact('orders'));
 
     }
     public function show($id){
         $order=PlanOrder::where('id',decrypt($id))->first();
-        return view('web.view-order-details',compact('order'));
+        return view('web.user.view-order-details',compact('order'));
 
     }
     // public function billing(){
@@ -42,7 +42,7 @@ class OrderController extends Controller
         ->orderBy('created_at', 'desc')
         ->paginate(10);
 
-    return view('web.billing', compact('bills'));
+    return view('web.user.billing', compact('bills'));
 }
 
 }

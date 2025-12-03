@@ -1,16 +1,12 @@
+@extends('layouts.app')
+@section('title', 'Blogs')
 @php
 use Illuminate\Support\Facades\Auth;
 $loggedUserId = Auth::id();
 // or Auth::user()->id
 @endphp
-<x-app-layout>
 
-
-
-
-
-
-
+@section('content')
 
 
 
@@ -1098,4 +1094,4 @@ $loggedUserId = Auth::id();
         });
     </script>
 
-</x-app-layout>
+@endsection
