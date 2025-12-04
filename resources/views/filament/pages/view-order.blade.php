@@ -44,10 +44,10 @@
         }
 
         .badge {
-            padding: 4px 12px;
+            padding: 1px 12px;
             border-radius: 6px;
-            font-weight: 600;
-            font-size: 14px;
+            font-weight: 700;
+            font-size: 13px;
             display: inline-block;
         }
 
@@ -103,7 +103,7 @@
         <div class="space-y-4">
 
             <div class="flex-between">
-                #{{ $this->record->id }}
+                <span><b>Order Id:</b> #{{ $this->record->id }}</span>
 
                 <span class="badge badge-{{ $badgeColor }}">
                     {{ $badgeText }}
