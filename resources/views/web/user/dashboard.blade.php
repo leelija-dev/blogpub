@@ -141,10 +141,10 @@
                             <div class="ml-5 w-0 flex-1">
                                 <dl>
                                     <dt class="text-sm font-medium text-gray-500 truncate">
-                                        Active Paid Plans
+                                        Active Plans
                                     </dt>
                                     <dd class="text-lg font-medium text-gray-900">
-                                        {{ $activePlansCount ?? 0 }}
+                                        {{ $totalActivePlans ?? 0 }}
                                     </dd>
                                 </dl>
                             </div>

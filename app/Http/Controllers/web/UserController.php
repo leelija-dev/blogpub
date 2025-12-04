@@ -29,6 +29,7 @@ class UserController extends Controller
         $availableMailToday = 0;
         $sentMailToday = 0;
         $activePlansCount = 0;
+        $totalActivePlans = 0;
         $totalSpent = 0;
 
         // Get user's mail available records and sum available mail from all valid plans
@@ -48,8 +49,9 @@ class UserController extends Controller
                     // Include both trial and paid plans if they're valid and not expired
                     if ($isValid) {
                         $availableMailToday += $mail_available_record->available_mail;
+                        $totalActivePlans++; // Count all active plans (trial + paid)
 
-                        // Only count paid plans for active plans count (not trial plans)
+                        // Track paid plans separately for dashboard access
                         if ($plan->id != config('paypal.trial_plan_id')) {
                             $activePlansCount++;
                         }
@@ -98,6 +100,6 @@ class UserController extends Controller
             $randomBlogs = [];
         }
 
-        return view('web.user.dashboard', compact('availableMailToday', 'sentMailToday', 'mails', 'randomBlogs', 'activePlansCount', 'totalSpent'));
+        return view('web.user.dashboard', compact('availableMailToday', 'sentMailToday', 'mails', 'randomBlogs', 'totalActivePlans', 'activePlansCount', 'totalSpent'));
     }
 }
