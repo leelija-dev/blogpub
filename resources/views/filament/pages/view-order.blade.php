@@ -69,7 +69,7 @@
         .badge-gray {
             background: #e5e7eb;
             color: #374151;
-        }
+        } 
 
         .billing-heading {
             font-size: 18px;
