@@ -39,7 +39,7 @@
 
         .text-muted {
             font-size: 14px;
-            color: #e3e3e3;
+            /* color: #e3e3e3; */
             font-weight: 500;
         }
 
@@ -85,9 +85,7 @@
             font-size: 14px;
         }
 
-        .text-gray {
-            color: #e3e3e3;
-        }
+        
     </style>
 
     @php
@@ -103,7 +101,7 @@
         <div class="space-y-4">
 
             <div class="flex-between">
-                <span><b>Order Id:</b> #{{ $this->record->id }}</span>
+                <span><b>Order ID:</b> #{{ $this->record->id }}</span>
 
                 <span class="badge badge-{{ $badgeColor }}">
                     {{ $badgeText }}
