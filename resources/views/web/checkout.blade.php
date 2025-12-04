@@ -970,7 +970,7 @@
                   <div class="flex items-center gap-4 flex-1 min-w-0 xs:flex-row flex-col ">
                     <!-- Icon -->
                     <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg flex-shrink-0">
-                      Check
+                      ${pkg.name}
                     </div>
 
                     <!-- Package Details -->
