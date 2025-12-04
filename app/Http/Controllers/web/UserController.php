@@ -10,6 +10,7 @@ use App\Models\UserMailHistory;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -27,7 +28,8 @@ class UserController extends Controller
         // Get mail statistics for today
         $availableMailToday = 0;
         $sentMailToday = 0;
-        $hasActivePlan = false;
+        $activePlansCount = 0;
+        $totalSpent = 0;
 
         // Get user's mail available records and sum available mail from all valid plans
         $mailAvailableRecords = MailAvailable::where('user_id', $user->id)->get();
@@ -40,18 +42,17 @@ class UserController extends Controller
                 $plan = Plan::where('id', $plan_order->plan_id)->first();
 
                 if ($plan) {
-                    // Exclude trial plan from valid plans
-                    if ($plan->id == config('paypal.trial_plan_id')) {
-                        continue; // Skip trial plan
-                    }
-
                     $expiryDate = Carbon::parse($plan_order->created_at)->addDays($plan->duration);
                     $isValid = Carbon::now()->lessThanOrEqualTo($expiryDate);
 
-                    // Sum available mail from all valid plans
+                    // Include both trial and paid plans if they're valid and not expired
                     if ($isValid) {
                         $availableMailToday += $mail_available_record->available_mail;
-                        $hasActivePlan = true;
+
+                        // Only count paid plans for active plans count (not trial plans)
+                        if ($plan->id != config('paypal.trial_plan_id')) {
+                            $activePlansCount++;
+                        }
                     }
                 }
             }
@@ -61,6 +62,11 @@ class UserController extends Controller
         $sentMailToday = UserMailHistory::where('user_id', $user->id)
             ->whereDate('created_at', Carbon::today())
             ->count();
+
+        // Calculate total amount spent by user on successful payments
+        $totalSpent = PlanOrder::where('user_id', $user->id)
+            ->where('status', 'COMPLETED') // Only count successful payments
+            ->sum('amount');
 
         // Get user's mail history (latest 5 for dashboard)
         $mails = UserMailHistory::where('user_id', $user->id)
@@ -92,6 +98,6 @@ class UserController extends Controller
             $randomBlogs = [];
         }
 
-        return view('web.user.dashboard', compact('availableMailToday', 'sentMailToday', 'mails', 'randomBlogs', 'hasActivePlan'));
+        return view('web.user.dashboard', compact('availableMailToday', 'sentMailToday', 'mails', 'randomBlogs', 'activePlansCount', 'totalSpent'));
     }
 }
