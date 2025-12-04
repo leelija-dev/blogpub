@@ -92,7 +92,7 @@
                         </div>
 
                         <div>
-                            <dt class="text-muted">Amount: ${{ number_format($this->record->amount, 2) }}</dt>
+                            <dt class="text-muted">Amount: {{ config('app.currency') }}{{ number_format($this->record->amount, 2) }}</dt>
                         </div>
 
                         <div>
