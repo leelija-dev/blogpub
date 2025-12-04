@@ -127,7 +127,7 @@ $loggedUserId = Auth::id(); // or Auth::user()->id
 
             <!-- Mail History -->
             <li>
-               <a href="{{ route('blog.mailHistory', encrypt($loggedUserId)) }}"
+               <a href="{{ route('blog.mailHistory') }}"
                   class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all group
                               {{ request()->routeIs('blog.mailHistory','blog.view-mail') ? 'bg-blue-50 text-blue-600 font-semibold' : '' }}">
                   <svg class="w-5 h-5 flex-shrink-0 {{ request()->routeIs('blog.mailHistory','blog.view-mail') ? 'text-blue-600' : 'text-gray-500 group-hover:text-blue-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
