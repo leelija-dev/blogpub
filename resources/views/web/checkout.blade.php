@@ -25,6 +25,9 @@
         max-height: 0;
         opacity: 0;
     }
+    .iti__country-list{
+        z-index: 2000 !important;
+    }
 </style>
 
 
@@ -101,11 +104,10 @@
                                 <input type="text" id="zip" placeholder=" " value="" required />
                                 <label for="zip">Zip / Postal Code</label>
                             </div>
-
                             <div class="floating-label-group">
-                                <input type="text" id="phone" placeholder=" " value="+123456789111" required />
-                                <label for="phone">Phone</label>
-                            </div>
+    <input type="tel" id="phone" placeholder=" " value="" required />
+    <!-- <label for="phone"></label> -->
+</div>
                         </div>
 
                         <!-- Checkboxes -->
@@ -244,7 +246,7 @@
 
 
 <!-- Modal Background -->
-<div id="package-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 min-h-screen">
+<div id="package-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[2000] min-h-screen">
 
     <!-- Modal Box -->
     <div class="bg-white rounded-lg shadow-xl w-fit p-6 relative max-h-[90vh] overflow-y-scroll">
@@ -422,13 +424,422 @@
 @section('scripts')
 <script src="https://www.paypal.com/sdk/js?client-id={{ config('paypal.client_id') }}&currency=USD&components=buttons&enable-funding=venmo&disable-funding=paylater"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Script for intl-tel-input -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         // Pass plan data from PHP to JavaScript
-        // const planData = @json($plan ?? null);
         const planData = @json($planModel ?? null);
         const trialMode = @json($trialMode ?? false);
+        
+        // Initialize intl-tel-input for phone field
+        const phoneInput = document.querySelector("#phone");
+        let iti = null;
+        let maxNationalDigits = 15; // Default fallback for national number (without country code)
+        let currentCountryCode = 'in'; // Default country code
+        
+        // Phone validation configuration
+        const PHONE_CONFIG = {
+            ALLOWED_CHARS: /^[0-9+\-\s()]*$/, // Only allow digits, plus, hyphen, space, parentheses
+            DIGITS_ONLY: /^[0-9]*$/ // For final validation - digits only
+        };
+        
+        if (phoneInput && typeof window.intlTelInput === 'function') {
+            // Initialize intl-tel-input first to get the placeholder
+            iti = window.intlTelInput(phoneInput, {
+                initialCountry: "in",
+                preferredCountries: ["gb", "us", "in"],
+                separateDialCode: true,
+                allowDropdown: true,
+                autoPlaceholder: "aggressive",
+                formatOnDisplay: true,
+                nationalMode: false,
+                // Custom validation
+                customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+                    // Store current country code
+                    currentCountryCode = selectedCountryData.iso2;
+                    
+                    // Extract max digits from placeholder text - get ALL digits from placeholder
+                    // This gives us the maximum NATIONAL number digits (without country code)
+                    const digitsOnly = selectedCountryPlaceholder.replace(/[^\d]/g, '');
+                    maxNationalDigits = digitsOnly.length;
+                    
+                    // Get the example number from intl-tel-input
+                    const exampleNumber = selectedCountryPlaceholder;
+                    console.log(`Country: ${selectedCountryData.name}, National number max digits: ${maxNationalDigits}`);
+                    
+                    return `${exampleNumber} (max ${maxNationalDigits} digits)`;
+                },
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
+            });
+            
+            // Track when country changes
+            phoneInput.addEventListener('countrychange', function() {
+                if (iti) {
+                    const selectedCountryData = iti.getSelectedCountryData();
+                    currentCountryCode = selectedCountryData.iso2;
+                    
+                    // Get the current placeholder to update maxNationalDigits
+                    const placeholder = phoneInput.placeholder;
+                    const digitsOnly = placeholder.replace(/[^\d]/g, '');
+                    maxNationalDigits = digitsOnly.length;
+                    
+                    console.log(`Country changed to: ${selectedCountryData.name}, New national max digits: ${maxNationalDigits}`);
+                    
+                    // Clear any existing error
+                    clearError(phoneInput);
+                }
+            });
+            
+            // Get current NATIONAL digit count (without country code)
+            function getCurrentNationalDigitCount(value) {
+                // First, try to get the national number using intl-tel-input
+                if (iti) {
+                    try {
+                        // Get the current number without country code
+                        const fullNumber = iti.getNumber();
+                        if (fullNumber) {
+                            // Extract national number
+                            const countryData = iti.getSelectedCountryData();
+                            const dialCode = countryData.dialCode;
+                            const nationalNumber = fullNumber.replace(`+${dialCode}`, '').replace(/[^\d]/g, '');
+                            return nationalNumber.length;
+                        }
+                    } catch (e) {
+                        console.log("Couldn't parse number with intl-tel-input, falling back");
+                    }
+                }
+                
+                // Fallback: Remove all non-digits and country code if present
+                let digitsOnly = value.replace(/[^\d]/g, '');
+                
+                // Try to remove country code based on current country
+                if (iti) {
+                    const countryData = iti.getSelectedCountryData();
+                    if (countryData && countryData.dialCode) {
+                        const dialCode = countryData.dialCode;
+                        // Check if the number starts with the country dial code
+                        if (digitsOnly.startsWith(dialCode)) {
+                            digitsOnly = digitsOnly.substring(dialCode.length);
+                        }
+                    }
+                }
+                
+                return digitsOnly.length;
+            }
+            
+            // Get national number only (without country code)
+            function getNationalNumber(value) {
+                let digitsOnly = value.replace(/[^\d]/g, '');
+                
+                if (iti) {
+                    const countryData = iti.getSelectedCountryData();
+                    if (countryData && countryData.dialCode) {
+                        const dialCode = countryData.dialCode;
+                        // Remove country code if present
+                        if (digitsOnly.startsWith(dialCode)) {
+                            digitsOnly = digitsOnly.substring(dialCode.length);
+                        }
+                    }
+                }
+                
+                return digitsOnly;
+            }
+            
+            // Helper to format national number
+            function formatNationalNumber(number, countryCode) {
+                // Simple formatting based on country
+                if (!number) return '';
+                
+                switch(countryCode) {
+                    case 'us':
+                    case 'ca':
+                        if (number.length === 10) {
+                            return number.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+                        }
+                        break;
+                    case 'in':
+                        if (number.length === 10) {
+                            return number.replace(/(\d{5})(\d{5})/, '$1 $2');
+                        }
+                        break;
+                    case 'gb':
+                        if (number.length === 10) {
+                            return number.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3');
+                        }
+                        break;
+                }
+                
+                // Default: just return the number
+                return number;
+            }
+            
+            // Restrict input to digits and basic phone characters
+            phoneInput.addEventListener('input', function(e) {
+                let value = this.value;
+                
+                // Get cursor position before any changes
+                const cursorPos = this.selectionStart;
+                
+                // Remove any non-allowed characters
+                const cleaned = value.replace(/[^0-9+\-\s()]/g, '');
+                
+                // Get national digit count (without country code)
+                const nationalDigitCount = getCurrentNationalDigitCount(cleaned);
+                
+                // If NATIONAL digits exceed max, truncate
+                if (nationalDigitCount > maxNationalDigits) {
+                    // Get national number only
+                    let nationalNumber = getNationalNumber(cleaned);
+                    
+                    // Truncate to max national digits
+                    nationalNumber = nationalNumber.substring(0, maxNationalDigits);
+                    
+                    // Now we need to reconstruct the full number with formatting
+                    let result = '';
+                    
+                    if (iti) {
+                        const countryData = iti.getSelectedCountryData();
+                        if (countryData && countryData.dialCode) {
+                            // Start with + and country code
+                            result = `+${countryData.dialCode}`;
+                            
+                            // Add formatting if the national number is not empty
+                            if (nationalNumber.length > 0) {
+                                result += ' ' + formatNationalNumber(nationalNumber, currentCountryCode);
+                            }
+                        } else {
+                            // No country code, just format national number
+                            result = formatNationalNumber(nationalNumber, currentCountryCode);
+                        }
+                    } else {
+                        // No intl-tel-input, just use the truncated number
+                        result = nationalNumber;
+                    }
+                    
+                    this.value = result;
+                    
+                    // Adjust cursor position
+                    const newCursorPos = Math.min(cursorPos, result.length);
+                    this.setSelectionRange(newCursorPos, newCursorPos);
+                } else if (cleaned !== value) {
+                    this.value = cleaned;
+                }
+                
+                // Update filled state
+                if (this.value.trim()) {
+                    this.classList.add('filled');
+                } else {
+                    this.classList.remove('filled');
+                }
+            });
+            
+            // Prevent paste of invalid characters and enforce max digits
+            phoneInput.addEventListener('paste', function(e) {
+                e.preventDefault();
+                
+                // Get pasted text
+                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                
+                // Clean the pasted text - keep only digits
+                let pastedDigits = pastedText.replace(/[^0-9]/g, '');
+                
+                // Get current national digits count
+                const currentNationalNumber = getNationalNumber(this.value);
+                const currentNationalDigitCount = currentNationalNumber.length;
+                
+                // Calculate how many digits we can add
+                const availableDigits = maxNationalDigits - currentNationalDigitCount;
+                
+                if (availableDigits <= 0) {
+                    // Already at max national digits
+                    return;
+                }
+                
+                // Take only as many digits as we can fit
+                pastedDigits = pastedDigits.substring(0, availableDigits);
+                
+                if (pastedDigits.length === 0) {
+                    return;
+                }
+                
+                // Append to current national number
+                const newNationalNumber = (currentNationalNumber + pastedDigits).substring(0, maxNationalDigits);
+                
+                // Format the new number
+                let newValue = '';
+                if (iti) {
+                    const countryData = iti.getSelectedCountryData();
+                    if (countryData && countryData.dialCode) {
+                        newValue = `+${countryData.dialCode} ` + formatNationalNumber(newNationalNumber, currentCountryCode);
+                    } else {
+                        newValue = formatNationalNumber(newNationalNumber, currentCountryCode);
+                    }
+                } else {
+                    newValue = newNationalNumber;
+                }
+                
+                this.value = newValue;
+                
+                // Move cursor to end
+                this.setSelectionRange(newValue.length, newValue.length);
+                
+                // Update filled state
+                if (this.value.trim()) {
+                    this.classList.add('filled');
+                }
+            });
+            
+            // Prevent keydown for adding more NATIONAL digits if at max
+            phoneInput.addEventListener('keydown', function(e) {
+                // Get current national digit count
+                const currentNationalNumber = getNationalNumber(this.value);
+                const currentNationalDigitCount = currentNationalNumber.length;
+                
+                // Check if it's a digit key (0-9 or numpad)
+                const isDigit = /^\d$/.test(e.key) || (e.key >= '0' && e.key <= '9');
+                
+                // Check if it's a control key
+                const isControl = [
+                    'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 
+                    'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End',
+                    'Enter', 'Escape'
+                ].includes(e.key);
+                
+                // Check if it's a formatting character that we allow
+                const isFormattingChar = /[+\-\s()]/.test(e.key);
+                
+                if (isDigit && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                    // If already at max NATIONAL digits, prevent adding more
+                    if (currentNationalDigitCount >= maxNationalDigits) {
+                        e.preventDefault();
+                        return;
+                    }
+                }
+                
+                // Allow control keys and formatting characters
+                if (!isDigit && !isControl && !isFormattingChar && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                    // Prevent typing other characters
+                    e.preventDefault();
+                }
+            });
+            
+            // Real-time digit count display (optional - for debugging)
+            phoneInput.addEventListener('input', function() {
+                const nationalDigits = getNationalNumber(this.value);
+                console.log(`National digits: ${nationalDigits.length}/${maxNationalDigits}`);
+            });
+            
+            // Format the number on blur if valid
+            phoneInput.addEventListener('blur', function() {
+                // Count current national digits
+                const nationalNumber = getNationalNumber(this.value);
+                
+                // STRICT enforcement - truncate if exceeds max NATIONAL digits
+                if (nationalNumber.length > maxNationalDigits) {
+                    const truncatedNational = nationalNumber.substring(0, maxNationalDigits);
+                    
+                    // Reformat with country code
+                    let formatted = '';
+                    
+                    if (iti) {
+                        const countryData = iti.getSelectedCountryData();
+                        if (countryData && countryData.dialCode) {
+                            formatted = `+${countryData.dialCode} ` + formatNationalNumber(truncatedNational, currentCountryCode);
+                        } else {
+                            formatted = formatNationalNumber(truncatedNational, currentCountryCode);
+                        }
+                    } else {
+                        formatted = truncatedNational;
+                    }
+                    
+                    this.value = formatted;
+                }
+                
+                // Validate with intl-tel-input if we have enough digits
+                if (iti && nationalNumber.length >= 6 && nationalNumber.length <= maxNationalDigits) {
+                    if (iti.isValidNumber()) {
+                        const formattedNumber = iti.getNumber();
+                        this.value = formattedNumber;
+                    }
+                }
+                
+                if (this.value.trim()) {
+                    this.classList.add('filled');
+                } else {
+                    this.classList.remove('filled');
+                }
+            });
+            
+            // Set initial filled state for phone
+            if (phoneInput.value) {
+                phoneInput.classList.add('filled');
+            }
+        }
 
+        // Update the validateField function for phone validation
+        function validateField(input) {
+            const value = input.value.trim();
+            const id = input.id;
+            clearError(input);
+
+            if (input.hasAttribute('required') && !value) {
+                showError(input, 'This field is required');
+                return false;
+            }
+            
+            if (id === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                showError(input, 'Please enter a valid email');
+                return false;
+            }
+            
+            if (id === 'phone' && value) {
+                // Get national number digits (without country code)
+                const nationalNumber = getNationalNumber ? getNationalNumber(value) : value.replace(/[^0-9]/g, '');
+                const nationalDigitCount = nationalNumber.length;
+                
+                // First, check national digit count
+                if (nationalDigitCount > maxNationalDigits) {
+                    showError(input, `Phone number cannot exceed ${maxNationalDigits} digits for ${currentCountryCode.toUpperCase()}`);
+                    return false;
+                }
+                
+                if (nationalDigitCount < 6) { // Minimum reasonable length for a phone number
+                    showError(input, 'Phone number is too short');
+                    return false;
+                }
+                
+                // Then check with intl-tel-input validation if available
+                if (iti) {
+                    if (!iti.isValidNumber()) {
+                        showError(input, 'Please enter a valid phone number');
+                        return false;
+                    }
+                    
+                    if (!PHONE_CONFIG.ALLOWED_CHARS.test(value.replace(/\+[0-9]+\s?/, ''))) {
+                        showError(input, 'Only digits and basic phone characters (+, -, (, ), space) are allowed');
+                        return false;
+                    }
+                } else {
+                    // Fallback validation without intl-tel-input
+                    const withoutCountryCode = value.replace(/^\+[0-9]+\s?/, '');
+                    if (!PHONE_CONFIG.ALLOWED_CHARS.test(withoutCountryCode)) {
+                        showError(input, 'Only digits and basic phone characters (+, -, (, ), space) are allowed');
+                        return false;
+                    }
+                }
+            }
+            
+            if (id === 'zip' && value && !/^\d{6}(-\d{4})?$/.test(value)) {
+                showError(input, 'Invalid ZIP code');
+                return false;
+            }
+            
+            return true;
+        }
+
+        // ... rest of your existing code remains the same ...
         const form = document.querySelector('form');
         const inputs = document.querySelectorAll('.floating-label-group input, .floating-label-group select');
         const selectedWrapper = document.getElementById('selected-package-wrapper');
@@ -442,7 +853,7 @@
             style: 'currency',
             currency: 'USD'
         });
-        // Track validation-blocked PayPal attempts to avoid showing payment error
+        
         let validationBlocked = false;
 
         // === LOAD COUNTRIES FROM API ===
@@ -451,27 +862,21 @@
             if (!countrySelect) return;
 
             try {
-                // Show loading state
                 countrySelect.innerHTML = '<option value="" disabled>Loading countries...</option>';
 
-                // Fetch countries from REST Countries API
                 const response = await fetch('https://restcountries.com/v3.1/all?fields=name,cca2');
                 if (!response.ok) {
                     throw new Error('Failed to fetch countries');
                 }
 
                 const countries = await response.json();
-
-                // Sort countries alphabetically by common name
                 countries.sort((a, b) => a.name.common.localeCompare(b.name.common));
 
-                // Clear and add default option
                 countrySelect.innerHTML = '<option value="" disabled selected>Select a country</option>';
 
-                // Add countries to select
                 countries.forEach(country => {
                     const option = document.createElement('option');
-                    option.value = country.cca2; // Use ISO 3166-1 alpha-2 code
+                    option.value = country.cca2;
                     option.textContent = country.name.common;
                     countrySelect.appendChild(option);
                 });
@@ -481,67 +886,22 @@
             } catch (error) {
                 console.error('Error loading countries:', error);
 
-                // Fallback: Add some common countries if API fails
-                const fallbackCountries = [{
-                        code: 'US',
-                        name: 'United States'
-                    },
-                    {
-                        code: 'CA',
-                        name: 'Canada'
-                    },
-                    {
-                        code: 'GB',
-                        name: 'United Kingdom'
-                    },
-                    {
-                        code: 'AU',
-                        name: 'Australia'
-                    },
-                    {
-                        code: 'DE',
-                        name: 'Germany'
-                    },
-                    {
-                        code: 'FR',
-                        name: 'France'
-                    },
-                    {
-                        code: 'IT',
-                        name: 'Italy'
-                    },
-                    {
-                        code: 'ES',
-                        name: 'Spain'
-                    },
-                    {
-                        code: 'NL',
-                        name: 'Netherlands'
-                    },
-                    {
-                        code: 'BE',
-                        name: 'Belgium'
-                    },
-                    {
-                        code: 'IN',
-                        name: 'India'
-                    },
-                    {
-                        code: 'JP',
-                        name: 'Japan'
-                    },
-                    {
-                        code: 'CN',
-                        name: 'China'
-                    },
-                    {
-                        code: 'BR',
-                        name: 'Brazil'
-                    },
-                    {
-                        code: 'MX',
-                        name: 'Mexico'
-                    }
+                const fallbackCountries = [
+                    { code: 'US', name: 'United States' },
+                    { code: 'CA', name: 'Canada' },
+                    { code: 'GB', name: 'United Kingdom' },
+                    { code: 'AU', name: 'Australia' },
+                    { code: 'DE', name: 'Germany' },
+                    { code: 'FR', name: 'France' },
+                    { code: 'IT', name: 'Italy' },
+                    { code: 'ES', name: 'Spain' },
+                    { code: 'NL', name: 'Netherlands' },
+                    { code: 'BE', name: 'Belgium' },
+                    { code: 'IN', name: 'India' },
+                    { code: 'JP', name: 'Japan' },
+                    { code: 'CN', name: 'China' },
+                    { code: 'BR', name: 'Brazil' },
+                    { code: 'MX', name: 'Mexico' }
                 ];
 
                 countrySelect.innerHTML = '<option value="" disabled selected>Select a country</option>';
@@ -556,45 +916,6 @@
             }
         }
 
-        // === PREVENT UNWANTED CHARACTERS IN PHONE FIELD WHILE TYPING ===
-        const phoneInput = document.getElementById('phone');
-        if (phoneInput) {
-            phoneInput.addEventListener('input', function(e) {
-                // Allow only: digits, +, and -
-                let value = this.value.replace(/[^0-9+-]/g, '');
-
-                // Prevent multiple + signs (only allow at start)
-                const plusCount = (value.match(/\+/g) || []).length;
-                if (plusCount > 1) {
-                    value = value.replace(/\+/g, (match, offset) => offset === 0 ? '+' : '');
-                }
-
-                // Prevent + sign anywhere except at the beginning
-                if (value.includes('+') && value.indexOf('+') !== 0) {
-                    value = value.replace(/\+/g, '');
-                }
-
-                this.value = value;
-            });
-
-            // Optional: Auto-format as user types (e.g. 123-456-7890)
-            phoneInput.addEventListener('keyup', function(e) {
-                let value = this.value.replace(/[^0-9+-]/g, '');
-                if (!value.startsWith('+')) {
-                    // Remove all non-digits for formatting
-                    let digits = value.replace(/\D/g, '');
-                    if (digits.length > 10) digits = digits.slice(0, 10);
-                    if (digits.length <= 3) {
-                        this.value = digits;
-                    } else if (digits.length <= 6) {
-                        this.value = digits.slice(0, 3) + '-' + digits.slice(3);
-                    } else {
-                        this.value = digits.slice(0, 3) + '-' + digits.slice(3, 6) + '-' + digits.slice(6);
-                    }
-                }
-            });
-        }
-
         // Initialize PayPal Buttons
         let paypalButtons;
         let selectedPackage = null;
@@ -605,11 +926,8 @@
                 return;
             }
 
-            // Check if PayPal SDK is loaded
             if (typeof paypal === 'undefined') {
                 console.warn('PayPal SDK not loaded yet, retrying...');
-
-                // Retry after a short delay
                 setTimeout(() => {
                     if (typeof paypal === 'undefined') {
                         console.error('PayPal SDK failed to load');
@@ -620,22 +938,19 @@
                             confirmButtonColor: '#ef4444'
                         });
                     } else {
-                        // Try to initialize again
                         initPayPalButtons();
                     }
                 }, 2000);
                 return;
             }
 
-            // Destroy existing buttons if they exist
             if (paypalButtons) {
                 paypalButtons.close();
             }
 
-            // Check if a package is selected
             const packageElement = selectedWrapper.querySelector('[data-item="1"]');
             if (!packageElement) {
-                return; // No package selected
+                return;
             }
 
             selectedPackage = {
@@ -643,10 +958,8 @@
                 price: parseFloat(packageElement.dataset.price)
             };
 
-            // Render PayPal buttons
             paypalButtons = paypal.Buttons({
                 createOrder: function(data, actions) {
-                    // Validate form before creating PayPal order
                     let isValid = true;
                     inputs.forEach(input => {
                         if (!validateField(input)) isValid = false;
@@ -674,7 +987,6 @@
                         throw new Error(errorMessage);
                     }
 
-                    // Create order via AJAX
                     return fetch('{{ route("checkout.create-order") }}', {
                             method: 'POST',
                             headers: {
@@ -705,7 +1017,6 @@
                             return data.order_id;
                         })
                         .catch(error => {
-                            // Re-throw with more user-friendly message
                             if (error.name === 'TypeError' && error.message.includes('fetch')) {
                                 throw new Error('Network error. Please check your internet connection and try again.');
                             }
@@ -713,7 +1024,6 @@
                         });
                 },
                 onApprove: function(data, actions) {
-                    // Validate that we have an order ID
                     if (!data.orderID) {
                         console.error('No PayPal order ID received');
                         Swal.fire({
@@ -725,7 +1035,6 @@
                         return;
                     }
 
-                    // Show processing message
                     Swal.fire({
                         title: 'Processing Payment...',
                         text: 'Please wait while we process your payment.',
@@ -736,7 +1045,6 @@
                         }
                     });
 
-                    // Capture the payment
                     return fetch('/checkout/capture-payment', {
                             method: 'POST',
                             headers: {
@@ -779,7 +1087,6 @@
                         });
                 },
                 onCancel: function(data) {
-                    // Show cancellation message before redirect
                     Swal.fire({
                         icon: 'info',
                         title: 'Payment Cancelled',
@@ -790,18 +1097,8 @@
                         window.location.href = '/checkout/cancel';
                     });
                 },
-                // onError: function(err) {
-                //     console.error('PayPal error:', err);
-                //     Swal.fire({
-                //         icon: 'error',
-                //         title: 'Payment Error',
-                //         text: 'There was an error with PayPal. Please try again.',
-                //         confirmButtonColor: '#ef4444'
-                //     });
-                // }
                 onError: function(err) {
                     console.error('PayPal error:', err);
-                    // Suppress PayPal error UI if the flow was blocked by client-side validation
                     if (validationBlocked) {
                         validationBlocked = false;
                         return;
@@ -886,33 +1183,8 @@
             if (errorEl) errorEl.remove();
         }
 
-        function validateField(input) {
-            const value = input.value.trim();
-            const id = input.id;
-            clearError(input);
-
-            if (input.hasAttribute('required') && !value) {
-                showError(input, 'This field is required');
-                return false;
-            }
-            if (id === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                showError(input, 'Please enter a valid email');
-                return false;
-            }
-            if (id === 'phone' && value && !/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/.test(value.replace(/\s/g, ''))) {
-                showError(input, 'Invalid phone number');
-                return false;
-            }
-            if (id === 'zip' && value && !/^\d{6}(-\d{4})?$/.test(value)) {
-                showError(input, 'Invalid ZIP code');
-                return false;
-            }
-            return true;
-        }
-
         // REPLACE PACKAGE - ONLY ONE PACKAGE ALLOWED AT A TIME
         function replacePackage(pkg) {
-            // Remove all existing packages
             selectedWrapper.innerHTML = '';
 
             const wasEmpty = selectedWrapper.children.length === 0;
@@ -923,69 +1195,21 @@
             row.dataset.price = pkg.price;
             row.dataset.packageId = pkg.id;
 
-            // row.innerHTML = `
-            //     <div class="flex flex-col smx:flex-row smx:items-center gap-2 sm:gap-6 w-full ">
-            //       <!-- Left side: Icon + Package Info -->
-            //       <div class="flex items-center gap-4 flex-1 min-w-0 xs:flex-row flex-col ">
-            //         <!-- Icon -->
-            //         <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg flex-shrink-0">
-            //           Check
-            //         </div>
-
-            //         <!-- Package Details -->
-            //         <div class="xs:flex-1 xs:min-w-0 xs:w-auto w-full xs:text-left text-center">
-            //           <p class="package-name font-bold text-gray-800 text-lg truncate ">
-            //             ${pkg.name}
-            //           </p>
-            //           <p class="text-sm text-gray-600 mt-1">
-            //             <span class="font-medium">Package ID:</span>
-            //             <span class="font-mono bg-gray-200 px-2 py-1 rounded text-xs package-id ml-1">
-            //               ${pkg.id.toUpperCase()}
-            //             </span>
-            //           </p>
-            //           <p class="text-xs text-gray-500 mt-1">
-            //             $${pkg.price.toLocaleString()}/month • Billed Annually
-            //           </p>
-            //         </div>
-            //       </div>
-
-            //       <!-- Right side: Price + Remove button -->
-            //       <div class="flex items-center  xs:justify-end justify-center  gap-4 mt-2 smxl:mt-0">
-            //         <p class="package-price text-[1.2rem] font-bold text-gray-900 whitespace-nowrap ">
-            //           ${fmt.format(pkg.price)}
-            //         </p>
-            //         <button 
-            //           type="button" 
-            //           class="remove-pkg text-red-500 hover:text-red-700 text-4xl font-light leading-none absolute top-0 right-[3px]"
-            //           aria-label="Remove package">
-            //           ×
-            //         </button>
-            //       </div>
-            //     </div>
-            // `;
-
             row.innerHTML = `
                 <div class="flex flex-col smx:flex-row smx:items-center gap-2 sm:gap-6 w-full ">
-                  <!-- Left side: Icon + Package Info -->
                   <div class="flex items-center gap-4 flex-1 min-w-0 xs:flex-row flex-col ">
-                    <!-- Icon -->
                     <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg flex-shrink-0">
                       ${pkg.name}
                     </div>
-
-                    <!-- Package Details -->
                     <div class="xs:flex-1 xs:min-w-0 xs:w-auto w-full xs:text-left text-center">
                       <p class="package-name font-bold text-gray-800 text-lg truncate ">
                         ${pkg.name}
                       </p>
-                    
                       <p class="text-xs text-gray-500 mt-1">
                         $${pkg.price.toLocaleString()}
                       </p>
                     </div>
                   </div>
-
-                  <!-- Right side: Price only (removed cross button) -->
                   <div class="flex items-center xs:justify-end justify-center mt-2 smxl:mt-0">
                     <p class="package-price text-[1.2rem] font-bold text-gray-900 whitespace-nowrap ">
                       ${fmt.format(pkg.price)}
@@ -997,17 +1221,7 @@
             selectedWrapper.appendChild(row);
             updateTotals();
 
-            // Initialize PayPal buttons after package selection
             setTimeout(initPayPalButtons, 100);
-
-            // Feedback message
-            // Swal.fire({
-            //     icon: 'success',
-            //     title: wasEmpty ? 'Package Selected!' : 'Package Changed!',
-            //     text: `${pkg.name} (ID: ${pkg.id.toUpperCase()})`,
-            //     timer: 1800,
-            //     showConfirmButton: false
-            // });
         }
 
         // "Get Started" buttons inside modal - REPLACE package
@@ -1024,29 +1238,9 @@
 
                 replacePackage(pkg);
 
-                // Close modal
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
             });
-        });
-
-        // Remove package (X button)
-        selectedWrapper.addEventListener('click', e => {
-            if (e.target.classList.contains('remove-pkg')) {
-                e.target.closest('[data-item="1"]').remove();
-                updateTotals();
-
-                if (selectedWrapper.children.length === 0) {
-                    if (subtotalEl) subtotalEl.textContent = '$0.00';
-                    if (grandTotalEl) grandTotalEl.textContent = '$0.00';
-                    if (payBtn) payBtn.textContent = 'Pay $0.00';
-                    // Remove PayPal buttons when no package selected
-                    const paypalContainer = document.getElementById('paypal-button-container');
-                    if (paypalContainer) {
-                        paypalContainer.innerHTML = '<p class="text-gray-500 text-sm">Please select a package to proceed with payment</p>';
-                    }
-                }
-            }
         });
 
         function updateTotals() {
@@ -1104,12 +1298,10 @@
 
             let isValid = true;
 
-            // Validate inputs
             inputs.forEach(input => {
                 if (!validateField(input)) isValid = false;
             });
 
-            // Terms checkbox
             const termsCheckbox = document.querySelector('input[type="checkbox"][required]');
             const termsLabel = termsCheckbox?.closest('label');
 
@@ -1126,7 +1318,6 @@
                 }
             }
 
-            // Must have exactly one package
             if (selectedWrapper.children.length === 0) {
                 isValid = false;
             }
@@ -1147,7 +1338,6 @@
                 return;
             }
 
-            // Confirmation dialog
             const result = await Swal.fire({
                 icon: 'question',
                 title: 'Confirm Your Order',
@@ -1189,7 +1379,6 @@
                     timer: 3000,
                     showConfirmButton: false
                 });
-                // form.submit(); // Uncomment when live
             }
         });
 
@@ -1209,12 +1398,10 @@
             trialCompleteBtn.addEventListener('click', async function() {
                 let isValid = true;
 
-                // Validate all inputs
                 inputs.forEach(input => {
                     if (!validateField(input)) isValid = false;
                 });
 
-                // Terms checkbox
                 const termsCheckbox = document.querySelector('input[type="checkbox"][required]');
                 const termsLabel = termsCheckbox?.closest('label');
 
@@ -1246,7 +1433,6 @@
                     return;
                 }
 
-                // Show processing message
                 Swal.fire({
                     title: 'Activating Trial...',
                     text: 'Please wait while we activate your trial.',
@@ -1258,7 +1444,6 @@
                 });
 
                 try {
-                    // Create trial order and activate trial
                     const response = await fetch('/checkout/free-complete', {
                         method: 'POST',
                         headers: {
@@ -1278,7 +1463,6 @@
                     const data = await response.json();
 
                     if (data.success) {
-                        // Redirect to success page
                         window.location.href = '/checkout/success?trial=1';
                     } else {
                         throw new Error(data.message || 'Failed to activate trial');
@@ -1298,7 +1482,6 @@
 
         // Auto-select plan 14 for trial mode
         if (@json($trialMode ?? false)) {
-            // Find plan with id 14 from allPlans
             const allPlans = @json($allPlans ?? []);
             const trialPlan = allPlans.find(plan => plan.id == {{ config('paypal.trial_plan_id') }});
 
@@ -1317,7 +1500,6 @@
 
         // Load countries on page load
         loadCountries();
-
         updateTotals();
     });
 </script>
