@@ -432,7 +432,10 @@
         // Pass plan data from PHP to JavaScript
         const planData = @json($planModel ?? null);
         const trialMode = @json($trialMode ?? false);
-        
+
+        // Global country mapping for converting codes to names
+        let countryCodeToName = {};
+
         // Initialize intl-tel-input for phone field
         const phoneInput = document.querySelector("#phone");
         let iti = null;
@@ -879,6 +882,9 @@
                     option.value = country.cca2;
                     option.textContent = country.name.common;
                     countrySelect.appendChild(option);
+
+                    // Store mapping for later use
+                    countryCodeToName[country.cca2] = country.name.common;
                 });
 
                 console.log(`Loaded ${countries.length} countries successfully`);
@@ -910,6 +916,9 @@
                     option.value = country.code;
                     option.textContent = country.name;
                     countrySelect.appendChild(option);
+
+                    // Store mapping for later use
+                    countryCodeToName[country.code] = country.name;
                 });
 
                 console.log('Using fallback countries due to API error');
@@ -1136,6 +1145,18 @@
         }
 
         function getBillingInfo() {
+            const countryCode = document.getElementById('country').value;
+            const countryName = countryCodeToName[countryCode] || countryCode;
+
+            // Get phone country code from intl-tel-input
+            let phoneCountryCode = '';
+            if (iti) {
+                const selectedCountryData = iti.getSelectedCountryData();
+                if (selectedCountryData && selectedCountryData.dialCode) {
+                    phoneCountryCode = `+${selectedCountryData.dialCode}`;
+                }
+            }
+
             return {
                 first_name: document.getElementById('firstName').value,
                 last_name: document.getElementById('lastName').value,
@@ -1143,9 +1164,11 @@
                 address1: document.getElementById('address1').value,
                 address2: document.getElementById('address2').value,
                 city: document.getElementById('city').value,
-                country: document.getElementById('country').value,
+                country: countryName, // Use full country name instead of code
+                country_code: countryCode, // Keep the original country code for reference
                 zip: document.getElementById('zip').value,
-                phone: document.getElementById('phone').value
+                phone: document.getElementById('phone').value,
+                phone_country_code: phoneCountryCode // Add phone country code
             };
         }
 
