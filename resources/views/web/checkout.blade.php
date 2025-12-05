@@ -434,7 +434,7 @@
         // Initialize intl-tel-input for phone field
         const phoneInput = document.querySelector("#phone");
         let iti = null;
-        let maxDigits = 15; // Default fallback
+        let maxNationalDigits = 15; // Default fallback for national number (without country code)
         let currentCountryCode = 'in'; // Default country code
         
         // Phone validation configuration
@@ -459,14 +459,15 @@
                     currentCountryCode = selectedCountryData.iso2;
                     
                     // Extract max digits from placeholder text - get ALL digits from placeholder
+                    // This gives us the maximum NATIONAL number digits (without country code)
                     const digitsOnly = selectedCountryPlaceholder.replace(/[^\d]/g, '');
-                    maxDigits = digitsOnly.length;
+                    maxNationalDigits = digitsOnly.length;
                     
                     // Get the example number from intl-tel-input
                     const exampleNumber = selectedCountryPlaceholder;
-                    console.log(`Country: ${selectedCountryData.name}, Example: ${exampleNumber}, Max digits: ${maxDigits}`);
+                    console.log(`Country: ${selectedCountryData.name}, National number max digits: ${maxNationalDigits}`);
                     
-                    return `${exampleNumber} (max ${maxDigits} digits)`;
+                    return `${exampleNumber} (max ${maxNationalDigits} digits)`;
                 },
                 utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
             });
@@ -477,18 +478,99 @@
                     const selectedCountryData = iti.getSelectedCountryData();
                     currentCountryCode = selectedCountryData.iso2;
                     
-                    // Get the current placeholder to update maxDigits
+                    // Get the current placeholder to update maxNationalDigits
                     const placeholder = phoneInput.placeholder;
                     const digitsOnly = placeholder.replace(/[^\d]/g, '');
-                    maxDigits = digitsOnly.length;
+                    maxNationalDigits = digitsOnly.length;
                     
-                    console.log(`Country changed to: ${selectedCountryData.name}, New max digits: ${maxDigits}`);
+                    console.log(`Country changed to: ${selectedCountryData.name}, New national max digits: ${maxNationalDigits}`);
+                    
+                    // Clear any existing error
+                    clearError(phoneInput);
                 }
             });
             
-            // Get current digit count helper
-            function getCurrentDigitCount(value) {
-                return (value.match(/[0-9]/g) || []).length;
+            // Get current NATIONAL digit count (without country code)
+            function getCurrentNationalDigitCount(value) {
+                // First, try to get the national number using intl-tel-input
+                if (iti) {
+                    try {
+                        // Get the current number without country code
+                        const fullNumber = iti.getNumber();
+                        if (fullNumber) {
+                            // Extract national number
+                            const countryData = iti.getSelectedCountryData();
+                            const dialCode = countryData.dialCode;
+                            const nationalNumber = fullNumber.replace(`+${dialCode}`, '').replace(/[^\d]/g, '');
+                            return nationalNumber.length;
+                        }
+                    } catch (e) {
+                        console.log("Couldn't parse number with intl-tel-input, falling back");
+                    }
+                }
+                
+                // Fallback: Remove all non-digits and country code if present
+                let digitsOnly = value.replace(/[^\d]/g, '');
+                
+                // Try to remove country code based on current country
+                if (iti) {
+                    const countryData = iti.getSelectedCountryData();
+                    if (countryData && countryData.dialCode) {
+                        const dialCode = countryData.dialCode;
+                        // Check if the number starts with the country dial code
+                        if (digitsOnly.startsWith(dialCode)) {
+                            digitsOnly = digitsOnly.substring(dialCode.length);
+                        }
+                    }
+                }
+                
+                return digitsOnly.length;
+            }
+            
+            // Get national number only (without country code)
+            function getNationalNumber(value) {
+                let digitsOnly = value.replace(/[^\d]/g, '');
+                
+                if (iti) {
+                    const countryData = iti.getSelectedCountryData();
+                    if (countryData && countryData.dialCode) {
+                        const dialCode = countryData.dialCode;
+                        // Remove country code if present
+                        if (digitsOnly.startsWith(dialCode)) {
+                            digitsOnly = digitsOnly.substring(dialCode.length);
+                        }
+                    }
+                }
+                
+                return digitsOnly;
+            }
+            
+            // Helper to format national number
+            function formatNationalNumber(number, countryCode) {
+                // Simple formatting based on country
+                if (!number) return '';
+                
+                switch(countryCode) {
+                    case 'us':
+                    case 'ca':
+                        if (number.length === 10) {
+                            return number.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+                        }
+                        break;
+                    case 'in':
+                        if (number.length === 10) {
+                            return number.replace(/(\d{5})(\d{5})/, '$1 $2');
+                        }
+                        break;
+                    case 'gb':
+                        if (number.length === 10) {
+                            return number.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3');
+                        }
+                        break;
+                }
+                
+                // Default: just return the number
+                return number;
             }
             
             // Restrict input to digits and basic phone characters
@@ -501,29 +583,37 @@
                 // Remove any non-allowed characters
                 const cleaned = value.replace(/[^0-9+\-\s()]/g, '');
                 
-                // Count digits only for max length check
-                const digitCount = getCurrentDigitCount(cleaned);
+                // Get national digit count (without country code)
+                const nationalDigitCount = getCurrentNationalDigitCount(cleaned);
                 
-                // If digits exceed max length, truncate
-                if (digitCount > maxDigits) {
-                    // Remove excess digits - STRICT enforcement
-                    let digitsOnly = cleaned.replace(/[^0-9]/g, '');
-                    digitsOnly = digitsOnly.substring(0, maxDigits);
+                // If NATIONAL digits exceed max, truncate
+                if (nationalDigitCount > maxNationalDigits) {
+                    // Get national number only
+                    let nationalNumber = getNationalNumber(cleaned);
                     
-                    // Reconstruct with formatting characters if needed
+                    // Truncate to max national digits
+                    nationalNumber = nationalNumber.substring(0, maxNationalDigits);
+                    
+                    // Now we need to reconstruct the full number with formatting
                     let result = '';
-                    let digitIndex = 0;
-                    let formattingCharCount = 0;
                     
-                    for (let i = 0; i < cleaned.length && digitIndex < digitsOnly.length; i++) {
-                        if (/[0-9]/.test(cleaned[i])) {
-                            result += digitsOnly[digitIndex];
-                            digitIndex++;
-                        } else if (/[+\-\s()]/.test(cleaned[i]) && digitIndex > 0) {
-                            // Only allow formatting characters if we have digits
-                            result += cleaned[i];
-                            formattingCharCount++;
+                    if (iti) {
+                        const countryData = iti.getSelectedCountryData();
+                        if (countryData && countryData.dialCode) {
+                            // Start with + and country code
+                            result = `+${countryData.dialCode}`;
+                            
+                            // Add formatting if the national number is not empty
+                            if (nationalNumber.length > 0) {
+                                result += ' ' + formatNationalNumber(nationalNumber, currentCountryCode);
+                            }
+                        } else {
+                            // No country code, just format national number
+                            result = formatNationalNumber(nationalNumber, currentCountryCode);
                         }
+                    } else {
+                        // No intl-tel-input, just use the truncated number
+                        result = nationalNumber;
                     }
                     
                     this.value = result;
@@ -551,66 +641,47 @@
                 const pastedText = (e.clipboardData || window.clipboardData).getData('text');
                 
                 // Clean the pasted text - keep only digits
-                let digitsOnly = pastedText.replace(/[^0-9]/g, '');
+                let pastedDigits = pastedText.replace(/[^0-9]/g, '');
                 
-                // Get current digits count
-                const currentDigits = this.value.replace(/[^0-9]/g, '');
-                const currentDigitCount = currentDigits.length;
+                // Get current national digits count
+                const currentNationalNumber = getNationalNumber(this.value);
+                const currentNationalDigitCount = currentNationalNumber.length;
                 
                 // Calculate how many digits we can add
-                const availableDigits = maxDigits - currentDigitCount;
+                const availableDigits = maxNationalDigits - currentNationalDigitCount;
                 
                 if (availableDigits <= 0) {
-                    // Already at max digits
+                    // Already at max national digits
                     return;
                 }
                 
                 // Take only as many digits as we can fit
-                digitsOnly = digitsOnly.substring(0, availableDigits);
+                pastedDigits = pastedDigits.substring(0, availableDigits);
                 
-                if (digitsOnly.length === 0) {
+                if (pastedDigits.length === 0) {
                     return;
                 }
                 
-                // Insert at cursor position
-                const start = this.selectionStart;
-                const end = this.selectionEnd;
-                const currentValue = this.value;
+                // Append to current national number
+                const newNationalNumber = (currentNationalNumber + pastedDigits).substring(0, maxNationalDigits);
                 
-                // Insert the digits
-                const before = currentValue.substring(0, start);
-                const after = currentValue.substring(end);
-                
-                // Combine and keep only allowed characters
-                let newValue = (before + digitsOnly + after).replace(/[^0-9+\-\s()]/g, '');
-                
-                // Ensure we don't exceed max digits
-                const newDigitCount = getCurrentDigitCount(newValue);
-                if (newDigitCount > maxDigits) {
-                    // Extract only maxDigits digits
-                    const allDigits = newValue.replace(/[^0-9]/g, '');
-                    const limitedDigits = allDigits.substring(0, maxDigits);
-                    
-                    // Reconstruct with original formatting if possible
-                    let formatted = '';
-                    let digitIndex = 0;
-                    
-                    for (let i = 0; i < newValue.length && digitIndex < limitedDigits.length; i++) {
-                        if (/[0-9]/.test(newValue[i])) {
-                            formatted += limitedDigits[digitIndex];
-                            digitIndex++;
-                        } else if (/[+\-\s()]/.test(newValue[i]) && digitIndex > 0) {
-                            formatted += newValue[i];
-                        }
+                // Format the new number
+                let newValue = '';
+                if (iti) {
+                    const countryData = iti.getSelectedCountryData();
+                    if (countryData && countryData.dialCode) {
+                        newValue = `+${countryData.dialCode} ` + formatNationalNumber(newNationalNumber, currentCountryCode);
+                    } else {
+                        newValue = formatNationalNumber(newNationalNumber, currentCountryCode);
                     }
-                    newValue = formatted;
+                } else {
+                    newValue = newNationalNumber;
                 }
                 
                 this.value = newValue;
                 
-                // Move cursor to end of inserted text
-                const newCursorPos = start + digitsOnly.length;
-                this.setSelectionRange(newCursorPos, newCursorPos);
+                // Move cursor to end
+                this.setSelectionRange(newValue.length, newValue.length);
                 
                 // Update filled state
                 if (this.value.trim()) {
@@ -618,11 +689,11 @@
                 }
             });
             
-            // Prevent keydown for adding more digits if at max
+            // Prevent keydown for adding more NATIONAL digits if at max
             phoneInput.addEventListener('keydown', function(e) {
-                // Get current digit count
-                const currentDigits = this.value.replace(/[^0-9]/g, '');
-                const currentDigitCount = currentDigits.length;
+                // Get current national digit count
+                const currentNationalNumber = getNationalNumber(this.value);
+                const currentNationalDigitCount = currentNationalNumber.length;
                 
                 // Check if it's a digit key (0-9 or numpad)
                 const isDigit = /^\d$/.test(e.key) || (e.key >= '0' && e.key <= '9');
@@ -638,8 +709,8 @@
                 const isFormattingChar = /[+\-\s()]/.test(e.key);
                 
                 if (isDigit && !e.ctrlKey && !e.metaKey && !e.altKey) {
-                    // If already at max digits, prevent adding more
-                    if (currentDigitCount >= maxDigits) {
+                    // If already at max NATIONAL digits, prevent adding more
+                    if (currentNationalDigitCount >= maxNationalDigits) {
                         e.preventDefault();
                         return;
                     }
@@ -654,40 +725,41 @@
             
             // Real-time digit count display (optional - for debugging)
             phoneInput.addEventListener('input', function() {
-                const digits = this.value.replace(/[^0-9]/g, '');
-                console.log(`Current digits: ${digits.length}/${maxDigits}`);
+                const nationalDigits = getNationalNumber(this.value);
+                console.log(`National digits: ${nationalDigits.length}/${maxNationalDigits}`);
             });
             
             // Format the number on blur if valid
             phoneInput.addEventListener('blur', function() {
-                // Count current digits
-                const digitsOnly = this.value.replace(/[^0-9]/g, '');
+                // Count current national digits
+                const nationalNumber = getNationalNumber(this.value);
                 
-                // STRICT enforcement - truncate if exceeds max
-                if (digitsOnly.length > maxDigits) {
-                    const truncated = digitsOnly.substring(0, maxDigits);
+                // STRICT enforcement - truncate if exceeds max NATIONAL digits
+                if (nationalNumber.length > maxNationalDigits) {
+                    const truncatedNational = nationalNumber.substring(0, maxNationalDigits);
                     
-                    // Try to preserve formatting
+                    // Reformat with country code
                     let formatted = '';
-                    let digitIndex = 0;
                     
-                    for (let i = 0; i < this.value.length && digitIndex < truncated.length; i++) {
-                        if (/[0-9]/.test(this.value[i])) {
-                            formatted += truncated[digitIndex];
-                            digitIndex++;
-                        } else if (/[+\-\s()]/.test(this.value[i]) && digitIndex > 0) {
-                            formatted += this.value[i];
+                    if (iti) {
+                        const countryData = iti.getSelectedCountryData();
+                        if (countryData && countryData.dialCode) {
+                            formatted = `+${countryData.dialCode} ` + formatNationalNumber(truncatedNational, currentCountryCode);
+                        } else {
+                            formatted = formatNationalNumber(truncatedNational, currentCountryCode);
                         }
+                    } else {
+                        formatted = truncatedNational;
                     }
                     
                     this.value = formatted;
                 }
                 
                 // Validate with intl-tel-input if we have enough digits
-                if (iti && digitsOnly.length >= 6 && digitsOnly.length <= maxDigits) {
+                if (iti && nationalNumber.length >= 6 && nationalNumber.length <= maxNationalDigits) {
                     if (iti.isValidNumber()) {
-                        const number = iti.getNumber();
-                        this.value = number;
+                        const formattedNumber = iti.getNumber();
+                        this.value = formattedNumber;
                     }
                 }
                 
@@ -721,15 +793,17 @@
             }
             
             if (id === 'phone' && value) {
-                const digitsOnly = value.replace(/[^0-9]/g, '');
+                // Get national number digits (without country code)
+                const nationalNumber = getNationalNumber ? getNationalNumber(value) : value.replace(/[^0-9]/g, '');
+                const nationalDigitCount = nationalNumber.length;
                 
-                // First, check digit count
-                if (digitsOnly.length > maxDigits) {
-                    showError(input, `Phone number cannot exceed ${maxDigits} digits for this country`);
+                // First, check national digit count
+                if (nationalDigitCount > maxNationalDigits) {
+                    showError(input, `Phone number cannot exceed ${maxNationalDigits} digits for ${currentCountryCode.toUpperCase()}`);
                     return false;
                 }
                 
-                if (digitsOnly.length < 6) { // Minimum reasonable length for a phone number
+                if (nationalDigitCount < 6) { // Minimum reasonable length for a phone number
                     showError(input, 'Phone number is too short');
                     return false;
                 }
@@ -741,19 +815,15 @@
                         return false;
                     }
                     
-                    if (!PHONE_CONFIG.ALLOWED_CHARS.test(value)) {
+                    if (!PHONE_CONFIG.ALLOWED_CHARS.test(value.replace(/\+[0-9]+\s?/, ''))) {
                         showError(input, 'Only digits and basic phone characters (+, -, (, ), space) are allowed');
                         return false;
                     }
                 } else {
                     // Fallback validation without intl-tel-input
-                    if (!PHONE_CONFIG.ALLOWED_CHARS.test(value)) {
+                    const withoutCountryCode = value.replace(/^\+[0-9]+\s?/, '');
+                    if (!PHONE_CONFIG.ALLOWED_CHARS.test(withoutCountryCode)) {
                         showError(input, 'Only digits and basic phone characters (+, -, (, ), space) are allowed');
-                        return false;
-                    }
-                    
-                    if (!PHONE_CONFIG.DIGITS_ONLY.test(digitsOnly)) {
-                        showError(input, 'Phone number must contain only digits');
                         return false;
                     }
                 }
