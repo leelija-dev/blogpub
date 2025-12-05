@@ -211,7 +211,7 @@
                         <div align="center" style="margin:32px 0 8px;">
                             <a href="https://yourapp.com/dashboard"
                                 target="_blank"
-                                style="background:#4f46e5; color:#ffffff; font-weight:bold; font-size:16px; text-decoration:none; padding:14px 32px; border-radius:8px; display:inline-block; width:100%; max-width:260px; text-align:center;">
+                                style="background:#4f46e5; color:#ffffff; font-weight:bold; font-size:16px; text-decoration:none; padding:14px 32px; border-radius:8px;  text-align:center;">
                                 Go to Dashboard →
                             </a>
                         </div>
