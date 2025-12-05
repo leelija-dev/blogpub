@@ -116,7 +116,7 @@ class CheckoutController extends Controller
                 'user_id' => Auth::id(),
                 'plan_id' => $plan->id,
                 'amount' => $plan->price,
-                'currency' => $plan->currency, // Store original currency
+                'currency' => config('app.currency'),//$plan->currency, // Store original currency
                 'status' => 'pending',
                 'billing_info' => $request->billing_info,
             ]);
@@ -186,7 +186,7 @@ class CheckoutController extends Controller
                 'user_id' => $user->id,
                 'plan_id' => $plan->id,
                 'amount' => 0, // Free trial
-                'currency' => $plan->currency,
+                'currency' => config('app.currency'),//$plan->currency,
                 'status' => 'completed',
                 'payment_status' => 'trial',
                 'paid_at' => now(),
@@ -392,11 +392,12 @@ class CheckoutController extends Controller
                     
 
                     //admin mail 
+                    $currency = config('app.currency');
                     $adminEmail = config('mail.admin_email'); // set in .env
                     $adminSubject = "New Plan Ordered";
                     $adminBody = "User: {$order->user->name} ({$order->user->email})\n"
                         . "Plan: {$plan->name}\n"
-                        . "Amount: {$order->amount} {$order->currency}\n"
+                        . "Amount: {$order->amount} {$currency}\n"
                         . "Transaction ID: {$order->transaction_id}\n"
                         . "Paid at: " . now()->toDateTimeString();
                     if($adminEmail!=null){
