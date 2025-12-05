@@ -434,45 +434,103 @@
         // Initialize intl-tel-input for phone field
         const phoneInput = document.querySelector("#phone");
         let iti = null;
+        let maxDigits = 15; // Default fallback
+        let currentCountryCode = 'in'; // Default country code
         
         // Phone validation configuration
         const PHONE_CONFIG = {
-            MAX_LENGTH: 15, // Maximum digits for phone number
             ALLOWED_CHARS: /^[0-9+\-\s()]*$/, // Only allow digits, plus, hyphen, space, parentheses
             DIGITS_ONLY: /^[0-9]*$/ // For final validation - digits only
         };
         
         if (phoneInput && typeof window.intlTelInput === 'function') {
+            // Initialize intl-tel-input first to get the placeholder
+            iti = window.intlTelInput(phoneInput, {
+                initialCountry: "in",
+                preferredCountries: ["gb", "us", "in"],
+                separateDialCode: true,
+                allowDropdown: true,
+                autoPlaceholder: "aggressive",
+                formatOnDisplay: true,
+                nationalMode: false,
+                // Custom validation
+                customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+                    // Store current country code
+                    currentCountryCode = selectedCountryData.iso2;
+                    
+                    // Extract max digits from placeholder text - get ALL digits from placeholder
+                    const digitsOnly = selectedCountryPlaceholder.replace(/[^\d]/g, '');
+                    maxDigits = digitsOnly.length;
+                    
+                    // Get the example number from intl-tel-input
+                    const exampleNumber = selectedCountryPlaceholder;
+                    console.log(`Country: ${selectedCountryData.name}, Example: ${exampleNumber}, Max digits: ${maxDigits}`);
+                    
+                    return `${exampleNumber} (max ${maxDigits} digits)`;
+                },
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
+            });
+            
+            // Track when country changes
+            phoneInput.addEventListener('countrychange', function() {
+                if (iti) {
+                    const selectedCountryData = iti.getSelectedCountryData();
+                    currentCountryCode = selectedCountryData.iso2;
+                    
+                    // Get the current placeholder to update maxDigits
+                    const placeholder = phoneInput.placeholder;
+                    const digitsOnly = placeholder.replace(/[^\d]/g, '');
+                    maxDigits = digitsOnly.length;
+                    
+                    console.log(`Country changed to: ${selectedCountryData.name}, New max digits: ${maxDigits}`);
+                }
+            });
+            
+            // Get current digit count helper
+            function getCurrentDigitCount(value) {
+                return (value.match(/[0-9]/g) || []).length;
+            }
+            
             // Restrict input to digits and basic phone characters
             phoneInput.addEventListener('input', function(e) {
                 let value = this.value;
+                
+                // Get cursor position before any changes
+                const cursorPos = this.selectionStart;
                 
                 // Remove any non-allowed characters
                 const cleaned = value.replace(/[^0-9+\-\s()]/g, '');
                 
                 // Count digits only for max length check
-                const digitCount = (cleaned.match(/[0-9]/g) || []).length;
+                const digitCount = getCurrentDigitCount(cleaned);
                 
                 // If digits exceed max length, truncate
-                if (digitCount > PHONE_CONFIG.MAX_LENGTH) {
-                    // Remove excess digits
+                if (digitCount > maxDigits) {
+                    // Remove excess digits - STRICT enforcement
                     let digitsOnly = cleaned.replace(/[^0-9]/g, '');
-                    digitsOnly = digitsOnly.substring(0, PHONE_CONFIG.MAX_LENGTH);
+                    digitsOnly = digitsOnly.substring(0, maxDigits);
                     
                     // Reconstruct with formatting characters if needed
                     let result = '';
                     let digitIndex = 0;
+                    let formattingCharCount = 0;
                     
                     for (let i = 0; i < cleaned.length && digitIndex < digitsOnly.length; i++) {
                         if (/[0-9]/.test(cleaned[i])) {
                             result += digitsOnly[digitIndex];
                             digitIndex++;
-                        } else if (/[+\-\s()]/.test(cleaned[i])) {
+                        } else if (/[+\-\s()]/.test(cleaned[i]) && digitIndex > 0) {
+                            // Only allow formatting characters if we have digits
                             result += cleaned[i];
+                            formattingCharCount++;
                         }
                     }
                     
                     this.value = result;
+                    
+                    // Adjust cursor position
+                    const newCursorPos = Math.min(cursorPos, result.length);
+                    this.setSelectionRange(newCursorPos, newCursorPos);
                 } else if (cleaned !== value) {
                     this.value = cleaned;
                 }
@@ -485,29 +543,33 @@
                 }
             });
             
-            // Prevent paste of invalid characters
+            // Prevent paste of invalid characters and enforce max digits
             phoneInput.addEventListener('paste', function(e) {
                 e.preventDefault();
                 
                 // Get pasted text
                 const pastedText = (e.clipboardData || window.clipboardData).getData('text');
                 
-                // Clean the pasted text
-                let cleaned = pastedText.replace(/[^0-9+\-\s()]/g, '');
+                // Clean the pasted text - keep only digits
+                let digitsOnly = pastedText.replace(/[^0-9]/g, '');
                 
-                // Count digits and check max length
-                const digitCount = (cleaned.match(/[0-9]/g) || []).length;
+                // Get current digits count
+                const currentDigits = this.value.replace(/[^0-9]/g, '');
+                const currentDigitCount = currentDigits.length;
                 
-                if (digitCount > PHONE_CONFIG.MAX_LENGTH) {
-                    // Take only first MAX_LENGTH digits
-                    const digitsOnly = cleaned.replace(/[^0-9]/g, '');
-                    cleaned = digitsOnly.substring(0, PHONE_CONFIG.MAX_LENGTH);
-                    
-                    // Try to preserve formatting if it's a simple phone number
-                    if (cleaned.length <= 10) {
-                        // Format as (XXX) XXX-XXXX
-                        cleaned = cleaned.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
-                    }
+                // Calculate how many digits we can add
+                const availableDigits = maxDigits - currentDigitCount;
+                
+                if (availableDigits <= 0) {
+                    // Already at max digits
+                    return;
+                }
+                
+                // Take only as many digits as we can fit
+                digitsOnly = digitsOnly.substring(0, availableDigits);
+                
+                if (digitsOnly.length === 0) {
+                    return;
                 }
                 
                 // Insert at cursor position
@@ -515,12 +577,40 @@
                 const end = this.selectionEnd;
                 const currentValue = this.value;
                 
-                this.value = currentValue.substring(0, start) + 
-                             cleaned + 
-                             currentValue.substring(end);
+                // Insert the digits
+                const before = currentValue.substring(0, start);
+                const after = currentValue.substring(end);
+                
+                // Combine and keep only allowed characters
+                let newValue = (before + digitsOnly + after).replace(/[^0-9+\-\s()]/g, '');
+                
+                // Ensure we don't exceed max digits
+                const newDigitCount = getCurrentDigitCount(newValue);
+                if (newDigitCount > maxDigits) {
+                    // Extract only maxDigits digits
+                    const allDigits = newValue.replace(/[^0-9]/g, '');
+                    const limitedDigits = allDigits.substring(0, maxDigits);
+                    
+                    // Reconstruct with original formatting if possible
+                    let formatted = '';
+                    let digitIndex = 0;
+                    
+                    for (let i = 0; i < newValue.length && digitIndex < limitedDigits.length; i++) {
+                        if (/[0-9]/.test(newValue[i])) {
+                            formatted += limitedDigits[digitIndex];
+                            digitIndex++;
+                        } else if (/[+\-\s()]/.test(newValue[i]) && digitIndex > 0) {
+                            formatted += newValue[i];
+                        }
+                    }
+                    newValue = formatted;
+                }
+                
+                this.value = newValue;
                 
                 // Move cursor to end of inserted text
-                this.selectionStart = this.selectionEnd = start + cleaned.length;
+                const newCursorPos = start + digitsOnly.length;
+                this.setSelectionRange(newCursorPos, newCursorPos);
                 
                 // Update filled state
                 if (this.value.trim()) {
@@ -528,34 +618,77 @@
                 }
             });
             
-            // Initialize intl-tel-input after setting up our validation
-            iti = window.intlTelInput(phoneInput, {
-                initialCountry: "in",
-                preferredCountries: ["gb", "us", "in"],
-                separateDialCode: true,
-                allowDropdown: true,
-                autoPlaceholder: "aggressive",
-                formatOnDisplay: true,
-                nationalMode: false,
-                // Custom validation
-                customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
-                    return selectedCountryPlaceholder.replace(/[^\d]/g, '').length + " digits maximum";
-                },
-                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
+            // Prevent keydown for adding more digits if at max
+            phoneInput.addEventListener('keydown', function(e) {
+                // Get current digit count
+                const currentDigits = this.value.replace(/[^0-9]/g, '');
+                const currentDigitCount = currentDigits.length;
+                
+                // Check if it's a digit key (0-9 or numpad)
+                const isDigit = /^\d$/.test(e.key) || (e.key >= '0' && e.key <= '9');
+                
+                // Check if it's a control key
+                const isControl = [
+                    'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 
+                    'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End',
+                    'Enter', 'Escape'
+                ].includes(e.key);
+                
+                // Check if it's a formatting character that we allow
+                const isFormattingChar = /[+\-\s()]/.test(e.key);
+                
+                if (isDigit && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                    // If already at max digits, prevent adding more
+                    if (currentDigitCount >= maxDigits) {
+                        e.preventDefault();
+                        return;
+                    }
+                }
+                
+                // Allow control keys and formatting characters
+                if (!isDigit && !isControl && !isFormattingChar && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                    // Prevent typing other characters
+                    e.preventDefault();
+                }
+            });
+            
+            // Real-time digit count display (optional - for debugging)
+            phoneInput.addEventListener('input', function() {
+                const digits = this.value.replace(/[^0-9]/g, '');
+                console.log(`Current digits: ${digits.length}/${maxDigits}`);
             });
             
             // Format the number on blur if valid
             phoneInput.addEventListener('blur', function() {
-                if (iti && iti.isValidNumber()) {
-                    const number = iti.getNumber();
-                    phoneInput.value = number;
+                // Count current digits
+                const digitsOnly = this.value.replace(/[^0-9]/g, '');
+                
+                // STRICT enforcement - truncate if exceeds max
+                if (digitsOnly.length > maxDigits) {
+                    const truncated = digitsOnly.substring(0, maxDigits);
+                    
+                    // Try to preserve formatting
+                    let formatted = '';
+                    let digitIndex = 0;
+                    
+                    for (let i = 0; i < this.value.length && digitIndex < truncated.length; i++) {
+                        if (/[0-9]/.test(this.value[i])) {
+                            formatted += truncated[digitIndex];
+                            digitIndex++;
+                        } else if (/[+\-\s()]/.test(this.value[i]) && digitIndex > 0) {
+                            formatted += this.value[i];
+                        }
+                    }
+                    
+                    this.value = formatted;
                 }
                 
-                // Additional validation for digits only
-                const digitsOnly = this.value.replace(/[^0-9]/g, '');
-                if (digitsOnly.length > PHONE_CONFIG.MAX_LENGTH) {
-                    // Truncate to max length
-                    this.value = digitsOnly.substring(0, PHONE_CONFIG.MAX_LENGTH);
+                // Validate with intl-tel-input if we have enough digits
+                if (iti && digitsOnly.length >= 6 && digitsOnly.length <= maxDigits) {
+                    if (iti.isValidNumber()) {
+                        const number = iti.getNumber();
+                        this.value = number;
+                    }
                 }
                 
                 if (this.value.trim()) {
@@ -588,46 +721,34 @@
             }
             
             if (id === 'phone' && value) {
-                // First, check with intl-tel-input validation if available
+                const digitsOnly = value.replace(/[^0-9]/g, '');
+                
+                // First, check digit count
+                if (digitsOnly.length > maxDigits) {
+                    showError(input, `Phone number cannot exceed ${maxDigits} digits for this country`);
+                    return false;
+                }
+                
+                if (digitsOnly.length < 6) { // Minimum reasonable length for a phone number
+                    showError(input, 'Phone number is too short');
+                    return false;
+                }
+                
+                // Then check with intl-tel-input validation if available
                 if (iti) {
                     if (!iti.isValidNumber()) {
                         showError(input, 'Please enter a valid phone number');
                         return false;
                     }
                     
-                    // Additional validation for digit count
-                    const digitsOnly = value.replace(/[^0-9]/g, '');
-                    
-                    if (digitsOnly.length > PHONE_CONFIG.MAX_LENGTH) {
-                        showError(input, `Phone number cannot exceed ${PHONE_CONFIG.MAX_LENGTH} digits`);
-                        return false;
-                    }
-                    
-                    if (digitsOnly.length < 6) { // Minimum reasonable length for a phone number
-                        showError(input, 'Phone number is too short');
-                        return false;
-                    }
-                    
-                    if (!PHONE_CONFIG.DIGITS_ONLY.test(digitsOnly)) {
-                        showError(input, 'Phone number can only contain digits');
-                        return false;
-                    }
-                } else {
-                    // Fallback validation without intl-tel-input
-                    const digitsOnly = value.replace(/[^0-9]/g, '');
-                    
                     if (!PHONE_CONFIG.ALLOWED_CHARS.test(value)) {
                         showError(input, 'Only digits and basic phone characters (+, -, (, ), space) are allowed');
                         return false;
                     }
-                    
-                    if (digitsOnly.length > PHONE_CONFIG.MAX_LENGTH) {
-                        showError(input, `Phone number cannot exceed ${PHONE_CONFIG.MAX_LENGTH} digits`);
-                        return false;
-                    }
-                    
-                    if (digitsOnly.length < 6) {
-                        showError(input, 'Phone number is too short');
+                } else {
+                    // Fallback validation without intl-tel-input
+                    if (!PHONE_CONFIG.ALLOWED_CHARS.test(value)) {
+                        showError(input, 'Only digits and basic phone characters (+, -, (, ), space) are allowed');
                         return false;
                     }
                     
