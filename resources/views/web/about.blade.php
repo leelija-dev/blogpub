@@ -1,6 +1,9 @@
 @extends('layouts.web.main-layout')
 
-@section('title', 'home-page')
+@section('title', 'About')
+@section('description', 'GPsites: one-stop link-building outreach automation tool and best backlinks marketplace helps you in extensive targeted outreach for quality link placements.')
+@section('keywords', 'about gpsites')
+@section('indexing', 'no')
 
 @section('content')
 <section class="lg:py-16 py-12 px-6">
@@ -124,7 +127,7 @@
             </div>
 
             <h2 class="text-h2-xs sm:text-h2-sm md:text-h2-md lg:text-h2-lg lgg:text-h2-lgg xl:text-h2-xl 2xl:text-h2-2xl font-bold text-gray-900 mb-4">
-                No. 1 Global Outreach Automation Marketplace 
+                No. 1 Global Outreach Automation Marketplace
             </h2>
 
             <p class="text-p-xs sm:text-p-sm md:text-p-md lg:text-p-lg lgg:text-p-lgg xl:text-p-xl 2xl:text-p-2xl text-gray-600 mb-8">
@@ -297,7 +300,7 @@
                 Features
                 <span class="w-2 h-2 bg-primary rounded-full ml-1"></span>
             </div>
-            
+
             <h2 class=" text-h2-xs sm:text-h2-sm md:text-h2-md lg:text-h2-lg lgg:text-h2-lgg xl:text-h2-xl 2xl:text-h2-2xl font-bold text-gray-900"> Predictive Functionality Features <br/><span class="text-primary">for improved efficiency </span></h2>
 
         </div>
